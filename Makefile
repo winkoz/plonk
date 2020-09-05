@@ -3,7 +3,7 @@ VERSION=$(shell git rev-parse --short HEAD)
 TAG=winkoz/plonk:$(VERSION)
 DOCKER=docker run -it -v ${PWD}:/go $(TAG)
 
-.PHONY: clean build test ssh go-build docker-build
+.PHONY: clean build test ssh go-build docker-build run
 # -----------------------------------------------
 # Top-level targets
 
@@ -24,6 +24,9 @@ test: build
 docker-build:
 	docker build -t $(TAG) .
 	@echo "Docker built successfully!"
+
+run:
+	$(DOCKER) /go/bin/plonk
 
 ssh:
 	$(DOCKER) bash
