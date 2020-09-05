@@ -25,7 +25,7 @@ docker-build:
 	docker build -t $(TAG) .
 	@echo "Docker built successfully!"
 
-run:
+run: docker-build build
 	$(DOCKER) /go/bin/plonk
 
 ssh:
