@@ -1,0 +1,4 @@
+variables:
+  - STACK: "$STACK"
+  - DOMAIN: "$DOMAIN"
+  - HOSTNAME: "$NAMESPACE.$DOMAIN"

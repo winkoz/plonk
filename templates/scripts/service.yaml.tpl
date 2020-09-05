@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: $NAME
+spec:
+  type: ClusterIP
+  ports:
+  - port: $SERVICE_PORT
+    targetPort: $MAIN_PORT
+  selector:
+    app: $NAME

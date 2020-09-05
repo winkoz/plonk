@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $NAME-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: $NAME
+  template:
+    metadata:
+      labels:
+        app: $NAME
+    spec:
+      containers:
+      - name: $NAME
+        image: $DOCKER_IMAGE
+        ports:
+        - containerPort: $MAIN_PORT
+        env:
+        - name: APP_ENV
+          value: $APP_ENV

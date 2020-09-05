@@ -1,0 +1,9 @@
+deploy-variables:
+  - NAME: "$NAME"
+  - APP_ENV: "$APP_ENV"
+  - NAMESPACE: "$STACK-$NAME"
+  - DOCKER_IMAGE: "$DOCKER_IMAGE_TAG"
+  - MAIN_PORT: "8080"
+  - HOSTNAME: "$HOSTNAME"
+  - SERVICE_PORT: "80"
+
