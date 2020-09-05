@@ -15,6 +15,10 @@ build: clean
 	$(GO) build -ldflags="-s -w" -o bin/plonk cmd/main.go
 	@echo "Applications built successfully!"
 
+local-build: clean
+	GO111MODULE=on go build -ldflags="-s -w" -o bin/plonk main.go
+	@echo "Plonk built successfully!"
+
 test: build
 	echo "test"
 
