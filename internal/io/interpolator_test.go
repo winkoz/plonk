@@ -42,6 +42,19 @@ func Test_interpolator_SubstituteValues(t *testing.T) {
 					"var1": "value1",
 					"var2": "value2",
 				},
+				template: "Hi $var1 this var2 should not change!",
+			},
+			want:    "Hi value1 this var2 should not change!",
+			wantErr: false,
+		},
+		{
+			name: "SubstituteValues should ONLY replace keys present in the template prefixed with $",
+			r:    sut,
+			args: args{
+				source: map[string]string{
+					"var1": "value1",
+					"var2": "value2",
+				},
 				template: "Hi $var1 this is $var2!",
 			},
 			want:    "Hi value1 this is value2!",
