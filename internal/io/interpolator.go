@@ -1,6 +1,8 @@
 package io
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"fmt"
 	"strings"
 )
@@ -22,8 +24,16 @@ func NewInterpolator() Interpolator {
 
 func (r interpolator) SubstituteValues(source map[string]string, template string) (string, error) {
 	result := template
+	hashedMap := map[string]string{}
 	for key, value := range source {
-		result = strings.ReplaceAll(result, fmt.Sprintf("%s%s", InterpolatorSignaler, key), value)
+		hasher := sha1.New()
+		hasher.Write([]byte(key))
+		hashedKey := hex.EncodeToString(hasher.Sum(nil))
+		result = strings.ReplaceAll(result, fmt.Sprintf("%s%s", InterpolatorSignaler, key), fmt.Sprintf("%s[%s]", InterpolatorSignaler, hashedKey))
+		hashedMap[hashedKey] = value
+	}
+	for key, value := range hashedMap {
+		result = strings.ReplaceAll(result, fmt.Sprintf("%s[%s]", InterpolatorSignaler, key), value)
 	}
 	return result, nil
 }
