@@ -42,9 +42,9 @@ func Test_interpolator_SubstituteValues(t *testing.T) {
 					"var1": "value1",
 					"var2": "value2",
 				},
-				template: "Hi $var1 this var2 should not change!",
+				template: "Hi $var1 this var2 should not change; but this other $var1 should!",
 			},
-			want:    "Hi value1 this var2 should not change!",
+			want:    "Hi value1 this var2 should not change; but this other value1 should!",
 			wantErr: false,
 		},
 		{
