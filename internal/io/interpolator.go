@@ -22,6 +22,7 @@ func NewInterpolator() Interpolator {
 	return interpolator{}
 }
 
+// SubstituteValues replaces all instances of 'key' with its respective 'value' from the `source` map in the `template` string and returns the applied template `string`.
 func (r interpolator) SubstituteValues(source map[string]string, template string) (string, error) {
 	result := template
 	hashedMap := map[string]string{}
