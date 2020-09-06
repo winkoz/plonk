@@ -60,20 +60,19 @@ func Test_interpolator_SubstituteValues(t *testing.T) {
 			want:    "Hi value1 this is value2!",
 			wantErr: false,
 		},
-		// TODO: Fix recursive templating - Esteban (because Jose can't code)
-		// {
-		// 	name: "SubstituteValues should not recursively substitute keys inside the template and source maps",
-		// 	r:    sut,
-		// 	args: args{
-		// 		source: map[string]string{
-		// 			"var1": "value1",
-		// 			"var2": "value2",
-		// 		},
-		// 		template: "Hi $var1 this is $var2!",
-		// 	},
-		// 	want:    "Hi value1 this is value2!",
-		// 	wantErr: false,
-		// },
+		{
+			name: "SubstituteValues should not recursively substitute keys inside the template and source maps",
+			r:    sut,
+			args: args{
+				source: map[string]string{
+					"var1": "$var2",
+					"var2": "value2",
+				},
+				template: "Hi $var1 this is $var2!",
+			},
+			want:    "Hi $var2 this is value2!",
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
