@@ -2,9 +2,8 @@ PROJECT_NAME=winkoz-plonk
 VERSION=$(shell git rev-parse --short HEAD)
 TAG=winkoz/plonk:$(VERSION)
 DOCKER=docker run -it -v ${PWD}:/go $(TAG)
-ADR_DOCKER=docker run -it -v ${PWD}:/plonk -w /plonk brianskarda/adr-tools-docker:latest
 
-.PHONY: clean build test ssh go-build go-test docker-build run adr_init adr super_adr
+.PHONY: clean build test ssh go-build go-test docker-build run
 # -----------------------------------------------
 # Top-level targets
 
@@ -36,23 +35,4 @@ run: docker-build build
 
 ssh:
 	$(DOCKER) bash
-
-adr_init:
-	$(ADR_DOCKER) adr init ./adrs/
-
-adr:
-ifdef ADR_TITLE
-	$(ADR_DOCKER) adr new $(ADR_TITLE)
-else
-	@echo "ADR Title missing. Try like this: 'make adr ADR_TITLE=\"ADR Title here\"'"
-	@exit
-endif
-
-super_adr:
-ifdef ADR_TITLE OLD_ADR
-	$(ADR_DOCKER) adr new -s $(OLD_ADR) $(ADR_TITLE)
-else
-	@echo "ADR Title missing as well as superseeded ADR number. Try the command like this: 'make super_adr ADR_TITLE'\"New ADR title\" OLD_ADR=<Number of the ADR to be superseded>"
-	@exit
-endif
 
