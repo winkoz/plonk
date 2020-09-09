@@ -1,5 +1,8 @@
 package io
 
+// YAMLExtension defines the extension used in the package for YAML files
+const YAMLExtension = "yaml"
+
 // Error generic I/O error
 type Error struct {
 	msg string
