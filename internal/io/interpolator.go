@@ -30,11 +30,11 @@ func (r interpolator) SubstituteValues(source map[string]string, template string
 		hasher := sha1.New()
 		hasher.Write([]byte(key))
 		hashedKey := hex.EncodeToString(hasher.Sum(nil))
-		result = strings.ReplaceAll(result, fmt.Sprintf("%s%s", InterpolatorSignaler, key), fmt.Sprintf("%s[%s]", InterpolatorSignaler, hashedKey))
+		result = strings.ReplaceAll(result, fmt.Sprintf("%s%s", InterpolatorSignaler, key), fmt.Sprintf("%s{%s}", InterpolatorSignaler, hashedKey))
 		hashedMap[hashedKey] = value
 	}
 	for key, value := range hashedMap {
-		result = strings.ReplaceAll(result, fmt.Sprintf("%s[%s]", InterpolatorSignaler, key), value)
+		result = strings.ReplaceAll(result, fmt.Sprintf("%s{%s}", InterpolatorSignaler, key), value)
 	}
 	return result, nil
 }
