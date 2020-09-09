@@ -24,7 +24,7 @@ build: clean
 
 test: docker-build
 	$(DOCKER) make go-test
-	echo "Application tests finished."
+	@echo "Application tests finished."
 
 docker-build:
 	docker build -t $(TAG) .
@@ -35,3 +35,4 @@ run: docker-build build
 
 ssh:
 	$(DOCKER) bash
+
