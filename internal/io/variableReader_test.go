@@ -40,6 +40,7 @@ func Test_variableReader_GetVariables(t *testing.T) {
 			want:    nil,
 			wantErr: NewParseVariableError(fmt.Sprintf("Unable to parse %s/invalidYAML.yaml", fixturesDir)),
 		},
+		// TODO: Add ALL the missing test cases
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
