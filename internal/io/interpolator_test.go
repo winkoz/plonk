@@ -22,21 +22,19 @@ func TestNewInterpolator(t *testing.T) {
 }
 
 func Test_interpolator_SubstituteValues(t *testing.T) {
-	sut := interpolator{}
+	sut := NewInterpolator()
 	type args struct {
 		source   map[string]string
 		template string
 	}
 	tests := []struct {
 		name    string
-		r       interpolator
 		args    args
 		want    string
 		wantErr bool
 	}{
 		{
 			name: "SubstituteValues should replace all source keys on the template with their respective values",
-			r:    sut,
 			args: args{
 				source: map[string]string{
 					"var1": "value1",
@@ -49,7 +47,6 @@ func Test_interpolator_SubstituteValues(t *testing.T) {
 		},
 		{
 			name: "SubstituteValues should ONLY replace keys present in the template prefixed with $",
-			r:    sut,
 			args: args{
 				source: map[string]string{
 					"var1": "value1",
@@ -62,7 +59,6 @@ func Test_interpolator_SubstituteValues(t *testing.T) {
 		},
 		{
 			name: "SubstituteValues should not recursively substitute keys inside the template and source maps",
-			r:    sut,
 			args: args{
 				source: map[string]string{
 					"var1": "$var2",
@@ -76,8 +72,7 @@ func Test_interpolator_SubstituteValues(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := interpolator{}
-			got, err := r.SubstituteValues(tt.args.source, tt.args.template)
+			got, err := sut.SubstituteValues(tt.args.source, tt.args.template)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("replacer.SubstituteValues() error = %v, wantErr %v", err, tt.wantErr)
 				return
