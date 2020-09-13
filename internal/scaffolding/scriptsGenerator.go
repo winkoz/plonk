@@ -1,13 +1,54 @@
 package scaffolding
 
+import (
+	"fmt"
+
+	"github.com/winkoz/plonk/internal/io"
+)
+
 type scriptsGenerator struct {
+	sourcePath   string
+	targetPath   string
+	duplicator   io.Duplicator
+	interpolator io.Interpolator
+	stitcher     io.Stitcher
 }
 
 // ScriptsGenerator substitues declared variables and generates new yaml configuration files.
 type ScriptsGenerator interface {
+	InitProject(projectName string, projectDefinition ProjectDefinition) error
 }
 
 // NewScriptsGenerator returns a fully initialised ScripterGenerator
-func NewScriptsGenerator() ScriptsGenerator {
-	return scriptsGenerator{}
+func NewScriptsGenerator(sourcePath string, targetPath string) ScriptsGenerator {
+	return scriptsGenerator{
+		sourcePath:   sourcePath,
+		targetPath:   targetPath,
+		duplicator:   io.NewDuplicator(),
+		interpolator: io.NewInterpolator(),
+	}
+}
+
+func (s scriptsGenerator) InitProject(projectName string, projectDefinition ProjectDefinition) error {
+	replaceProjectName := func(input []byte) []byte {
+		interpolatedResult, err := s.interpolator.SubstituteValues(
+			map[string]string{
+				"PROJECT_NAME": projectName,
+			},
+			string(input),
+		)
+
+		if err != nil {
+			fmt.Printf("Unable to interpolate input. %+v", err)
+			return nil
+		}
+
+		return []byte(interpolatedResult)
+	}
+
+	if err := s.duplicator.CopyMultiple(s.sourcePath, s.targetPath, projectDefinition, replaceProjectName); err != nil {
+		return err
+	}
+
+	return nil
 }
