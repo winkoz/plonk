@@ -12,6 +12,9 @@ func CreatePath(path string) error {
 }
 
 // DeletePath in the local filesystem
-func DeletePath(path string) error {
-	return os.RemoveAll(path)
+func DeletePath(path string) {
+	err := os.RemoveAll(path)
+	if err != nil {
+		panic(err)
+	}
 }

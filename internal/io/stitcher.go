@@ -9,7 +9,7 @@ type stitcher struct{}
 
 // Stitcher creates a new file by joining the contents of several text files.
 type Stitcher interface {
-	Stitch(sourcePath string, targetPath string, targetFilename string, filePaths []string) error
+	Stitch(sourcePath string, targetPath string, targetFilename string, filePaths []string, fileTransformator Transformator) error
 }
 
 // NewStitcher returns a fully initialised Stitcher
@@ -17,7 +17,7 @@ func NewStitcher() Stitcher {
 	return stitcher{}
 }
 
-func (s stitcher) Stitch(sourcePath string, targetPath string, targetFilename string, filePaths []string) error {
+func (s stitcher) Stitch(sourcePath string, targetPath string, targetFilename string, filePaths []string, fileTransformator Transformator) error {
 	if err := s.validate(sourcePath, targetPath); err != nil {
 		return err
 	}
@@ -27,8 +27,10 @@ func (s stitcher) Stitch(sourcePath string, targetPath string, targetFilename st
 		return err
 	}
 
+	transformedBytes := fileTransformator(mergedBytes)
+
 	targetFilePath := fmt.Sprintf("%s/%s", targetPath, targetFilename)
-	if err := ioutil.WriteFile(targetFilePath, mergedBytes, 777); err != nil {
+	if err := ioutil.WriteFile(targetFilePath, transformedBytes, 0777); err != nil {
 		return err
 	}
 
