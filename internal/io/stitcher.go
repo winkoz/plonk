@@ -17,6 +17,7 @@ func NewStitcher() Stitcher {
 	return stitcher{}
 }
 
+// Stitch checks existence of source and target paths; then stitches all source files together and saves it to target file name after applying the passed in transformation
 func (s stitcher) Stitch(sourcePath string, targetPath string, targetFilename string, filePaths []string, fileTransformator Transformator) error {
 	if err := s.validate(sourcePath, targetPath); err != nil {
 		return err
