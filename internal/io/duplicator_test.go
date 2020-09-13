@@ -13,9 +13,10 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 	testTargetPath := "/tmp/plonk/tests/deploy"
 	sharedtesting.CreatePath(testTargetPath)
 	type args struct {
-		sourcePath string
-		targetPath string
-		sources    []string
+		sourcePath    string
+		targetPath    string
+		sources       []string
+		transformator Transformator
 	}
 	tests := []struct {
 		name    string
@@ -30,6 +31,7 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 				sources: []string{
 					"service.yaml",
 				},
+				transformator: sharedtesting.SimpleTransformator,
 			},
 			wantErr: false,
 		},
@@ -71,7 +73,7 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			d := duplicator{}
-			if err := d.CopyMultiple(tt.args.sourcePath, tt.args.targetPath, tt.args.sources); (err != nil) != tt.wantErr {
+			if err := d.CopyMultiple(tt.args.sourcePath, tt.args.targetPath, tt.args.sources, tt.args.transformator); (err != nil) != tt.wantErr {
 				t.Errorf("duplicator.CopyMultiple() error = %v, wantErr %v", err, tt.wantErr)
 			} else if !tt.wantErr {
 				for _, s := range tt.args.sources {
