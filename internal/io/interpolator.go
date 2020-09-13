@@ -14,7 +14,7 @@ const InterpolatorSignaler string = "$"
 
 // Interpolator manages variable substitution
 type Interpolator interface {
-	SubstituteValues(source map[string]string, template string) (string, error)
+	SubstituteValues(source map[string]string, target string) (string, error)
 }
 
 // NewInterpolator returns a fully initialised Interpolator

@@ -12,9 +12,6 @@ import (
 func Test_stitcher_Stitch(t *testing.T) {
 	fixturesPath := "../fixtures/stitcher"
 	targetPath := "/tmp/plonk/tests/deploy"
-	simpleTransformator := func(input []byte) []byte {
-		return input
-	}
 	sharedtesting.DeletePath(targetPath)
 	sharedtesting.CreatePath(targetPath)
 
@@ -43,7 +40,7 @@ func Test_stitcher_Stitch(t *testing.T) {
 					"2.yaml",
 					"3.yaml",
 				},
-				transformator: simpleTransformator,
+				transformator: sharedtesting.SimpleTransformator,
 			},
 			wantErr:     false,
 			wantChannel: nil,
