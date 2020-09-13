@@ -21,3 +21,8 @@ func fileExists(filename string) bool {
 	}
 	return !info.IsDir()
 }
+
+func isValidPath(path string) error {
+	_, err := os.Stat(path)
+	return err
+}

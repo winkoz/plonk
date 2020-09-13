@@ -3,7 +3,6 @@ package io
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 )
 
 type duplicator struct{}
@@ -38,12 +37,12 @@ func (d duplicator) copy(source string, target string) error {
 // CopyMultiple copies a series of files from a specific path into another
 func (d duplicator) CopyMultiple(sourcePath string, targetPath string, sources []string) error {
 	// validate source path
-	if err := d.isValidPath(sourcePath); err != nil {
+	if err := isValidPath(sourcePath); err != nil {
 		return err
 	}
 
 	// validate target path
-	if err := d.isValidPath(targetPath); err != nil {
+	if err := isValidPath(targetPath); err != nil {
 		return err
 	}
 
@@ -59,9 +58,4 @@ func (d duplicator) CopyMultiple(sourcePath string, targetPath string, sources [
 	}
 
 	return nil
-}
-
-func (d duplicator) isValidPath(path string) error {
-	_, err := os.Stat(path)
-	return err
 }

@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/winkoz/plonk/internal/sharedtesting"
 )
 
 func Test_duplicator_CopyMultiple(t *testing.T) {
 	fixturesPath := "../fixtures/scripts"
 	testTargetPath := "/tmp/plonk/tests/deploy"
-	createTestPaths(testTargetPath)
+	sharedtesting.CreatePath(testTargetPath)
 	type args struct {
 		sourcePath string
 		targetPath string
@@ -81,16 +83,5 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 			}
 		})
 	}
-}
-
-func createTestPaths(path string) error {
-	err := os.MkdirAll(path, 0755)
-	if !os.IsExist(err) {
-		return err
-	}
-	return nil
-}
-
-func deleteTestPaths(path string) error {
-	return os.RemoveAll("/tmp/")
+	sharedtesting.DeletePath(testTargetPath)
 }

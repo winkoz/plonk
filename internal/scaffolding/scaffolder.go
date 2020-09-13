@@ -11,3 +11,5 @@ type Scaffolder interface {
 func NewScaffolder() Scaffolder {
 	return scaffolder{}
 }
+
+// leer un monton de archivos y escribir un archivo con todos esos archivos pegados
