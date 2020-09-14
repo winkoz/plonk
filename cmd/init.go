@@ -18,7 +18,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/prometheus/common/log"
 	"github.com/spf13/cobra"
 )
 
@@ -38,11 +37,7 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	// Configure logging level
-	if err := log.Base().SetLevel("DEBUG"); err != nil {
-		panic(err.Error())
-	}
-
+	AddVerbosity(rootCmd)
 	rootCmd.AddCommand(initCmd)
 
 	// Here you will define your flags and configuration settings.
