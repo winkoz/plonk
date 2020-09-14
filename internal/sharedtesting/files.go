@@ -1,11 +1,16 @@
 package sharedtesting
 
-import "os"
+import (
+	"os"
+
+	"github.com/prometheus/common/log"
+)
 
 // CreatePath in the local filesystem
 func CreatePath(path string) error {
 	err := os.MkdirAll(path, 0755)
 	if !os.IsExist(err) {
+		log.Error(err)
 		return err
 	}
 	return nil

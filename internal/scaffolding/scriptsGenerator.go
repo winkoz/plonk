@@ -1,8 +1,7 @@
 package scaffolding
 
 import (
-	"fmt"
-
+	"github.com/prometheus/common/log"
 	"github.com/winkoz/plonk/internal/io"
 )
 
@@ -39,7 +38,7 @@ func (s scriptsGenerator) InitProject(projectName string, projectDefinition Proj
 		)
 
 		if err != nil {
-			fmt.Printf("Unable to interpolate input. %+v", err)
+			log.Errorf("Unable to interpolate input. %+v", err)
 			return nil
 		}
 
@@ -47,6 +46,7 @@ func (s scriptsGenerator) InitProject(projectName string, projectDefinition Proj
 	}
 
 	if err := s.duplicator.CopyMultiple(s.sourcePath, s.targetPath, projectDefinition, replaceProjectName); err != nil {
+		log.Error(err)
 		return err
 	}
 
