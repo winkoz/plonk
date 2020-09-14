@@ -31,7 +31,7 @@ func (d duplicator) copy(source string, target string, transformator Transformat
 		transformedBytes = transformator(input)
 	}
 
-	err = ioutil.WriteFile(target, transformedBytes, 0644)
+	err = ioutil.WriteFile(target, transformedBytes, OwnerPermission)
 	if err != nil {
 		log.Errorf("Error creating: %+v\n%+v", target, err)
 		return err

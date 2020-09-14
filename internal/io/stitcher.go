@@ -35,7 +35,8 @@ func (s stitcher) Stitch(sourcePath string, targetPath string, targetFilename st
 	transformedBytes := fileTransformator(mergedBytes)
 
 	targetFilePath := fmt.Sprintf("%s/%s", targetPath, targetFilename)
-	if err := ioutil.WriteFile(targetFilePath, transformedBytes, 0777); err != nil {
+	if err := ioutil.WriteFile(targetFilePath, transformedBytes, OwnerPermission); err != nil {
+		log.Error(err)
 		return err
 	}
 
