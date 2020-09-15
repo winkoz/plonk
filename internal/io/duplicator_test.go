@@ -3,6 +3,7 @@ package io
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/winkoz/plonk/internal/sharedtesting"
@@ -13,9 +14,8 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 	testTargetPath := "/tmp/plonk/tests/deploy"
 	sharedtesting.CreatePath(testTargetPath)
 	type args struct {
-		sourcePath    string
 		targetPath    string
-		sources       []string
+		sourcePaths   []string
 		transformator Transformator
 	}
 	tests := []struct {
@@ -26,10 +26,9 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 		{
 			name: "succeeds by copying all sources from one path to the other",
 			args: args{
-				sourcePath: fixturesPath,
 				targetPath: testTargetPath,
-				sources: []string{
-					"service.yaml",
+				sourcePaths: []string{
+					fixturesPath + "/service.yaml",
 				},
 				transformator: sharedtesting.SimpleTransformator,
 			},
@@ -38,10 +37,9 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 		{
 			name: "throws error when the sourcePath doesn't exist",
 			args: args{
-				sourcePath: "../fixtures/missingscriptsfolder",
 				targetPath: testTargetPath,
-				sources: []string{
-					"service.yaml",
+				sourcePaths: []string{
+					"../fixtures/missingscriptsfolder" + "/service.yaml",
 				},
 			},
 			wantErr: true,
@@ -49,10 +47,9 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 		{
 			name: "throws error when the targetPath doesn't exist",
 			args: args{
-				sourcePath: fixturesPath,
 				targetPath: "/tmp/plonk/thisfolderdoesntexist",
-				sources: []string{
-					"service.yaml",
+				sourcePaths: []string{
+					fixturesPath + "/service.yaml",
 				},
 			},
 			wantErr: true,
@@ -60,11 +57,10 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 		{
 			name: "throws error when one of the source files doesn't exist",
 			args: args{
-				sourcePath: fixturesPath,
 				targetPath: testTargetPath,
-				sources: []string{
-					"service.yaml",
-					"thisdoesntexist.yaml",
+				sourcePaths: []string{
+					fixturesPath + "/service.yaml",
+					fixturesPath + "/thisdoesntexist.yaml",
 				},
 			},
 			wantErr: true,
@@ -73,11 +69,11 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			d := duplicator{}
-			if err := d.CopyMultiple(tt.args.sourcePath, tt.args.targetPath, tt.args.sources, tt.args.transformator); (err != nil) != tt.wantErr {
+			if err := d.CopyMultiple(tt.args.targetPath, tt.args.sourcePaths, tt.args.transformator); (err != nil) != tt.wantErr {
 				t.Errorf("duplicator.CopyMultiple() error = %v, wantErr %v", err, tt.wantErr)
 			} else if !tt.wantErr {
-				for _, s := range tt.args.sources {
-					targetSourcePath := fmt.Sprintf("%s/%s", tt.args.targetPath, s)
+				for _, s := range tt.args.sourcePaths {
+					targetSourcePath := fmt.Sprintf("%s/%s", tt.args.targetPath, filepath.Base(s))
 					if _, err := os.Stat(targetSourcePath); (err != nil) != tt.wantErr {
 						t.Errorf("duplicator.CopyMultiple() test_check_error = %v", err)
 					}
