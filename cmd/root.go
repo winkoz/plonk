@@ -1,10 +1,11 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
+	"github.com/prometheus/common/log"
 	"github.com/spf13/cobra"
+	"github.com/winkoz/plonk/internal/io/logger"
 )
 
 var rootCmd = &cobra.Command{
@@ -12,7 +13,7 @@ var rootCmd = &cobra.Command{
 	Short: "Plonk is a deploy manager for kubernetes apps using kubeclt",
 	Long:  "",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("RUN COMMAND")
+		log.Debugf("RUN COMMAND - Verbosity: %s", logger.Severity)
 		// Do Stuff Here
 	},
 }
@@ -20,7 +21,8 @@ var rootCmd = &cobra.Command{
 // Execute executes command
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		log.Error(err)
+
 		os.Exit(1)
 	}
 }

@@ -3,6 +3,8 @@ package io
 import (
 	"fmt"
 	"io/ioutil"
+
+	"github.com/prometheus/common/log"
 )
 
 type duplicator struct{}
@@ -20,7 +22,7 @@ func NewDuplicator() Duplicator {
 func (d duplicator) copy(source string, target string, transformator Transformator) error {
 	input, err := ioutil.ReadFile(source)
 	if err != nil {
-		fmt.Println(err)
+		log.Error(err)
 		return err
 	}
 
@@ -29,10 +31,9 @@ func (d duplicator) copy(source string, target string, transformator Transformat
 		transformedBytes = transformator(input)
 	}
 
-	err = ioutil.WriteFile(target, transformedBytes, 0644)
+	err = ioutil.WriteFile(target, transformedBytes, OwnerPermission)
 	if err != nil {
-		fmt.Printf("Error creating: %+v\n", target)
-		fmt.Println(err)
+		log.Errorf("Error creating: %+v\n%+v", target, err)
 		return err
 	}
 	return err
@@ -42,11 +43,13 @@ func (d duplicator) copy(source string, target string, transformator Transformat
 func (d duplicator) CopyMultiple(sourcePath string, targetPath string, sources []string, transformator Transformator) error {
 	// validate source path
 	if err := isValidPath(sourcePath); err != nil {
+		log.Error(err)
 		return err
 	}
 
 	// validate target path
 	if err := isValidPath(targetPath); err != nil {
+		log.Error(err)
 		return err
 	}
 
@@ -57,6 +60,7 @@ func (d duplicator) CopyMultiple(sourcePath string, targetPath string, sources [
 		targetFilePath = fmt.Sprintf("%s/%s", targetPath, s)
 		sourceFilePath = fmt.Sprintf("%s/%s", sourcePath, s)
 		if err := d.copy(sourceFilePath, targetFilePath, transformator); err != nil {
+			log.Error(err)
 			return err
 		}
 	}

@@ -3,6 +3,9 @@ package io
 // YAMLExtension defines the extension used in the package for YAML files
 const YAMLExtension = "yaml"
 
+// OwnerPermission sets read & write permissions for the user on the file/folder while group members & other users have only read access.
+const OwnerPermission = 0644
+
 // Error generic I/O error
 type Error struct {
 	msg string
