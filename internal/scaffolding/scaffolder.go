@@ -1,5 +1,7 @@
 package scaffolding
 
+import "github.com/prometheus/common/log"
+
 type scaffolder struct {
 }
 
@@ -15,5 +17,6 @@ func NewScaffolder() Scaffolder {
 
 // Init initializes the basic structure of a plonk project
 func (s scaffolder) Init(targetPath string, templatesPath string, name string) error {
+	log.Debugf("Init Scaffolder: [%s] - [%s] - [%s]", targetPath, templatesPath, name)
 	return nil
 }

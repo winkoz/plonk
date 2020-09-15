@@ -19,13 +19,14 @@ type variableReader struct {
 	baseFileName   string
 }
 
+// DeployVariables variables used for interpolating the script templates
 type DeployVariables struct {
 	Variables map[string]string `yaml:"variables,omitempty"`
 }
 
 // NewVariableReader returns a fully configure VariableReader
 func NewVariableReader() VariableReader {
-	path := getCurrentDir()
+	path := GetCurrentDir()
 	return variableReader{
 		path:           path,
 		baseFileName:   "base",

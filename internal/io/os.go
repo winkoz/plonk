@@ -5,7 +5,8 @@ import (
 	"os"
 )
 
-func getCurrentDir() string {
+// GetCurrentDir returns the directory in which the project is running.
+func GetCurrentDir() string {
 	path, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
