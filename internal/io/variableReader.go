@@ -57,7 +57,7 @@ func (vr variableReader) GetVariables(stackName string) (map[string]string, erro
 func (vr variableReader) read(fileName string) (map[string]string, error) {
 	fullName := fmt.Sprintf("%s.%s", fileName, YAMLExtension)
 	filePath := fmt.Sprintf("%s/%s", vr.path, fullName)
-	if !fileExists(filePath) {
+	if !FileExists(filePath) {
 		err := NewParseVariableError(fmt.Sprintf("%s not found at location: %s", fullName, vr.path))
 		log.Error(err)
 		return nil, err

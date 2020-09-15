@@ -1,0 +1,4 @@
+scripts:
+  - ingress.yaml
+  - main-deployment.yaml
+  - service.yaml

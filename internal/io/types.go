@@ -20,5 +20,10 @@ func NewParseVariableError(message string) *Error {
 	return &Error{msg: message}
 }
 
+// NewParseYamlError returns an io.Error representing when failed to read a YAML file
+func NewParseYamlError(message string) *Error {
+	return &Error{msg: message}
+}
+
 // Transformator is a function that receives a byte array and returns a transformated array
 type Transformator func(input []byte) []byte

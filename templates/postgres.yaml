@@ -1,0 +1,3 @@
+scripts:
+  - ingress.yaml
+  - myPostgressFile.yaml
