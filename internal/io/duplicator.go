@@ -59,6 +59,7 @@ func (d duplicator) CopyMultiple(sourcePath string, targetPath string, sources [
 	for _, s := range sources {
 		targetFilePath = fmt.Sprintf("%s/%s", targetPath, s)
 		sourceFilePath = fmt.Sprintf("%s/%s", sourcePath, s)
+		log.Debugf("Duplicating %s into %s", sourceFilePath, targetFilePath)
 		if err := d.copy(sourceFilePath, targetFilePath, transformator); err != nil {
 			log.Error(err)
 			return err

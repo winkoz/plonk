@@ -15,7 +15,8 @@ func GetCurrentDir() string {
 	return path
 }
 
-func fileExists(filename string) bool {
+// FileExists returns wether or not a file is found on disk
+func FileExists(filename string) bool {
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {
 		return false

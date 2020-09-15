@@ -32,7 +32,7 @@ func (s scriptsGenerator) InitProject(projectName string, projectDefinition Proj
 	replaceProjectName := func(input []byte) []byte {
 		interpolatedResult, err := s.interpolator.SubstituteValues(
 			map[string]string{
-				"PROJECT_NAME": projectName,
+				"NAME": projectName,
 			},
 			string(input),
 		)

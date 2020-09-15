@@ -50,7 +50,7 @@ func (s stitcher) mergeFiles(sourcePath string, filePaths []string) ([]byte, err
 	for _, source := range filePaths {
 		filePath := fmt.Sprintf("%s/%s", sourcePath, source)
 
-		if !fileExists(filePath) {
+		if !FileExists(filePath) {
 			err := fmt.Errorf("File does not exist at path: %s", filePath)
 			log.Error(err)
 			return nil, err
