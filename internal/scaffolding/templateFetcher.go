@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/prometheus/common/log"
-	"github.com/winkoz/plonk/io"
+	"github.com/winkoz/plonk/internal/io"
 )
 
 // TemplateFetcher fetches a project configuration from disk based on a passed configuration file
@@ -40,8 +40,8 @@ func (tf templateFetcher) FetchConfiguration(configurationFileName string) ([]st
 		return nil, err
 	}
 
-	templateConfig := TemplateConfiguration{}
-	err = tf.yamlReader.Read(configFilePath, &templateConfig)
+	templateConfig := &TemplateConfiguration{}
+	err = tf.yamlReader.Read(configFilePath, templateConfig)
 	if err != nil {
 		log.Error(err)
 		return nil, err
