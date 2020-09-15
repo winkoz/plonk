@@ -45,7 +45,7 @@ func (s scriptsGenerator) InitProject(projectName string, projectDefinition Proj
 		return []byte(interpolatedResult)
 	}
 
-	if err := s.duplicator.CopyMultiple(s.sourcePath, s.targetPath, projectDefinition, replaceProjectName); err != nil {
+	if err := s.duplicator.CopyMultiple(s.targetPath, projectDefinition, replaceProjectName); err != nil {
 		log.Error(err)
 		return err
 	}

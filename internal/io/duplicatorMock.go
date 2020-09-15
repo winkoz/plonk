@@ -10,9 +10,9 @@ type DuplicatorMock struct {
 }
 
 // CopyMultiple is a mock of CopyMultiple
-func (d *DuplicatorMock) CopyMultiple(sourcePath string, targetPath string, sources []string, transformator Transformator) error {
-	args := d.Called(sourcePath, targetPath, sources)
-	for _, source := range sources {
+func (d *DuplicatorMock) CopyMultiple(targetPath string, sourcePaths []string, transformator Transformator) error {
+	args := d.Called(targetPath, sourcePaths)
+	for _, source := range sourcePaths {
 		transformator([]byte(source))
 	}
 	return args.Error(0)

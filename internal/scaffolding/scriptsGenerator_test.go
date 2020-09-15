@@ -33,7 +33,6 @@ func Test_scriptsGenerator_InitProject(t *testing.T) {
 	}
 	type wantDuplicator struct {
 		testDuplicator bool
-		sourcePath     string
 		targetPath     string
 		sources        []string
 		returnErr      error
@@ -67,7 +66,6 @@ func Test_scriptsGenerator_InitProject(t *testing.T) {
 			},
 			wantDuplicator: wantDuplicator{
 				testDuplicator: true,
-				sourcePath:     sourcePath,
 				targetPath:     targetPath,
 				sources:        projectDefinition,
 				returnErr:      nil,
@@ -101,7 +99,6 @@ func Test_scriptsGenerator_InitProject(t *testing.T) {
 			if tt.wantDuplicator.testDuplicator {
 				tt.fields.duplicator.On(
 					"CopyMultiple",
-					tt.wantDuplicator.sourcePath,
 					tt.wantDuplicator.targetPath,
 					tt.wantDuplicator.sources,
 				).Return(
