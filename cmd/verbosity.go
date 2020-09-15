@@ -6,7 +6,7 @@ import (
 )
 
 // AddVerbosity adds a --verbose and --quiet flag to the command and all subcommands.
-func AddVerbosity(cmd *cobra.Command) {
+func addVerbosity(cmd *cobra.Command) {
 	verboseFlag := cmd.PersistentFlags().VarPF(&log.Severity, "verbose", "v", "More verbose output")
 	quiteFlag := cmd.PersistentFlags().VarPF(&log.Severity, "quiet", "q", "Less verbose output")
 

@@ -18,7 +18,7 @@ go-test:
 	GO111MODULE=on go test ./...
 	@echo "Plonk finished testing!"
 
-build: clean
+build: clean docker-build
 	$(DOCKER) make go-build 
 	@echo "Applications built successfully!"
 
@@ -30,7 +30,7 @@ docker-build:
 	docker build -t $(TAG) .
 	@echo "Docker built successfully!"
 
-run: docker-build build
+run: build
 	$(DOCKER) /go/bin/plonk
 
 ssh:
