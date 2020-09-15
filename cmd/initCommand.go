@@ -38,8 +38,8 @@ func addInitCommand(rootCmd *cobra.Command) {
 func newInitCommandHandler() CobraHandler {
 	return func(cmd *cobra.Command, args []string) {
 		targetPath := io.GetCurrentDir()
-		templatePath := targetPath + "/templates/scripts"
-		s := scaffolding.NewScaffolder(targetPath+"/test", templatePath)
+		customTemplatePath := targetPath + "/templates/scripts"
+		s := scaffolding.NewScaffolder(customTemplatePath, targetPath+"/test")
 		s.Init(args[0])
 	}
 }

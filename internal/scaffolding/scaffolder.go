@@ -14,18 +14,18 @@ type Scaffolder interface {
 }
 
 // NewScaffolder returns a fully initialised Scaffolder
-func NewScaffolder(targetPath string, sourcePath string) Scaffolder {
+func NewScaffolder(customTemplatePath string, targetPath string) Scaffolder {
 	return scaffolder{
 		targetPath:       targetPath,
-		sourcePath:       sourcePath,
-		scriptsGenerator: NewScriptsGenerator(sourcePath, targetPath),
+		sourcePath:       customTemplatePath,
+		scriptsGenerator: NewScriptsGenerator(customTemplatePath, targetPath),
 	}
 }
 
 // Init initializes the basic structure of a plonk project
 func (s scaffolder) Init(name string) error {
 	log.Debugf("Init Scaffolder: [%s] - [%s] - [%s]", s.targetPath, s.sourcePath, name)
-	err := s.scriptsGenerator.InitProject(name, BaseProjectFiles)
+	err := s.scriptsGenerator.ScaffoldTemplate(name, "base")
 	if err != nil {
 		log.Error(err)
 	}
