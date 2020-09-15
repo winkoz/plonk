@@ -33,7 +33,7 @@ func NewTemplateFetcher(defaultTemplatePath string, customTemplatePath string) T
 }
 
 func (tf templateFetcher) FetchConfiguration(configurationFileName string) ([]string, error) {
-	configFilePath, err := tf.fileLocator(configurationFileName)
+	configFilePath, err := tf.fileLocator(fmt.Sprintf("%s.%s", configurationFileName, io.YAMLExtension))
 
 	if err != nil {
 		log.Error(err)

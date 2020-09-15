@@ -21,8 +21,8 @@ func Test_scriptsGenerator_InitProject(t *testing.T) {
 		stitcher     *sharedtesting.StitcherMock
 	}
 	type args struct {
-		projectName       string
-		projectDefinition ProjectDefinition
+		projectName  string
+		templateName string
 	}
 	type wantInterpolator struct {
 		testInterpolator   bool
@@ -54,8 +54,8 @@ func Test_scriptsGenerator_InitProject(t *testing.T) {
 				interpolator: new(sharedtesting.InterpolatorMock),
 			},
 			args: args{
-				projectName:       projectName,
-				projectDefinition: projectDefinition,
+				projectName:  projectName,
+				templateName: "base",
 			},
 			wantErr: false,
 			wantInterpolator: wantInterpolator{
@@ -78,14 +78,14 @@ func Test_scriptsGenerator_InitProject(t *testing.T) {
 
 		t.Run(tt.name, func(t *testing.T) {
 			s := scriptsGenerator{
-				sourcePath:   tt.fields.sourcePath,
-				targetPath:   tt.fields.targetPath,
-				interpolator: tt.fields.interpolator,
-				duplicator:   tt.fields.duplicator,
+				customTemplatesPath: tt.fields.sourcePath,
+				targetPath:          tt.fields.targetPath,
+				interpolator:        tt.fields.interpolator,
+				duplicator:          tt.fields.duplicator,
 			}
 
 			if tt.wantInterpolator.testInterpolator {
-				for _, source := range tt.args.projectDefinition {
+				for _, source := range tt.args.templateName {
 					tt.fields.interpolator.On(
 						"SubstituteValues",
 						tt.wantInterpolator.source,
@@ -106,7 +106,7 @@ func Test_scriptsGenerator_InitProject(t *testing.T) {
 				)
 			}
 
-			if err := s.InitProject(tt.args.projectName, tt.args.projectDefinition); (err != nil) != tt.wantErr {
+			if err := s.ScaffoldTemplate(tt.args.projectName, tt.args.templateName); (err != nil) != tt.wantErr {
 				t.Errorf("scriptsGenerator.InitProject() error = %v, wantErr %v", err, tt.wantErr)
 			} else if !tt.wantErr {
 				if tt.wantInterpolator.testInterpolator {

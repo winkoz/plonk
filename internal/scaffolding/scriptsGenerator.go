@@ -5,30 +5,34 @@ import (
 	"github.com/winkoz/plonk/internal/io/log"
 )
 
+const defaultTemplateName = "./templates"
+
 type scriptsGenerator struct {
-	sourcePath   string
-	targetPath   string
-	duplicator   io.Duplicator
-	interpolator io.Interpolator
-	stitcher     io.Stitcher
+	customTemplatesPath string
+	targetPath          string
+	duplicator          io.Duplicator
+	interpolator        io.Interpolator
+	stitcher            io.Stitcher
+	templateFetcher     TemplateFetcher
 }
 
 // ScriptsGenerator substitues declared variables and generates new yaml configuration files.
 type ScriptsGenerator interface {
-	InitProject(projectName string, projectDefinition ProjectDefinition) error
+	ScaffoldTemplate(projectName string, templateName string) error
 }
 
 // NewScriptsGenerator returns a fully initialised ScripterGenerator
-func NewScriptsGenerator(sourcePath string, targetPath string) ScriptsGenerator {
+func NewScriptsGenerator(customTemplatesPath string, targetPath string) ScriptsGenerator {
 	return scriptsGenerator{
-		sourcePath:   sourcePath,
-		targetPath:   targetPath,
-		duplicator:   io.NewDuplicator(),
-		interpolator: io.NewInterpolator(),
+		templateFetcher:     NewTemplateFetcher(defaultTemplateName, customTemplatesPath),
+		customTemplatesPath: customTemplatesPath,
+		targetPath:          targetPath,
+		duplicator:          io.NewDuplicator(),
+		interpolator:        io.NewInterpolator(),
 	}
 }
 
-func (s scriptsGenerator) InitProject(projectName string, projectDefinition ProjectDefinition) error {
+func (s scriptsGenerator) ScaffoldTemplate(projectName string, templateName string) error {
 	replaceProjectName := func(input []byte) []byte {
 		interpolatedResult, err := s.interpolator.SubstituteValues(
 			map[string]string{
@@ -45,7 +49,13 @@ func (s scriptsGenerator) InitProject(projectName string, projectDefinition Proj
 		return []byte(interpolatedResult)
 	}
 
-	if err := s.duplicator.CopyMultiple(s.targetPath, projectDefinition, replaceProjectName); err != nil {
+	templateConfig, err := s.templateFetcher.FetchConfiguration(templateName)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	if err := s.duplicator.CopyMultiple(s.targetPath, templateConfig, replaceProjectName); err != nil {
 		log.Error(err)
 		return err
 	}
