@@ -8,6 +8,7 @@ import (
 
 func Test_variableReader_GetVariables(t *testing.T) {
 	fixturesDir := "../fixtures"
+	yamlReader := NewYamlReader()
 	type args struct {
 		stackName string
 	}
@@ -20,7 +21,11 @@ func Test_variableReader_GetVariables(t *testing.T) {
 	}{
 		{
 			name: "File doesn't exist should return a ParseVariableError with file not found",
-			sut:  variableReader{path: fixturesDir, baseFileName: "notFound"},
+			sut: variableReader{
+				path:         fixturesDir,
+				baseFileName: "notFound",
+				yamlReader:   yamlReader,
+			},
 			args: args{
 				stackName: "production",
 			},
@@ -33,6 +38,7 @@ func Test_variableReader_GetVariables(t *testing.T) {
 				path:           fixturesDir,
 				baseFileName:   "base",
 				customFileName: "invalidYaml",
+				yamlReader:     yamlReader,
 			},
 			args: args{
 				stackName: "production",

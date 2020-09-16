@@ -2,10 +2,8 @@ package io
 
 import (
 	"fmt"
-	"io/ioutil"
 
 	"github.com/winkoz/plonk/internal/io/log"
-	"gopkg.in/yaml.v2"
 )
 
 // VariableReader reads the variables from a stack flattening with base and returning a map
@@ -17,6 +15,7 @@ type variableReader struct {
 	path           string
 	customFileName string
 	baseFileName   string
+	yamlReader     YamlReader
 }
 
 // DeployVariables variables used for interpolating the script templates
@@ -31,6 +30,7 @@ func NewVariableReader() VariableReader {
 		path:           path,
 		baseFileName:   "base",
 		customFileName: "custom",
+		yamlReader:     NewYamlReader(),
 	}
 }
 
@@ -63,15 +63,8 @@ func (vr variableReader) read(fileName string) (map[string]string, error) {
 		return nil, err
 	}
 
-	data, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		internalErr := NewParseVariableError(fmt.Sprintf("Unable to read %s", filePath))
-		log.Errorf("Error: %+v\t%+v", internalErr, err)
-		return nil, internalErr
-	}
-
 	fileVariables := DeployVariables{}
-	err = yaml.Unmarshal(data, &fileVariables)
+	err := vr.yamlReader.Read(filePath, &fileVariables)
 	if err != nil {
 		internalErr := NewParseVariableError(fmt.Sprintf("Unable to parse %s", filePath))
 		log.Errorf("Error: %+v\t%+v", internalErr, err)
