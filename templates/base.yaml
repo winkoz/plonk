@@ -1,4 +1,11 @@
+name: base
+config:
+  - base/plonk.yaml
+variables: 
+  - base/base.yaml
+  - base/custom.yaml
+  - base/production.yaml
 scripts:
-  - ingress.yaml
-  - main-deployment.yaml
-  - service.yaml
+  - base/ingress.yaml
+  - base/main-deployment.yaml
+  - base/service.yaml
