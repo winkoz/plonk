@@ -5,26 +5,30 @@ import (
 	"github.com/winkoz/plonk/internal/io/log"
 )
 
+// Constant
 const defaultTemplateName = "./templates"
+const originTargetPath = "./"
+const variableTargetPath = "./deploy/variables/"
+const scriptsTargetPath = "./deploy/scripts/"
 
-type scriptsGenerator struct {
+type templateWriter struct {
 	customTemplatesPath string
 	targetPath          string
 	duplicator          io.Duplicator
 	interpolator        io.Interpolator
 	stitcher            io.Stitcher
-	templateFetcher     TemplateFetcher
+	templateReader      TemplateReader
 }
 
-// ScriptsGenerator substitues declared variables and generates new yaml configuration files.
-type ScriptsGenerator interface {
-	ScaffoldTemplate(projectName string, templateName string) error
+// TemplateWriter substitues declared variables and generates new yaml configuration files.
+type TemplateWriter interface {
+	Write(projectName string, templateName string) error
 }
 
-// NewScriptsGenerator returns a fully initialised ScripterGenerator
-func NewScriptsGenerator(customTemplatesPath string, targetPath string) ScriptsGenerator {
-	return scriptsGenerator{
-		templateFetcher:     NewTemplateFetcher(defaultTemplateName, customTemplatesPath),
+// NewTemplateWriter returns a fully initialised TemplateWriter
+func NewTemplateWriter(customTemplatesPath string, targetPath string) TemplateWriter {
+	return templateWriter{
+		templateReader:      NewTemplateReader(defaultTemplateName, customTemplatesPath),
 		customTemplatesPath: customTemplatesPath,
 		targetPath:          targetPath,
 		duplicator:          io.NewDuplicator(),
@@ -32,7 +36,7 @@ func NewScriptsGenerator(customTemplatesPath string, targetPath string) ScriptsG
 	}
 }
 
-func (s scriptsGenerator) ScaffoldTemplate(projectName string, templateName string) error {
+func (s templateWriter) Write(projectName string, templateName string) error {
 	replaceProjectName := func(input []byte) []byte {
 		interpolatedResult := s.interpolator.SubstituteValues(
 			map[string]string{
@@ -44,7 +48,7 @@ func (s scriptsGenerator) ScaffoldTemplate(projectName string, templateName stri
 		return []byte(interpolatedResult)
 	}
 
-	templateConfig, err := s.templateFetcher.FetchConfiguration(templateName)
+	templateConfig, err := s.templateReader.Read(templateName)
 	if err != nil {
 		log.Error(err)
 		return err

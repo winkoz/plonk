@@ -3,9 +3,9 @@ package scaffolding
 import "github.com/prometheus/common/log"
 
 type scaffolder struct {
-	targetPath       string
-	sourcePath       string
-	scriptsGenerator ScriptsGenerator
+	targetPath     string
+	sourcePath     string
+	templateWriter TemplateWriter
 }
 
 // Scaffolder runs the scaffolding logic to generate new plonk services
@@ -16,16 +16,16 @@ type Scaffolder interface {
 // NewScaffolder returns a fully initialised Scaffolder
 func NewScaffolder(customTemplatePath string, targetPath string) Scaffolder {
 	return scaffolder{
-		targetPath:       targetPath,
-		sourcePath:       customTemplatePath,
-		scriptsGenerator: NewScriptsGenerator(customTemplatePath, targetPath),
+		targetPath:     targetPath,
+		sourcePath:     customTemplatePath,
+		templateWriter: NewTemplateWriter(customTemplatePath, targetPath),
 	}
 }
 
 // Init initializes the basic structure of a plonk project
 func (s scaffolder) Init(name string) error {
 	log.Debugf("Init Scaffolder: [%s] - [%s] - [%s]", s.targetPath, s.sourcePath, name)
-	err := s.scriptsGenerator.ScaffoldTemplate(name, "base")
+	err := s.templateWriter.Write(name, "base")
 	if err != nil {
 		log.Error(err)
 	}
