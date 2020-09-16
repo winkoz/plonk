@@ -9,6 +9,7 @@ import (
 func Test_variableReader_GetVariables(t *testing.T) {
 	fixturesDir := "../fixtures/variables"
 	yamlReader := NewYamlReader()
+	interpolator := NewInterpolator()
 	type args struct {
 		stackName string
 	}
@@ -17,6 +18,7 @@ func Test_variableReader_GetVariables(t *testing.T) {
 		baseFileName   string
 		customFileName string
 		yamlReader     YamlReader
+		interpolator   Interpolator
 	}
 	tests := []struct {
 		name    string
@@ -31,6 +33,7 @@ func Test_variableReader_GetVariables(t *testing.T) {
 				path:         fixturesDir,
 				baseFileName: "notFound",
 				yamlReader:   yamlReader,
+				interpolator: interpolator,
 			},
 			args: args{
 				stackName: "production",
@@ -45,6 +48,7 @@ func Test_variableReader_GetVariables(t *testing.T) {
 				baseFileName:   "base",
 				customFileName: "invalidYaml",
 				yamlReader:     yamlReader,
+				interpolator:   interpolator,
 			},
 			args: args{
 				stackName: "production",
@@ -59,9 +63,10 @@ func Test_variableReader_GetVariables(t *testing.T) {
 				baseFileName:   "base",
 				customFileName: "test",
 				yamlReader:     yamlReader,
+				interpolator:   interpolator,
 			},
 			args: args{
-				stackName: "producution",
+				stackName: "production",
 			},
 			want: map[string]string{
 				"profile_pictures": "profile-pictures-dev",
@@ -76,12 +81,34 @@ func Test_variableReader_GetVariables(t *testing.T) {
 				baseFileName:   "base",
 				customFileName: "all_new_variables",
 				yamlReader:     yamlReader,
+				interpolator:   interpolator,
 			},
 			args: args{
-				stackName: "producution",
+				stackName: "production",
 			},
 			want: map[string]string{
 				"profile_pictures": "profile-pictures-dev",
+				"second_val":       "test",
+				"newVal1":          "val1",
+				"newVal2":          "val2",
+				"newVal3":          "val3",
+			},
+			wantErr: nil,
+		},
+		{
+			name: "successfully returns all the values from the custom stack plus the values in the base after interpolating the passed STACK name",
+			fields: fields{
+				path:           fixturesDir,
+				baseFileName:   "base",
+				customFileName: "custom_stackname_var",
+				yamlReader:     yamlReader,
+				interpolator:   interpolator,
+			},
+			args: args{
+				stackName: "production",
+			},
+			want: map[string]string{
+				"profile_pictures": "profile-pictures-production-$NAME",
 				"second_val":       "test",
 				"newVal1":          "val1",
 				"newVal2":          "val2",
@@ -97,6 +124,7 @@ func Test_variableReader_GetVariables(t *testing.T) {
 				customFileName: tt.fields.customFileName,
 				baseFileName:   tt.fields.baseFileName,
 				yamlReader:     tt.fields.yamlReader,
+				interpolator:   tt.fields.interpolator,
 			}
 			got, err := sut.GetVariables(tt.args.stackName)
 			if (tt.wantErr != nil && err == nil) || (tt.wantErr == nil && err != nil) {

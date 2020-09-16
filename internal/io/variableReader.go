@@ -16,6 +16,7 @@ type variableReader struct {
 	customFileName string
 	baseFileName   string
 	yamlReader     YamlReader
+	interpolator   Interpolator
 }
 
 // DeployVariables variables used for interpolating the script templates
@@ -31,6 +32,7 @@ func NewVariableReader() VariableReader {
 		baseFileName:   "base",
 		customFileName: "custom",
 		yamlReader:     NewYamlReader(),
+		interpolator:   NewInterpolator(),
 	}
 }
 
@@ -48,8 +50,18 @@ func (vr variableReader) GetVariables(stackName string) (map[string]string, erro
 		return nil, err
 	}
 
-	result := mergeMap(baseVariables, customVariables)
-	log.Debug(result)
+	mergedResult := mergeMap(baseVariables, customVariables)
+	log.Debugf("Merged maps: %v", mergedResult)
+
+	stackNameVars := map[string]string{
+		"STACK": stackName,
+	}
+
+	result, err := vr.interpolator.SubstituteValuesInMap(stackNameVars, mergedResult)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
 
 	return result, nil
 }
