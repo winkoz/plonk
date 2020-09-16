@@ -38,8 +38,8 @@ func NewVariableReader() VariableReader {
 func (vr variableReader) GetVariables(stackName string) (map[string]string, error) {
 	baseVariables, err := vr.read(vr.baseFileName)
 	if err != nil {
-		log.Error(err)
 		return nil, err
+		log.Error(err)
 	}
 
 	customVariables, err := vr.read(vr.customFileName)
