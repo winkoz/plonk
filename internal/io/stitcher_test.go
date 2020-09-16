@@ -12,8 +12,8 @@ import (
 func Test_stitcher_Stitch(t *testing.T) {
 	fixturesPath := "../fixtures/stitcher"
 	targetPath := "/tmp/plonk/tests/deploy"
-	sharedtesting.DeletePath(targetPath)
-	sharedtesting.CreatePath(targetPath)
+	DeletePath(targetPath)
+	CreatePath(targetPath)
 
 	type args struct {
 		sourcePath     string

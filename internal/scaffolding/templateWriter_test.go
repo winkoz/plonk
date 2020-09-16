@@ -73,8 +73,8 @@ func Test_scriptsGenerator_InitProject(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		sharedtesting.DeletePath(targetPath)
-		sharedtesting.CreatePath(targetPath)
+		io.DeletePath(targetPath)
+		io.CreatePath(targetPath)
 
 		t.Run(tt.name, func(t *testing.T) {
 			s := templateWriter{

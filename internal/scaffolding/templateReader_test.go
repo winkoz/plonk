@@ -23,7 +23,9 @@ func Test_templateReader_Read(t *testing.T) {
 		want    []string
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "successfully loads a template data file into ",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
