@@ -44,25 +44,27 @@ func (tf templateReader) Read(configurationFileName string) (TemplateData, error
 		return templateData, err
 	}
 
-	err = tf.yamlReader.Read(configFilePath, templateData)
+	err = tf.yamlReader.Read(configFilePath, &templateData)
 	if err != nil {
 		log.Error(err)
 		return templateData, err
 	}
 
-	err = tf.locateFiles(&templateData.Origin)
+	templateData.Origin, err = tf.locateFiles(templateData.Origin)
+	log.Debug(templateData.Origin)
 	if err != nil {
 		log.Error(err)
 		return templateData, err
 	}
 
-	err = tf.locateFiles(&templateData.Scripts)
+	templateData.Scripts, err = tf.locateFiles(templateData.Scripts)
+	log.Debug(templateData.Scripts)
 	if err != nil {
 		log.Error(err)
 		return templateData, err
 	}
 
-	err = tf.locateFiles(&templateData.Variables)
+	templateData.Variables, err = tf.locateFiles(templateData.Variables)
 	if err != nil {
 		log.Error(err)
 		return templateData, err
@@ -71,16 +73,17 @@ func (tf templateReader) Read(configurationFileName string) (TemplateData, error
 	return templateData, nil
 }
 
-func (tf templateReader) locateFiles(filePaths *[]string) error {
-	for key, fileName := range *filePaths {
-		scriptPath, filerr := tf.fileLocator(fileName)
+func (tf templateReader) locateFiles(filePaths []string) ([]string, error) {
+	locatedFilePaths := []string{}
+	for _, fileName := range filePaths {
+		filePath, filerr := tf.fileLocator(fileName)
 		if filerr != nil {
 			log.Error(filerr)
-			return filerr
+			return locatedFilePaths, filerr
 		}
-		(*filePaths)[key] = scriptPath
+		locatedFilePaths = append(locatedFilePaths, filePath)
 	}
-	return nil
+	return locatedFilePaths, nil
 }
 
 func (tf templateReader) fileLocator(fileName string) (string, error) {
@@ -96,5 +99,8 @@ func (tf templateReader) fileLocator(fileName string) (string, error) {
 		return defaultPath, nil
 	}
 
-	return "", NewScaffolderFileNotFound(fmt.Sprintf("Template not found %s. Locations [%s, %s]", fileName, tf.customTemplatePath, tf.defaultTemplatePath))
+	err := NewScaffolderFileNotFound(fmt.Sprintf("Template not found %s. Locations [%s, %s]", fileName, tf.customTemplatePath, tf.defaultTemplatePath))
+	log.Error(err)
+
+	return "", err
 }

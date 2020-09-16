@@ -12,7 +12,7 @@ import (
 func Test_duplicator_CopyMultiple(t *testing.T) {
 	fixturesPath := "../fixtures/scripts"
 	testTargetPath := "/tmp/plonk/tests/deploy"
-	sharedtesting.CreatePath(testTargetPath)
+	CreatePath(testTargetPath)
 	type args struct {
 		targetPath    string
 		sourcePaths   []string
@@ -81,5 +81,5 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 			}
 		})
 	}
-	sharedtesting.DeletePath(testTargetPath)
+	DeletePath(testTargetPath)
 }
