@@ -50,20 +50,37 @@ func (tf templateReader) Read(configurationFileName string) (TemplateData, error
 		return templateData, err
 	}
 
-	// CALL locatefiles for scripts, origin & variables
+	err = tf.locateFiles(&templateData.Origin)
+	if err != nil {
+		log.Error(err)
+		return templateData, err
+	}
+
+	err = tf.locateFiles(&templateData.Scripts)
+	if err != nil {
+		log.Error(err)
+		return templateData, err
+	}
+
+	err = tf.locateFiles(&templateData.Variables)
+	if err != nil {
+		log.Error(err)
+		return templateData, err
+	}
+
+	return templateData, nil
 }
 
-func (tf templateReader) locateFiles(filePaths []string) ([]string, error) {
-	locatedFilePaths := []string{}
-	for _, fileName := range filePaths {
+func (tf templateReader) locateFiles(filePaths *[]string) error {
+	for key, fileName := range *filePaths {
 		scriptPath, filerr := tf.fileLocator(fileName)
 		if filerr != nil {
 			log.Error(filerr)
-			return locatedFilePaths, filerr
+			return filerr
 		}
-		locatedFilePaths = append(locatedFilePaths, scriptPath)
+		(*filePaths)[key] = scriptPath
 	}
-	return locatedFilePaths, nil
+	return nil
 }
 
 func (tf templateReader) fileLocator(fileName string) (string, error) {
