@@ -1,3 +1,6 @@
 variables:
-  profile_pictures: profile-$STACK-$NAME-pictures-dev
+  profile_pictures: profile-pictures-$STACK-$NAME
   second_val: test
+  newVal1: val1
+  newVal2: val2
+  newVal3: val3
