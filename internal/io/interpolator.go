@@ -16,8 +16,8 @@ const InterpolatorSignaler string = "$"
 
 // Interpolator manages variable substitution
 type Interpolator interface {
-	SubstituteValues(source map[string]string, target string) (string, error)
-	SubstituteValuesInMap(source map[string]string, target map[string]string) (map[string]string, error)
+	SubstituteValues(source map[string]string, target string) string
+	SubstituteValuesInMap(source map[string]string, target map[string]string) map[string]string
 }
 
 // NewInterpolator returns a fully initialised Interpolator
@@ -26,7 +26,7 @@ func NewInterpolator() Interpolator {
 }
 
 // SubstituteValues replaces all instances of 'key' with its respective 'value' from the `source` map in the `target` string and returns the applied target `string`.
-func (i interpolator) SubstituteValues(source map[string]string, target string) (string, error) {
+func (i interpolator) SubstituteValues(source map[string]string, target string) string {
 	result := target
 	hashedMap := map[string]string{}
 	for key, value := range source {
@@ -42,22 +42,17 @@ func (i interpolator) SubstituteValues(source map[string]string, target string) 
 	}
 
 	log.Debugf("Full replace string: %s", result)
-	return result, nil
+	return result
 }
 
 // SubstituteValuesInMap replaces all instances of 'key' with its respective 'value' from the `source` map in the `target` map and returns the applied target `map`.
-func (i interpolator) SubstituteValuesInMap(source map[string]string, target map[string]string) (map[string]string, error) {
+func (i interpolator) SubstituteValuesInMap(source map[string]string, target map[string]string) map[string]string {
 	interpolatedMap := map[string]string{}
 	for targetKey, targetValue := range target {
-		result, err := i.SubstituteValues(source, targetValue)
-		if err != nil {
-			log.Error(err)
-
-			return nil, err
-		}
+		result := i.SubstituteValues(source, targetValue)
 
 		interpolatedMap[targetKey] = result
 	}
 
-	return interpolatedMap, nil
+	return interpolatedMap
 }

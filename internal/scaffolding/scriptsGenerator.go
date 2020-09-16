@@ -34,17 +34,12 @@ func NewScriptsGenerator(customTemplatesPath string, targetPath string) ScriptsG
 
 func (s scriptsGenerator) ScaffoldTemplate(projectName string, templateName string) error {
 	replaceProjectName := func(input []byte) []byte {
-		interpolatedResult, err := s.interpolator.SubstituteValues(
+		interpolatedResult := s.interpolator.SubstituteValues(
 			map[string]string{
 				"NAME": projectName,
 			},
 			string(input),
 		)
-
-		if err != nil {
-			log.Errorf("Unable to interpolate input. %+v", err)
-			return nil
-		}
 
 		return []byte(interpolatedResult)
 	}
