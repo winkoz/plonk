@@ -40,8 +40,8 @@ func NewVariableReader() VariableReader {
 func (vr variableReader) GetVariables(stackName string) (map[string]string, error) {
 	baseVariables, err := vr.read(vr.baseFileName)
 	if err != nil {
-		return nil, err
 		log.Error(err)
+		return nil, err
 	}
 
 	customVariables, err := vr.read(vr.customFileName)
@@ -57,11 +57,7 @@ func (vr variableReader) GetVariables(stackName string) (map[string]string, erro
 		"STACK": stackName,
 	}
 
-	result, err := vr.interpolator.SubstituteValuesInMap(stackNameVars, mergedResult)
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
+	result := vr.interpolator.SubstituteValuesInMap(stackNameVars, mergedResult)
 
 	return result, nil
 }

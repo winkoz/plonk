@@ -72,13 +72,9 @@ func Test_interpolator_SubstituteValues(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := sut.SubstituteValues(tt.args.source, tt.args.template)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("replacer.SubstituteValues() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			got := sut.SubstituteValues(tt.args.source, tt.args.template)
 			if got != tt.want {
-				t.Errorf("replacer.SubstituteValues() = %v, want %v", got, tt.want)
+				t.Errorf("interpolator.SubstituteValues() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -138,11 +134,7 @@ func Test_interpolator_SubstituteValuesInMap(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			i := interpolator{}
-			got, err := i.SubstituteValuesInMap(tt.args.source, tt.args.target)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("interpolator.SubstituteValuesInMap() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			got := i.SubstituteValuesInMap(tt.args.source, tt.args.target)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("interpolator.SubstituteValuesInMap() = %v, want %v", got, tt.want)
 			}
