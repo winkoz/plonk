@@ -1,5 +1,5 @@
 name: base
-config:
+origin:
   - base/plonk.yaml
 variables: 
   - base/base.yaml

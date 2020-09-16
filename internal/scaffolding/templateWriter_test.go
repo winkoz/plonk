@@ -77,7 +77,7 @@ func Test_scriptsGenerator_InitProject(t *testing.T) {
 		sharedtesting.CreatePath(targetPath)
 
 		t.Run(tt.name, func(t *testing.T) {
-			s := scriptsGenerator{
+			s := templateWriter{
 				customTemplatesPath: tt.fields.sourcePath,
 				targetPath:          tt.fields.targetPath,
 				interpolator:        tt.fields.interpolator,
@@ -106,7 +106,7 @@ func Test_scriptsGenerator_InitProject(t *testing.T) {
 				)
 			}
 
-			if err := s.ScaffoldTemplate(tt.args.projectName, tt.args.templateName); (err != nil) != tt.wantErr {
+			if err := s.Write(tt.args.projectName, tt.args.templateName); (err != nil) != tt.wantErr {
 				t.Errorf("scriptsGenerator.InitProject() error = %v, wantErr %v", err, tt.wantErr)
 			} else if !tt.wantErr {
 				if tt.wantInterpolator.testInterpolator {
