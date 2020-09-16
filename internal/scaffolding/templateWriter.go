@@ -48,15 +48,24 @@ func (s templateWriter) Write(projectName string, templateName string) error {
 		return []byte(interpolatedResult)
 	}
 
-	templateConfig, err := s.templateReader.Read(templateName)
+	templateData, err := s.templateReader.Read(templateName)
 	if err != nil {
 		log.Error(err)
 		return err
 	}
 
-	if err := s.duplicator.CopyMultiple(s.targetPath, templateConfig, replaceProjectName); err != nil {
+	templateConfigs := map[string][]string{
+		originTargetPath:   templateData.Origin,
+		variableTargetPath: templateData.Variables,
+		scriptsTargetPath:  templateData.Scripts,
+	}
+
+	for path, files := range templateConfigs {
+		fullTargetPath := fmt.Sprintf("%s/%s", s.targetPath, path)
+		if err := s.duplicator.CopyMultiple(fullTargetPath, files, replaceProjectName); err != nil {
 		log.Error(err)
 		return err
+		}
 	}
 
 	return nil
