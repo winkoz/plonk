@@ -7,7 +7,7 @@ import (
 )
 
 func Test_variableReader_GetVariables(t *testing.T) {
-	fixturesDir := "../fixtures"
+	fixturesDir := "../fixtures/variables"
 	yamlReader := NewYamlReader()
 	type args struct {
 		stackName string
@@ -66,6 +66,26 @@ func Test_variableReader_GetVariables(t *testing.T) {
 			want: map[string]string{
 				"profile_pictures": "profile-pictures-dev",
 				"second_val":       "merged_value",
+			},
+			wantErr: nil,
+		},
+		{
+			name: "successfully returns all the values from the custom stack plus the values in the base",
+			fields: fields{
+				path:           fixturesDir,
+				baseFileName:   "base",
+				customFileName: "all_new_variables",
+				yamlReader:     yamlReader,
+			},
+			args: args{
+				stackName: "producution",
+			},
+			want: map[string]string{
+				"profile_pictures": "profile-pictures-dev",
+				"second_val":       "test",
+				"newVal1":          "val1",
+				"newVal2":          "val2",
+				"newVal3":          "val3",
 			},
 			wantErr: nil,
 		},
