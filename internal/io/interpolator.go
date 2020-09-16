@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	"strings"
+
+	"github.com/prometheus/common/log"
 )
 
 type interpolator struct{}
@@ -15,6 +17,7 @@ const InterpolatorSignaler string = "$"
 // Interpolator manages variable substitution
 type Interpolator interface {
 	SubstituteValues(source map[string]string, target string) (string, error)
+	SubstituteValuesInMap(source map[string]string, target map[string]string) (map[string]string, error)
 }
 
 // NewInterpolator returns a fully initialised Interpolator
@@ -23,7 +26,7 @@ func NewInterpolator() Interpolator {
 }
 
 // SubstituteValues replaces all instances of 'key' with its respective 'value' from the `source` map in the `target` string and returns the applied target `string`.
-func (r interpolator) SubstituteValues(source map[string]string, target string) (string, error) {
+func (i interpolator) SubstituteValues(source map[string]string, target string) (string, error) {
 	result := target
 	hashedMap := map[string]string{}
 	for key, value := range source {
@@ -34,7 +37,27 @@ func (r interpolator) SubstituteValues(source map[string]string, target string) 
 		hashedMap[hashedKey] = value
 	}
 	for key, value := range hashedMap {
+		log.Debugf("Replaced %s[%s]", key, value)
 		result = strings.ReplaceAll(result, fmt.Sprintf("%s{%s}", InterpolatorSignaler, key), value)
 	}
+
+	log.Debugf("Full replace string: %s", result)
 	return result, nil
+}
+
+// SubstituteValuesInMap replaces all instances of 'key' with its respective 'value' from the `source` map in the `target` map and returns the applied target `map`.
+func (i interpolator) SubstituteValuesInMap(source map[string]string, target map[string]string) (map[string]string, error) {
+	interpolatedMap := map[string]string{}
+	for targetKey, targetValue := range target {
+		result, err := i.SubstituteValues(source, targetValue)
+		if err != nil {
+			log.Error(err)
+
+			return nil, err
+		}
+
+		interpolatedMap[targetKey] = result
+	}
+
+	return interpolatedMap, nil
 }

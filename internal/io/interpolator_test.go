@@ -83,3 +83,69 @@ func Test_interpolator_SubstituteValues(t *testing.T) {
 		})
 	}
 }
+
+func Test_interpolator_SubstituteValuesInMap(t *testing.T) {
+	source := map[string]string{
+		"key1": "value1",
+		"key2": "value2",
+		"key3": "value3",
+	}
+	type args struct {
+		source map[string]string
+		target map[string]string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    map[string]string
+		wantErr bool
+	}{
+		{
+			name: "successfully replaces all interpolatable keys from the values of the target map",
+			args: args{
+				source: source,
+				target: map[string]string{
+					"interpolated":     "this-is-$key1",
+					"non-interpolated": "just-a-value",
+					"interpolated2":    "another-$key3-interpolated-value",
+				},
+			},
+			want: map[string]string{
+				"interpolated":     "this-is-value1",
+				"non-interpolated": "just-a-value",
+				"interpolated2":    "another-value3-interpolated-value",
+			},
+			wantErr: false,
+		},
+		{
+			name: "successfully returns the same target map when there are no interpolatable values",
+			args: args{
+				source: source,
+				target: map[string]string{
+					"non-interpolated":  "this-is-a-value",
+					"non-interpolated2": "just-a-value",
+					"non-interpolated3": "another-non-interpolated-value",
+				},
+			},
+			want: map[string]string{
+				"non-interpolated":  "this-is-a-value",
+				"non-interpolated2": "just-a-value",
+				"non-interpolated3": "another-non-interpolated-value",
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			i := interpolator{}
+			got, err := i.SubstituteValuesInMap(tt.args.source, tt.args.target)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("interpolator.SubstituteValuesInMap() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("interpolator.SubstituteValuesInMap() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
