@@ -1,0 +1,3 @@
+plonk:
+  name: $NAME
+  command: kubectl

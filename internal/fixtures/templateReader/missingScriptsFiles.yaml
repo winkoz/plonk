@@ -1,0 +1,8 @@
+name: base
+origin:
+  - base/ingress.yaml
+variables: 
+  - base/base.yaml
+scripts:
+  - base/missingScriptFile.yaml
+  

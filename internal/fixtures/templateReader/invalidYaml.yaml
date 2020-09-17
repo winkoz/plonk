@@ -1,0 +1,4 @@
+name: invalidConfig
+variables:
+  - thisis: broken
+ - variable: broken

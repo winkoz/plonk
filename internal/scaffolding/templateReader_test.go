@@ -9,7 +9,8 @@ import (
 )
 
 func Test_templateReader_Read(t *testing.T) {
-	fixturesPath := "../fixtures/templateReader"
+	defaultTemplatePath := "../fixtures/templateReader"
+	customTemplatePath := "../fixtures/templateReader/customTemplate"
 	yamlReader := io.NewYamlReader()
 	type fields struct {
 		defaultTemplatePath string
@@ -27,10 +28,10 @@ func Test_templateReader_Read(t *testing.T) {
 		wantErr error
 	}{
 		{
-			name: "successfully loads a template data file into a TemplateData structure",
+			name: "successfully loads a template data file located in the default template folder into a TemplateData structure",
 			fields: fields{
-				defaultTemplatePath: fixturesPath,
-				customTemplatePath:  fixturesPath,
+				defaultTemplatePath: defaultTemplatePath,
+				customTemplatePath:  customTemplatePath,
 				yamlReader:          yamlReader,
 			},
 			args: args{
@@ -39,13 +40,61 @@ func Test_templateReader_Read(t *testing.T) {
 			want: TemplateData{
 				Name: "base",
 				Origin: []string{
-					fixturesPath + "/base/plonk.yaml",
+					defaultTemplatePath + "/base/plonk.yaml",
 				},
 				Variables: []string{
-					fixturesPath + "/base/base.yaml",
+					defaultTemplatePath + "/base/base.yaml",
 				},
 				Scripts: []string{
-					fixturesPath + "/base/ingress.yaml",
+					defaultTemplatePath + "/base/ingress.yaml",
+				},
+			},
+			wantErr: nil,
+		},
+		{
+			name: "successfully loads a template data file located in the custom template folder into a TemplateData structure",
+			fields: fields{
+				defaultTemplatePath: customTemplatePath,
+				customTemplatePath:  defaultTemplatePath,
+				yamlReader:          yamlReader,
+			},
+			args: args{
+				configurationFileName: "custom",
+			},
+			want: TemplateData{
+				Name: "custom",
+				Origin: []string{
+					customTemplatePath + "/custom/plonk.yaml",
+				},
+				Variables: []string{
+					customTemplatePath + "/custom/base.yaml",
+				},
+				Scripts: []string{
+					customTemplatePath + "/custom/ingress.yaml",
+				},
+			},
+			wantErr: nil,
+		},
+		{
+			name: "successfully loads a template data file with files from custom & default template folders into a TemplateData structure",
+			fields: fields{
+				defaultTemplatePath: defaultTemplatePath,
+				customTemplatePath:  customTemplatePath,
+				yamlReader:          yamlReader,
+			},
+			args: args{
+				configurationFileName: "base_custom",
+			},
+			want: TemplateData{
+				Name: "base_custom",
+				Origin: []string{
+					defaultTemplatePath + "/base/plonk.yaml",
+				},
+				Variables: []string{
+					customTemplatePath + "/custom/base.yaml",
+				},
+				Scripts: []string{
+					defaultTemplatePath + "/base/ingress.yaml",
 				},
 			},
 			wantErr: nil,
@@ -53,15 +102,94 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "returns an error when the configuration file cannot be located",
 			fields: fields{
-				defaultTemplatePath: fixturesPath,
-				customTemplatePath:  fixturesPath,
+				defaultTemplatePath: defaultTemplatePath,
+				customTemplatePath:  customTemplatePath,
 				yamlReader:          yamlReader,
 			},
 			args: args{
 				configurationFileName: "non-existent-config-file",
 			},
 			want:    TemplateData{},
-			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found non-existent-config-file.yaml. Locations [%s, %s]", fixturesPath, fixturesPath)),
+			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found non-existent-config-file.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
+		},
+		{
+			name: "returns an error when the configuration file is invalid",
+			fields: fields{
+				defaultTemplatePath: defaultTemplatePath,
+				customTemplatePath:  customTemplatePath,
+				yamlReader:          yamlReader,
+			},
+			args: args{
+				configurationFileName: "invalidYaml",
+			},
+			want:    TemplateData{},
+			wantErr: io.NewParseYamlError(fmt.Sprintf("Unable to parse %s", defaultTemplatePath+"/invalidYaml.yaml")),
+		},
+		{
+			name: "returns an error when the configuration file points to a non-existent file within origin",
+			fields: fields{
+				defaultTemplatePath: defaultTemplatePath,
+				customTemplatePath:  customTemplatePath,
+				yamlReader:          yamlReader,
+			},
+			args: args{
+				configurationFileName: "missingOriginFiles",
+			},
+			want: TemplateData{
+				Name:   "base",
+				Origin: []string{},
+				Variables: []string{
+					"base/base.yaml",
+				},
+				Scripts: []string{
+					"base/ingress.yaml",
+				},
+			},
+			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found base/missingOriginFile.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
+		},
+		{
+			name: "returns an error when the configuration file points to a non-existent file within variables",
+			fields: fields{
+				defaultTemplatePath: defaultTemplatePath,
+				customTemplatePath:  customTemplatePath,
+				yamlReader:          yamlReader,
+			},
+			args: args{
+				configurationFileName: "missingVariablesFiles",
+			},
+			want: TemplateData{
+				Name: "base",
+				Origin: []string{
+					defaultTemplatePath + "/base/base.yaml",
+				},
+				Variables: []string{},
+				Scripts: []string{
+					defaultTemplatePath + "/base/ingress.yaml",
+				},
+			},
+			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found base/missingVariableFile.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
+		},
+		{
+			name: "returns an error when the configuration file points to a non-existent file within scripts",
+			fields: fields{
+				defaultTemplatePath: defaultTemplatePath,
+				customTemplatePath:  customTemplatePath,
+				yamlReader:          yamlReader,
+			},
+			args: args{
+				configurationFileName: "missingScriptsFiles",
+			},
+			want: TemplateData{
+				Name: "base",
+				Origin: []string{
+					defaultTemplatePath + "/base/ingress.yaml",
+				},
+				Variables: []string{
+					"base/base.yaml",
+				},
+				Scripts: []string{},
+			},
+			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found base/missingScriptFile.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
 		},
 	}
 	for _, tt := range tests {
