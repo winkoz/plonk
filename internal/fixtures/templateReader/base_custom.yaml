@@ -1,0 +1,8 @@
+name: base_custom
+origin:
+  - base/plonk.yaml
+variables: 
+  - customTemplate/custom/base.yaml
+scripts:
+  - base/ingress.yaml
+  
