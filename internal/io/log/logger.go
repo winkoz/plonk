@@ -118,82 +118,82 @@ func (l logger) SetLevel(level string) error {
 
 // Debug logs a message at level Debug on the standard log.
 func Debug(args ...interface{}) {
-	baselog.Debug(args...)
+	baseLogger.Debug(args...)
 }
 
 // Debugln logs a message at level Debug on the standard log.
 func Debugln(args ...interface{}) {
-	baselog.Debugln(args...)
+	baseLogger.Debugln(args...)
 }
 
 // Debugf logs a message at level Debug on the standard log.
 func Debugf(format string, args ...interface{}) {
-	baselog.Debugf(format, args...)
+	baseLogger.Debugf(format, args...)
 }
 
 // Info logs a message at level Info on the standard log.
 func Info(args ...interface{}) {
-	baselog.Info(args...)
+	baseLogger.Info(args...)
 }
 
 // Infoln logs a message at level Info on the standard log.
 func Infoln(args ...interface{}) {
-	baselog.Infoln(args...)
+	baseLogger.Infoln(args...)
 }
 
 // Infof logs a message at level Info on the standard log.
 func Infof(format string, args ...interface{}) {
-	baselog.Infof(format, args...)
+	baseLogger.Infof(format, args...)
 }
 
 // Warn logs a message at level Warn on the standard log.
 func Warn(args ...interface{}) {
-	baselog.Warn(args...)
+	baseLogger.Warn(args...)
 }
 
 // Warnln logs a message at level Warn on the standard log.
 func Warnln(args ...interface{}) {
-	baselog.Warnln(args...)
+	baseLogger.Warnln(args...)
 }
 
 // Warnf logs a message at level Warn on the standard log.
 func Warnf(format string, args ...interface{}) {
-	baselog.Warnf(format, args...)
+	baseLogger.Warnf(format, args...)
 }
 
 // Error logs a message at level Error on the standard log.
 func Error(args ...interface{}) {
-	baselog.Error(args...)
+	baseLogger.Error(args...)
 }
 
 // Errorln logs a message at level Error on the standard log.
 func Errorln(args ...interface{}) {
-	baselog.Errorln(args...)
+	baseLogger.Errorln(args...)
 }
 
 // Errorf logs a message at level Error on the standard log.
 func Errorf(format string, args ...interface{}) {
-	baselog.Errorf(format, args...)
+	baseLogger.Errorf(format, args...)
 }
 
 // Fatal logs a message at level Fatal on the standard log.
 func Fatal(args ...interface{}) {
-	baselog.Fatal(args...)
+	baseLogger.Fatal(args...)
 }
 
 // Fatalln logs a message at level Fatal on the standard log.
 func Fatalln(args ...interface{}) {
-	baselog.Fatalln(args...)
+	baseLogger.Fatalln(args...)
 }
 
 // Fatalf logs a message at level Fatal on the standard log.
 func Fatalf(format string, args ...interface{}) {
-	baselog.Fatalf(format, args...)
+	baseLogger.Fatalf(format, args...)
 }
 
 // SetLevel sets the verbosity level for the logs
 func SetLevel(level string) error {
-	return baselog.SetLevel(level)
+	return baseLogger.SetLevel(level)
 }
 
 func init() {

@@ -3,9 +3,8 @@ package cmd
 import (
 	"os"
 
-	"github.com/prometheus/common/log"
 	"github.com/spf13/cobra"
-	"github.com/winkoz/plonk/internal/io/logger"
+	"github.com/winkoz/plonk/internal/io/log"
 )
 
 var rootCmd = &cobra.Command{
@@ -13,7 +12,7 @@ var rootCmd = &cobra.Command{
 	Short: "Plonk is a deploy manager for kubernetes apps using kubeclt",
 	Long:  "",
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Debugf("RUN COMMAND - Verbosity: %s", logger.Severity)
+		log.Debugf("RUN COMMAND - Verbosity: %s", log.Severity)
 		// Do Stuff Here
 	},
 }

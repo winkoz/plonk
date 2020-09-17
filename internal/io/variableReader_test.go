@@ -32,13 +32,13 @@ func Test_variableReader_GetVariables(t *testing.T) {
 			sut: variableReader{
 				path:           fixturesDir,
 				baseFileName:   "base",
-				customFileName: "invalidYAML",
+				customFileName: "invalidYaml",
 			},
 			args: args{
 				stackName: "production",
 			},
 			want:    nil,
-			wantErr: NewParseVariableError(fmt.Sprintf("Unable to parse %s/invalidYAML.yaml", fixturesDir)),
+			wantErr: NewParseVariableError(fmt.Sprintf("Unable to parse %s/invalidYaml.yaml", fixturesDir)),
 		},
 		// TODO: Add ALL the missing test cases
 	}
