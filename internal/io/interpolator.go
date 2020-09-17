@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/prometheus/common/log"
+	"github.com/winkoz/plonk/internal/io/log"
 )
 
 type interpolator struct{}

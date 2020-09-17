@@ -1,6 +1,8 @@
 package scaffolding
 
 import (
+	"fmt"
+
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
 )
@@ -63,8 +65,8 @@ func (s templateWriter) Write(projectName string, templateName string) error {
 	for path, files := range templateConfigs {
 		fullTargetPath := fmt.Sprintf("%s/%s", s.targetPath, path)
 		if err := s.duplicator.CopyMultiple(fullTargetPath, files, replaceProjectName); err != nil {
-		log.Error(err)
-		return err
+			log.Error(err)
+			return err
 		}
 	}
 

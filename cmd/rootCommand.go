@@ -45,6 +45,6 @@ func newRootCommand() *cobra.Command {
 
 func newRootCommandHandler() CobraHandler {
 	return func(cmd *cobra.Command, args []string) {
-		log.Debugf("RUN COMMAND - Verbosity: %s", logger.Severity)
+		log.Debugf("RUN COMMAND - Verbosity: %s", log.Severity)
 	}
 }
