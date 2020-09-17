@@ -1,6 +1,4 @@
-package logger
-
-import "github.com/prometheus/common/log"
+package log
 
 // SeverityLevel defines the level of logging that we desire for the application
 type SeverityLevel string
@@ -12,11 +10,11 @@ var Severity SeverityLevel = "INFO"
 func (s *SeverityLevel) Set(value string) error {
 	Severity = SeverityLevel(value)
 	// Configure logging level
-	if err := log.Base().SetLevel(value); err != nil {
+	if err := SetLevel(value); err != nil {
 		panic(err.Error())
 	}
 
-	log.Debugf("Severity Value: %s", Severity)
+	Debugf("Severity Value: %s", Severity)
 	return nil
 }
 

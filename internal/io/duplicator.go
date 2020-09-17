@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/prometheus/common/log"
+	"github.com/winkoz/plonk/internal/io/log"
 )
 
 type duplicator struct{}

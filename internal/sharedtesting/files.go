@@ -3,7 +3,7 @@ package sharedtesting
 import (
 	"os"
 
-	"github.com/prometheus/common/log"
+	"github.com/winkoz/plonk/internal/io/log"
 )
 
 // CreatePath in the local filesystem

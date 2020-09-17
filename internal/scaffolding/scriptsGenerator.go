@@ -1,8 +1,8 @@
 package scaffolding
 
 import (
-	"github.com/prometheus/common/log"
 	"github.com/winkoz/plonk/internal/io"
+	"github.com/winkoz/plonk/internal/io/log"
 )
 
 type scriptsGenerator struct {
