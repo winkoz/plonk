@@ -1,0 +1,8 @@
+name: base
+origin:
+  - base/plonk.yaml
+variables: 
+  - base/base.yaml
+scripts:
+  - base/ingress.yaml
+  
