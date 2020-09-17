@@ -3,8 +3,8 @@ package scaffolding
 import (
 	"fmt"
 
-	"github.com/prometheus/common/log"
 	"github.com/winkoz/plonk/internal/io"
+	"github.com/winkoz/plonk/internal/io/log"
 )
 
 // TemplateReader reads a project configuration from disk based on a passed configuration file

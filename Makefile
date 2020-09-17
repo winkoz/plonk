@@ -15,7 +15,7 @@ go-build: clean
 	@echo "Plonk built successfully!"
 
 go-test:
-	GO111MODULE=on go test ./...
+	GO111MODULE=on go test -v -cover ./...
 	@echo "Plonk finished testing!"
 
 build: clean docker-build

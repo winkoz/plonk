@@ -3,7 +3,7 @@ package io
 import (
 	"os"
 
-	"github.com/prometheus/common/log"
+	"github.com/winkoz/plonk/internal/io/log"
 )
 
 // GetCurrentDir returns the directory in which the project is running.
