@@ -1,6 +1,7 @@
 package scaffolding
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -23,7 +24,7 @@ func Test_templateReader_Read(t *testing.T) {
 		fields  fields
 		args    args
 		want    TemplateData
-		wantErr bool
+		wantErr error
 	}{
 		{
 			name: "successfully loads a template data file into a TemplateData structure",
@@ -47,7 +48,20 @@ func Test_templateReader_Read(t *testing.T) {
 					fixturesPath + "/base/ingress.yaml",
 				},
 			},
-			wantErr: false,
+			wantErr: nil,
+		},
+		{
+			name: "returns an error when the configuration file cannot be located",
+			fields: fields{
+				defaultTemplatePath: fixturesPath,
+				customTemplatePath:  fixturesPath,
+				yamlReader:          yamlReader,
+			},
+			args: args{
+				configurationFileName: "non-existent-config-file",
+			},
+			want:    TemplateData{},
+			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found non-existent-config-file.yaml. Locations [%s, %s]", fixturesPath, fixturesPath)),
 		},
 	}
 	for _, tt := range tests {
@@ -58,7 +72,11 @@ func Test_templateReader_Read(t *testing.T) {
 				yamlReader:          tt.fields.yamlReader,
 			}
 			got, err := tf.Read(tt.args.configurationFileName)
-			if (err != nil) != tt.wantErr {
+			if (tt.wantErr == nil && err != nil) || (tt.wantErr != nil && err == nil) {
+				t.Errorf("templateReader.Read() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if (tt.wantErr != nil && err != nil) && tt.wantErr.Error() != err.Error() {
 				t.Errorf("templateReader.Read() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
