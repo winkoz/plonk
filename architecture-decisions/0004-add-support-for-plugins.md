@@ -9,7 +9,7 @@ Accepted
 ## Context
 
 A big part of this project is to allow different organizations or projects with different configurations to easily modify Plonk's actions to 
-adhere to their needs, meaning different values, structure and frecuency of kubernetes manifests or other file types that we decide to end up supporting, but at the same time we don't want to expose the projects to the complexity of this files, in k8s case, the complexity of the manifests.
+adhere to their needs, meaning different values, structure and frecuency of kubernetes manifests or other file types that we decide to end up supporting, but at the same time we don't want to expose the projects to the complexity of these files, in k8s case, the complexity of the manifests.
 
 ## Decision
 
