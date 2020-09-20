@@ -59,7 +59,7 @@ func (s templateWriter) Write(projectName string, templateName string) error {
 	templateConfigs := map[string][]string{
 		originTargetPath:   templateData.Origin,
 		variableTargetPath: templateData.Variables,
-		scriptsTargetPath:  templateData.Scripts,
+		scriptsTargetPath:  templateData.Manifests,
 	}
 
 	for path, files := range templateConfigs {

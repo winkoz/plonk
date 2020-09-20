@@ -5,7 +5,7 @@ variables:
   - base/base.yaml
   - base/custom.yaml
   - base/production.yaml
-scripts:
+manifests:
   - base/ingress.yaml
   - base/main-deployment.yaml
   - base/service.yaml
