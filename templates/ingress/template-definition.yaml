@@ -1,0 +1,16 @@
+name: api
+variables:
+  production:
+    name: production
+manifests:
+  - api.yaml
+  - service.yaml
+  - ingress.yaml
+  - grafana.yaml
+
+
+
+
+
+
+  
