@@ -1,0 +1,4 @@
+base:
+  - NAME: "$NAME"
+  - APP_ENV: "$APP_ENV"
+  - NAMESPACE: "$STACK-$NAME"

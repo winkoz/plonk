@@ -17,6 +17,4 @@ spec:
         image: $DOCKER_IMAGE
         ports:
         - containerPort: $MAIN_PORT
-        env:
-        - name: APP_ENV
-          value: $APP_ENV
+        env: $ENVIRONMENT_VARIABLES

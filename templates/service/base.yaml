@@ -1,0 +1,6 @@
+service:
+  DOCKER_IMAGE: $DOCKER_IMAGE
+  MAIN_PORT: $MAIN_PORT
+  ENVIRONMENT_VARIABLES: 
+    - sdfas: ssdfsadf
+    - sdafsad: sdfsadf
