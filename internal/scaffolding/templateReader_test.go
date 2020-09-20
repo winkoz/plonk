@@ -45,7 +45,7 @@ func Test_templateReader_Read(t *testing.T) {
 				Variables: []string{
 					defaultTemplatePath + "/base/base.yaml",
 				},
-				Scripts: []string{
+				Manifests: []string{
 					defaultTemplatePath + "/base/ingress.yaml",
 				},
 			},
@@ -69,7 +69,7 @@ func Test_templateReader_Read(t *testing.T) {
 				Variables: []string{
 					customTemplatePath + "/custom/base.yaml",
 				},
-				Scripts: []string{
+				Manifests: []string{
 					customTemplatePath + "/custom/ingress.yaml",
 				},
 			},
@@ -93,7 +93,7 @@ func Test_templateReader_Read(t *testing.T) {
 				Variables: []string{
 					customTemplatePath + "/custom/base.yaml",
 				},
-				Scripts: []string{
+				Manifests: []string{
 					defaultTemplatePath + "/base/ingress.yaml",
 				},
 			},
@@ -141,7 +141,7 @@ func Test_templateReader_Read(t *testing.T) {
 				Variables: []string{
 					"base/base.yaml",
 				},
-				Scripts: []string{
+				Manifests: []string{
 					"base/ingress.yaml",
 				},
 			},
@@ -163,7 +163,7 @@ func Test_templateReader_Read(t *testing.T) {
 					defaultTemplatePath + "/base/base.yaml",
 				},
 				Variables: []string{},
-				Scripts: []string{
+				Manifests: []string{
 					defaultTemplatePath + "/base/ingress.yaml",
 				},
 			},
@@ -187,7 +187,7 @@ func Test_templateReader_Read(t *testing.T) {
 				Variables: []string{
 					"base/base.yaml",
 				},
-				Scripts: []string{},
+				Manifests: []string{},
 			},
 			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found base/missingScriptFile.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
 		},

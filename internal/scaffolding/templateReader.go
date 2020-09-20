@@ -23,7 +23,7 @@ type TemplateData struct {
 	Name      string   `yaml:"name"`
 	Origin    []string `yaml:"origin,omitempty"`
 	Variables []string `yaml:"variables,omitempty"`
-	Scripts   []string `yaml:"scripts,omitempty"`
+	Manifests []string `yaml:"manifests,omitempty"`
 }
 
 // NewTemplateReader returns a fully configure TemplateReader
@@ -57,8 +57,8 @@ func (tf templateReader) Read(configurationFileName string) (TemplateData, error
 		return templateData, err
 	}
 
-	templateData.Scripts, err = tf.locateFiles(templateData.Scripts)
-	log.Debug(templateData.Scripts)
+	templateData.Manifests, err = tf.locateFiles(templateData.Manifests)
+	log.Debug(templateData.Manifests)
 	if err != nil {
 		log.Error(err)
 		return templateData, err
