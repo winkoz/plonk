@@ -57,8 +57,8 @@ func (s templateWriter) Write(projectName string, templateName string) error {
 	}
 
 	templateConfigs := map[string][]string{
-		originTargetPath:   templateData.Origin,
-		variableTargetPath: templateData.Variables,
+		originTargetPath:   templateData.Files,
+		variableTargetPath: {templateData.Variables},
 		scriptsTargetPath:  templateData.Manifests,
 	}
 

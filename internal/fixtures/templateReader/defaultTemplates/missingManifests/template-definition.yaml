@@ -1,0 +1,4 @@
+name: missing-manifests
+manifests: 
+  - missingFile.yaml
+  
