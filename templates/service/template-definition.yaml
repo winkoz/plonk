@@ -1,7 +1,5 @@
 name: api
-variables:
-  production:
-    name: production
+variables: vars.yaml
 manifests:
   - api.yaml
   - service.yaml
