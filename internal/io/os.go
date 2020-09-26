@@ -1,11 +1,15 @@
 package io
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/winkoz/plonk/internal/io/log"
 )
+
+type WalkFunc func(path string, info os.FileInfo, err error) error
 
 // GetCurrentDir returns the directory in which the project is running.
 func GetCurrentDir() string {
@@ -55,6 +59,12 @@ func DeletePath(path string) {
 
 // ReadFile reads a file
 func ReadFile(path string) ([]byte, error) {
+	if !FileExists(path) {
+		err := fmt.Errorf("File does not exist at path: %s", path)
+		log.Error(err)
+		return nil, err
+	}
+
 	data, err := ioutil.ReadFile(path)
 	log.Error(string(data))
 	if err != nil {
@@ -62,6 +72,38 @@ func ReadFile(path string) ([]byte, error) {
 		return []byte{}, err
 	}
 	return data, nil
+}
+
+// Walk walks the entire file structure for `root` and calls `walkFn` for each item it finds
+func Walk(root string, walkFn WalkFunc) error {
+	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		return walkFn(path, info, err)
+	})
+
+	if err != nil {
+		log.Errorf("Error walking the path %q: %v\n", root, err)
+		return err
+	}
+
+	return nil
+}
+
+// Append opens or creates file at `targetFilePath` and appends the `content` to it
+func Append(targetFilePath string, content string) error {
+	//Append second line
+	file, err := os.OpenFile(targetFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	defer file.Close()
+
+	if err != nil {
+		log.Errorf("Unable to open file %s. %v", targetFilePath, err)
+		return err
+	}
+	if _, err := file.WriteString(content); err != nil {
+		log.Errorf("Unable to append data to file %s. %v", targetFilePath, err)
+		return err
+	}
+
+	return nil
 }
 
 func isValidPath(path string) error {
