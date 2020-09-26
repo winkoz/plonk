@@ -8,10 +8,9 @@ import (
 )
 
 type scaffolder struct {
-	targetPath     string
-	sourcePath     string
-	templateWriter TemplateWriter
-	templatePaths  []string
+	targetPath    string
+	sourcePath    string
+	templatePaths []string
 }
 
 // Scaffolder runs the scaffolding logic to generate new plonk services
@@ -22,14 +21,9 @@ type Scaffolder interface {
 // NewScaffolder returns a fully initialised Scaffolder
 func NewScaffolder(customTemplatePath string, targetPath string) Scaffolder {
 	return scaffolder{
-		targetPath:     targetPath,
-		sourcePath:     customTemplatePath,
-		templateWriter: NewTemplateWriter(customTemplatePath, targetPath),
-		templatePaths: []string{
-			originTargetPath,
-			scriptsTargetPath,
-			variableTargetPath,
-		},
+		targetPath:    targetPath,
+		sourcePath:    customTemplatePath,
+		templatePaths: []string{},
 	}
 }
 
@@ -44,12 +38,7 @@ func (s scaffolder) Init(name string) error {
 		}
 	}
 
-	err := s.templateWriter.Write(name, "base")
-	if err != nil {
-		log.Error(err)
-	}
-
-	return err
+	return nil
 }
 
 func (s scaffolder) createDirectoryIfNeeded(directoryName string) error {
