@@ -21,7 +21,7 @@ func NewDuplicator() Duplicator {
 }
 
 func (d duplicator) copy(source string, target string, transformator Transformator) error {
-	input, err := ioutil.ReadFile(source)
+	input, err := ReadFile(source)
 	if err != nil {
 		log.Error(err)
 		return err

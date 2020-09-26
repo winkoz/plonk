@@ -42,7 +42,11 @@ func Test_templateReader_Read(t *testing.T) {
 				Files: []string{
 					defaultTemplatePath + "/default/plonk.yaml",
 				},
-				Variables: defaultTemplatePath + "/default/vars.yaml",
+				VariablesFileName: defaultTemplatePath + "/default/vars.yaml",
+				VariablesContents: `plonk:
+  - NAME: "$NAME"
+  - APP_ENV: "$APP_ENV"
+  - NAMESPACE: "$STACK-$NAME"`,
 				Manifests: []string{},
 			},
 			wantErr: nil,
@@ -62,7 +66,11 @@ func Test_templateReader_Read(t *testing.T) {
 				Files: []string{
 					customTemplatePath + "/custom/plonk.yaml",
 				},
-				Variables: customTemplatePath + "/custom/vars.yaml",
+				VariablesFileName: customTemplatePath + "/custom/vars.yaml",
+				VariablesContents: `plonk:
+  - NAME: "custom-name"
+  - APP_ENV: "$APP_ENV"
+  - NAMESPACE: "$STACK-$NAME"`,
 				Manifests: []string{},
 			},
 			wantErr: nil,
@@ -78,9 +86,13 @@ func Test_templateReader_Read(t *testing.T) {
 				templateName: "mixed",
 			},
 			want: TemplateData{
-				Name:      "custom-mixed-template",
-				Files:     []string{},
-				Variables: defaultTemplatePath + "/mixed/vars.yaml",
+				Name:              "custom-mixed-template",
+				Files:             []string{},
+				VariablesFileName: defaultTemplatePath + "/mixed/vars.yaml",
+				VariablesContents: `plonk:
+  - NAME: "mixed-name"
+  - APP_ENV: "$APP_ENV"
+  - NAMESPACE: "$STACK-$NAME"`,
 				Manifests: []string{
 					customTemplatePath + "/mixed/manifest3.yaml",
 					defaultTemplatePath + "/mixed/manifest2.yaml",
@@ -138,10 +150,10 @@ func Test_templateReader_Read(t *testing.T) {
 				templateName: "missingVariables",
 			},
 			want: TemplateData{
-				Name:      "missing-variables",
-				Files:     []string{},
-				Variables: "",
-				Manifests: []string{},
+				Name:              "missing-variables",
+				Files:             []string{},
+				VariablesFileName: "",
+				Manifests:         []string{},
 			},
 			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found vars.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
 		},
@@ -156,10 +168,28 @@ func Test_templateReader_Read(t *testing.T) {
 				templateName: "missingManifests",
 			},
 			want: TemplateData{
-				Name:      "missing-manifests",
-				Files:     []string{},
-				Variables: "",
-				Manifests: []string{},
+				Name:              "missing-manifests",
+				Files:             []string{},
+				VariablesFileName: "",
+				Manifests:         []string{},
+			},
+			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found missingFile.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
+		},
+		{
+			name: "returns an error when the configuration file points to a non-existent file within scripts",
+			fields: fields{
+				defaultTemplatePath: defaultTemplatePath,
+				customTemplatePath:  customTemplatePath,
+				yamlReader:          yamlReader,
+			},
+			args: args{
+				templateName: "missingManifests",
+			},
+			want: TemplateData{
+				Name:              "missing-manifests",
+				Files:             []string{},
+				VariablesFileName: "",
+				Manifests:         []string{},
 			},
 			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found missingFile.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
 		},

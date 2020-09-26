@@ -1,4 +1,4 @@
 plonk:
-  - NAME: "$NAME"
+  - NAME: "mixed-name"
   - APP_ENV: "$APP_ENV"
   - NAMESPACE: "$STACK-$NAME"
