@@ -41,8 +41,8 @@ func FileExists(filename string) bool {
 
 // CreatePath in the local filesystem
 func CreatePath(path string) error {
-	err := os.MkdirAll(path, 0755)
-	if !os.IsExist(err) {
+	err := os.MkdirAll(path, OwnerPermission)
+	if err != nil && !os.IsExist(err) {
 		log.Errorf("CreatePath %s failed. %v", path, err)
 		return err
 	}
@@ -91,7 +91,7 @@ func Walk(root string, walkFn WalkFunc) error {
 // Append opens or creates file at `targetFilePath` and appends the `content` to it
 func Append(targetFilePath string, content string) error {
 	//Append second line
-	file, err := os.OpenFile(targetFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(targetFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, OwnerPermission)
 	defer file.Close()
 
 	if err != nil {
