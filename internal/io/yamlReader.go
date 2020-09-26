@@ -22,12 +22,6 @@ func NewYamlReader() YamlReader {
 // Read a Yaml file into the passed in structure after validating its existence
 func (yr yamlReader) Read(filePath string, output interface{}) error {
 	log.Debugf("Reading file %s", filePath)
-	if !FileExists(filePath) {
-		err := NewParseYamlError(fmt.Sprintf("Yaml file not found: %s", filePath))
-		log.Error(err)
-		return err
-	}
-
 	data, err := ReadFile(filePath)
 	log.Error(string(data))
 	if err != nil {
