@@ -2,6 +2,7 @@ package scaffolding
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
