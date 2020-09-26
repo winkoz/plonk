@@ -8,35 +8,55 @@ import (
 )
 
 type scaffolder struct {
-	targetPath    string
-	sourcePath    string
-	templatePaths []string
+	targetPath     string
+	sourcePath     string
+	templateReader TemplateReader
+	duplicator     io.Duplicator
+	templatePaths  []string
 }
 
 // Scaffolder runs the scaffolding logic to generate new plonk services
 type Scaffolder interface {
-	Init(name string) error
+	Install(name string) error
 }
 
 // NewScaffolder returns a fully initialised Scaffolder
-func NewScaffolder(customTemplatePath string, targetPath string) Scaffolder {
+func NewScaffolder(
+	defaultTemplatePath string,
+	customTemplatePath string,
+	targetPath string) Scaffolder {
+
+	templateReader := NewTemplateReader(defaultTemplatePath, customTemplatePath)
 	return scaffolder{
-		targetPath:    targetPath,
-		sourcePath:    customTemplatePath,
-		templatePaths: []string{},
+		targetPath:     targetPath,
+		sourcePath:     customTemplatePath,
+		templateReader: templateReader,
+		duplicator:     io.NewDuplicator(),
+		templatePaths:  []string{},
 	}
 }
 
 // Init initializes the basic structure of a plonk project
-func (s scaffolder) Init(name string) error {
-	log.Debugf("Init Scaffolder: [%s] - [%s] - [%s]", s.targetPath, s.sourcePath, name)
+func (s scaffolder) Install(name string) error {
+	log.Debugf("Install Scaffolder: [%s] - [%s] - [%s]", s.targetPath, s.sourcePath, name)
 
-	for _, path := range s.templatePaths {
-		if err := s.createDirectoryIfNeeded(path); err != nil {
-			log.Error(err)
-			return err
+	// Read Template
+	template, err := s.templateReader.Read(name)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	// Duplicate Files
+	if len(template.Files) > 0 {
+		if err := s.duplicator.CopyMultiple(s.targetPath, template.Files, io.NoOpTransformator); err != nil {
+			log.Errorf("Failed scaffolding files of templatte %s: %s", name, err)
 		}
 	}
+
+	// Append to Vars
+
+	//TemplateData.VariablesContents
 
 	return nil
 }
