@@ -29,8 +29,7 @@ func addInitCommand(rootCmd *cobra.Command) {
 		and then generates the deploy folder with the basic project files.
 		`,
 		Run:     newInitCommandHandler(),
-		Args:    cobra.MinimumNArgs(1),
-		Example: "plonk init [project_name]",
+		Example: "plonk init",
 	}
 	rootCmd.AddCommand(initCmd)
 }
@@ -38,8 +37,8 @@ func addInitCommand(rootCmd *cobra.Command) {
 func newInitCommandHandler() CobraHandler {
 	return func(cmd *cobra.Command, args []string) {
 		targetPath := io.GetCurrentDir()
-		customTemplatePath := targetPath + "/templates/scripts"
-		s := scaffolding.NewScaffolder(customTemplatePath, targetPath+"/test")
-		s.Init(args[0])
+		// TODO: Remove the /test from the target
+		s := scaffolding.NewScaffolder(defaultTemplatesPath, defaultCustomTemplatesPath, deployFolderName, deployVariablesPath, targetPath+"/test")
+		s.Install("default")
 	}
 }
