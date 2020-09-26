@@ -5,8 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/winkoz/plonk/internal/sharedtesting"
 )
 
 func Test_duplicator_CopyMultiple(t *testing.T) {
@@ -30,7 +28,7 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 				sourcePaths: []string{
 					fixturesPath + "/service.yaml",
 				},
-				transformator: sharedtesting.SimpleTransformator,
+				transformator: NoOpTransformator,
 			},
 			wantErr: false,
 		},
