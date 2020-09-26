@@ -14,6 +14,8 @@ type scaffolder struct {
 	templateReader TemplateReader
 	duplicator     io.Duplicator
 	templatePaths  []string
+	deployDirName  string
+	variablesPath  string
 }
 
 // Scaffolder runs the scaffolding logic to generate new plonk services
@@ -25,12 +27,16 @@ type Scaffolder interface {
 func NewScaffolder(
 	defaultTemplatePath string,
 	customTemplatePath string,
+	deployDirName string,
+	variablesPath string,
 	targetPath string) Scaffolder {
 
 	templateReader := NewTemplateReader(defaultTemplatePath, customTemplatePath)
 	return scaffolder{
 		targetPath:     targetPath,
 		sourcePath:     customTemplatePath,
+		deployDirName:  deployDirName,
+		variablesPath:  variablesPath,
 		templateReader: templateReader,
 		duplicator:     io.NewDuplicator(),
 		templatePaths:  []string{},
@@ -56,8 +62,24 @@ func (s scaffolder) Install(name string) error {
 	}
 
 	// Append to Vars
+	variablesFullPath := fmt.Sprintf("%s/%s", s.targetPath, s.variablesPath)
+	if err := s.createDirectoryIfNeeded(variablesFullPath); err != nil { // Creates target/deploy/variables if needed
+		log.Errorf("Cannot create folder %s. %v", variablesFullPath, err)
+		return err
+	}
 
-	//TemplateData.VariablesContents
+	io.Walk(variablesFullPath, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+
+		if err := io.Append(path, template.VariablesContents); err != nil {
+			log.Errorf("Unable to append variables content to file %s. %v", path, err)
+			return err
+		}
+
+		return nil
+	})
 
 	return nil
 }
