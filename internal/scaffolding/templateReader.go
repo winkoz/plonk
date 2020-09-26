@@ -24,6 +24,7 @@ type TemplateData struct {
 	VariablesFileName string `yaml:"variables,omitempty"`
 	VariablesContents string
 	Manifests         []string `yaml:"manifests,omitempty"`
+	FilesLocation     []io.FileLocation
 	Files             []string `yaml:"files,omitempty"`
 }
 
@@ -37,7 +38,10 @@ func NewTemplateReader(defaultTemplatePath string, customTemplatePath string) Te
 }
 
 func (tr templateReader) Read(templateName string) (TemplateData, error) {
-	templateData := TemplateData{}
+	templateData := TemplateData{
+		FilesLocation: []io.FileLocation{},
+		Files:         []string{},
+	}
 
 	templateDefinitionFilePath, err := tr.fileLocator(templateName, fmt.Sprintf("template-definition.%s", io.YAMLExtension))
 	if err != nil {
@@ -51,11 +55,25 @@ func (tr templateReader) Read(templateName string) (TemplateData, error) {
 		return templateData, err
 	}
 
-	templateData.Files, err = tr.locateFiles(templateName, templateData.Files)
-	log.Debug(templateData.Files)
+	resolvedFilePaths, err := tr.locateFiles(templateName, templateData.Files)
+	log.Debug(resolvedFilePaths)
 	if err != nil {
 		log.Error(err)
 		return templateData, err
+	}
+
+	if len(resolvedFilePaths) != len(templateData.Files) {
+		err := fmt.Errorf("mismatched number of resolved files paths %d from original files %d", len(resolvedFilePaths), len(templateData.Files))
+		log.Errorf("Unable to read template. %v", err)
+	}
+
+	for idx, originalFile := range templateData.Files {
+		fileLocation := io.FileLocation{
+			OriginalFilePath: originalFile,
+			ResolvedFilePath: resolvedFilePaths[idx],
+		}
+
+		templateData.FilesLocation = append(templateData.FilesLocation, fileLocation)
 	}
 
 	templateData.Manifests, err = tr.locateFiles(templateName, templateData.Manifests)

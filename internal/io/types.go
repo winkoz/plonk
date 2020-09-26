@@ -11,6 +11,13 @@ type Error struct {
 	msg string
 }
 
+// FileLocation describes the original file name and it's resolved path
+type FileLocation struct {
+	OriginalFilePath string
+	ResolvedFilePath string
+}
+
+// Error prints out the formatted error message.
 func (e *Error) Error() string {
 	return e.msg
 }

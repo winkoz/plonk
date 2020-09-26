@@ -66,7 +66,6 @@ func ReadFile(path string) ([]byte, error) {
 	}
 
 	data, err := ioutil.ReadFile(path)
-	log.Error(string(data))
 	if err != nil {
 		log.Errorf("Error reading file %s: %+v", path, err)
 		return []byte{}, err

@@ -23,7 +23,6 @@ func NewYamlReader() YamlReader {
 func (yr yamlReader) Read(filePath string, output interface{}) error {
 	log.Debugf("Reading file %s", filePath)
 	data, err := ReadFile(filePath)
-	log.Error(string(data))
 	if err != nil {
 		internalErr := NewParseYamlError(fmt.Sprintf("Unable to read %s", filePath))
 		log.Errorf("Error: %+v\t%+v", internalErr, err)

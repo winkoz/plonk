@@ -39,9 +39,13 @@ func Test_templateReader_Read(t *testing.T) {
 			},
 			want: TemplateData{
 				Name: "default-template",
-				Files: []string{
-					defaultTemplatePath + "/default/plonk.yaml",
+				FilesLocation: []io.FileLocation{
+					{
+						ResolvedFilePath: defaultTemplatePath + "/default/plonk.yaml",
+						OriginalFilePath: "plonk.yaml",
+					},
 				},
+				Files:             []string{"plonk.yaml"},
 				VariablesFileName: defaultTemplatePath + "/default/vars.yaml",
 				VariablesContents: `plonk:
   - NAME: "$NAME"
@@ -63,9 +67,13 @@ func Test_templateReader_Read(t *testing.T) {
 			},
 			want: TemplateData{
 				Name: "custom-template",
-				Files: []string{
-					customTemplatePath + "/custom/plonk.yaml",
+				FilesLocation: []io.FileLocation{
+					{
+						ResolvedFilePath: customTemplatePath + "/custom/plonk.yaml",
+						OriginalFilePath: "plonk.yaml",
+					},
 				},
+				Files:             []string{"plonk.yaml"},
 				VariablesFileName: customTemplatePath + "/custom/vars.yaml",
 				VariablesContents: `plonk:
   - NAME: "custom-name"
@@ -87,6 +95,7 @@ func Test_templateReader_Read(t *testing.T) {
 			},
 			want: TemplateData{
 				Name:              "custom-mixed-template",
+				FilesLocation:     []io.FileLocation{},
 				Files:             []string{},
 				VariablesFileName: defaultTemplatePath + "/mixed/vars.yaml",
 				VariablesContents: `plonk:
@@ -110,7 +119,10 @@ func Test_templateReader_Read(t *testing.T) {
 			args: args{
 				templateName: "non-existent-config-file",
 			},
-			want:    TemplateData{},
+			want: TemplateData{
+				FilesLocation: []io.FileLocation{},
+				Files:         []string{},
+			},
 			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found template-definition.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
 		},
 		{
@@ -123,11 +135,14 @@ func Test_templateReader_Read(t *testing.T) {
 			args: args{
 				templateName: "invalid",
 			},
-			want:    TemplateData{},
+			want: TemplateData{
+				FilesLocation: []io.FileLocation{},
+				Files:         []string{},
+			},
 			wantErr: io.NewParseYamlError(fmt.Sprintf("Unable to parse %s", defaultTemplatePath+"/invalid/template-definition.yaml")),
 		},
 		{
-			name: "returns an error when the configuration file points to a non-existent file within origin",
+			name: "returns an error when the configuration file points to a non-existent file within the default path",
 			fields: fields{
 				defaultTemplatePath: defaultTemplatePath,
 				customTemplatePath:  customTemplatePath,
@@ -136,7 +151,10 @@ func Test_templateReader_Read(t *testing.T) {
 			args: args{
 				templateName: "missingFiles",
 			},
-			want:    TemplateData{},
+			want: TemplateData{
+				FilesLocation: []io.FileLocation{},
+				Files:         []string{},
+			},
 			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found template-definition.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
 		},
 		{
@@ -151,6 +169,7 @@ func Test_templateReader_Read(t *testing.T) {
 			},
 			want: TemplateData{
 				Name:              "missing-variables",
+				FilesLocation:     []io.FileLocation{},
 				Files:             []string{},
 				VariablesFileName: "",
 				Manifests:         []string{},
@@ -169,6 +188,7 @@ func Test_templateReader_Read(t *testing.T) {
 			},
 			want: TemplateData{
 				Name:              "missing-manifests",
+				FilesLocation:     []io.FileLocation{},
 				Files:             []string{},
 				VariablesFileName: "",
 				Manifests:         []string{},
@@ -187,6 +207,7 @@ func Test_templateReader_Read(t *testing.T) {
 			},
 			want: TemplateData{
 				Name:              "missing-manifests",
+				FilesLocation:     []io.FileLocation{},
 				Files:             []string{},
 				VariablesFileName: "",
 				Manifests:         []string{},
@@ -211,7 +232,7 @@ func Test_templateReader_Read(t *testing.T) {
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("templateReader.Read() = %v, want %v", got, tt.want)
+				t.Errorf("templateReader.Read() =\n\t%+v,\nwant\n\t%+v", got, tt.want)
 			}
 		})
 	}
