@@ -2,11 +2,9 @@ package io
 
 import (
 	"fmt"
-	"io/ioutil"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/winkoz/plonk/internal/sharedtesting"
 )
 
 func Test_stitcher_Stitch(t *testing.T) {
@@ -40,7 +38,7 @@ func Test_stitcher_Stitch(t *testing.T) {
 					"2.yaml",
 					"3.yaml",
 				},
-				transformator: sharedtesting.SimpleTransformator,
+				transformator: NoOpTransformator,
 			},
 			wantErr:     false,
 			wantChannel: nil,
@@ -78,7 +76,7 @@ func Test_stitcher_Stitch(t *testing.T) {
 				t.Errorf("stitcher.Stitch() error = %v, wantErr %v", err, tt.wantErr)
 			} else if !tt.wantErr {
 				outputPath := fmt.Sprintf("%s/%s", tt.args.targetPath, tt.args.targetFilename)
-				outputBytes, err := ioutil.ReadFile(outputPath)
+				outputBytes, err := ReadFile(outputPath)
 				if err != nil {
 					t.Errorf("stitcher.Stitch() output_read_error = %v", err)
 				}

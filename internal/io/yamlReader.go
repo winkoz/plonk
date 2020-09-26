@@ -2,7 +2,6 @@ package io
 
 import (
 	"fmt"
-	"io/ioutil"
 
 	"github.com/winkoz/plonk/internal/io/log"
 	"gopkg.in/yaml.v2"
@@ -29,7 +28,7 @@ func (yr yamlReader) Read(filePath string, output interface{}) error {
 		return err
 	}
 
-	data, err := ioutil.ReadFile(filePath)
+	data, err := ReadFile(filePath)
 	log.Error(string(data))
 	if err != nil {
 		internalErr := NewParseYamlError(fmt.Sprintf("Unable to read %s", filePath))

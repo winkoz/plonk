@@ -24,6 +24,3 @@ func NewParseVariableError(message string) *Error {
 func NewParseYamlError(message string) *Error {
 	return &Error{msg: message}
 }
-
-// Transformator is a function that receives a byte array and returns a transformated array
-type Transformator func(input []byte) []byte

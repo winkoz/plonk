@@ -57,7 +57,7 @@ func (s stitcher) mergeFiles(sourcePath string, filePaths []string) ([]byte, err
 		}
 
 		var fileContents []byte
-		fileContents, err = ioutil.ReadFile(filePath)
+		fileContents, err = ReadFile(filePath)
 		if err != nil {
 			log.Error(err)
 			return nil, err

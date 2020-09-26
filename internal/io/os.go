@@ -1,6 +1,7 @@
 package io
 
 import (
+	"io/ioutil"
 	"os"
 
 	"github.com/winkoz/plonk/internal/io/log"
@@ -50,6 +51,17 @@ func DeletePath(path string) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+// ReadFile reads a file
+func ReadFile(path string) ([]byte, error) {
+	data, err := ioutil.ReadFile(path)
+	log.Error(string(data))
+	if err != nil {
+		log.Errorf("Error reading file %s: %+v", path, err)
+		return []byte{}, err
+	}
+	return data, nil
 }
 
 func isValidPath(path string) error {
