@@ -61,15 +61,15 @@ func (s scaffolder) Install(name string) error {
 	}
 
 	// Duplicate Files
-	if len(template.Files) > 0 {
-		if err := s.duplicator.CopyMultiple(s.targetPath, template.Files, io.NoOpTransformator); err != nil {
+	if len(template.FilesLocation) > 0 {
+		if err := s.duplicator.CopyMultiple(s.targetPath, template.FilesLocation, io.NoOpTransformator); err != nil {
 			log.Errorf("Failed scaffolding files of template %s: %s", name, err)
 		}
 	}
 
 	// Append to Vars
 	if err := s.appendToAllVariablesFiles(template.VariablesContents); err != nil {
-		log.Errorf("Cannot append to all variable files %s. %v", err)
+		log.Errorf("Cannot append to all variable files. %v", err)
 		return err
 	}
 
@@ -91,12 +91,11 @@ func (s scaffolder) createDirectoryIfNeeded(directoryName string) error {
 func (s scaffolder) appendToAllVariablesFiles(content string) error {
 	variablesFullPath := fmt.Sprintf("%s/%s", s.targetPath, s.variablesPath)
 	err := io.Walk(variablesFullPath, func(path string, info os.FileInfo, err error) error {
-		log.Errorf("AQUIIIIII 2222 %+v", variablesFullPath)
 		if info.IsDir() {
 			return nil
 		}
 
-		if err := io.Append(path, content); err != nil {
+		if err := io.Append(path, fmt.Sprintf("\n%s", content)); err != nil {
 			log.Errorf("Unable to append variables content to file %s. %v", path, err)
 			return err
 		}

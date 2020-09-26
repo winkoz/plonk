@@ -3,7 +3,6 @@ package io
 import (
 	"fmt"
 	"io/ioutil"
-	"path/filepath"
 
 	"github.com/winkoz/plonk/internal/io/log"
 )
@@ -12,7 +11,7 @@ type duplicator struct{}
 
 // Duplicator duplicates files from one directory to another
 type Duplicator interface {
-	CopyMultiple(targetPath string, sourcesPaths []string, transformator Transformator) error
+	CopyMultiple(targetPath string, sourcesPaths []FileLocation, transformator Transformator) error
 }
 
 // NewDuplicator returns a fully initialised Duplicator
@@ -41,7 +40,7 @@ func (d duplicator) copy(source string, target string, transformator Transformat
 }
 
 // CopyMultiple copies a series of files from a specific path into another
-func (d duplicator) CopyMultiple(targetPath string, sourcePaths []string, transformator Transformator) error {
+func (d duplicator) CopyMultiple(targetPath string, sourcePaths []FileLocation, transformator Transformator) error {
 	// validate target path
 	if err := isValidPath(targetPath); err != nil {
 		log.Error(err)
@@ -50,10 +49,10 @@ func (d duplicator) CopyMultiple(targetPath string, sourcePaths []string, transf
 
 	// copy sources
 	var targetFilePath string
-	for _, sourceFilePath := range sourcePaths {
-		targetFilePath = fmt.Sprintf("%s/%s", targetPath, filepath.Base(sourceFilePath))
-		log.Debugf("Duplicating %s into %s", sourceFilePath, targetFilePath)
-		if err := d.copy(sourceFilePath, targetFilePath, transformator); err != nil {
+	for _, sourceFileLocation := range sourcePaths {
+		targetFilePath = fmt.Sprintf("%s/%s", targetPath, sourceFileLocation.OriginalFilePath)
+		log.Debugf("Duplicating %s into %s", sourceFileLocation.OriginalFilePath, targetFilePath)
+		if err := d.copy(sourceFileLocation.ResolvedFilePath, targetFilePath, transformator); err != nil {
 			log.Error(err)
 			return err
 		}
