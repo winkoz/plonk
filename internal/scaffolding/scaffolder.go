@@ -54,32 +54,24 @@ func (s scaffolder) Install(name string) error {
 		return err
 	}
 
+	// Create required structure
+	if err := s.createDirectoryIfNeeded(s.variablesPath); err != nil { // Creates target/deploy/variables if needed
+		log.Errorf("Cannot create folder %s. %v", s.variablesPath, err)
+		return err
+	}
+
 	// Duplicate Files
 	if len(template.Files) > 0 {
 		if err := s.duplicator.CopyMultiple(s.targetPath, template.Files, io.NoOpTransformator); err != nil {
-			log.Errorf("Failed scaffolding files of templatte %s: %s", name, err)
+			log.Errorf("Failed scaffolding files of template %s: %s", name, err)
 		}
 	}
 
 	// Append to Vars
-	variablesFullPath := fmt.Sprintf("%s/%s", s.targetPath, s.variablesPath)
-	if err := s.createDirectoryIfNeeded(variablesFullPath); err != nil { // Creates target/deploy/variables if needed
-		log.Errorf("Cannot create folder %s. %v", variablesFullPath, err)
+	if err := s.appendToAllVariablesFiles(template.VariablesContents); err != nil {
+		log.Errorf("Cannot append to all variable files %s. %v", err)
 		return err
 	}
-
-	io.Walk(variablesFullPath, func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() {
-			return nil
-		}
-
-		if err := io.Append(path, template.VariablesContents); err != nil {
-			log.Errorf("Unable to append variables content to file %s. %v", path, err)
-			return err
-		}
-
-		return nil
-	})
 
 	return nil
 }
@@ -94,4 +86,27 @@ func (s scaffolder) createDirectoryIfNeeded(directoryName string) error {
 	}
 
 	return nil
+}
+
+func (s scaffolder) appendToAllVariablesFiles(content string) error {
+	variablesFullPath := fmt.Sprintf("%s/%s", s.targetPath, s.variablesPath)
+	err := io.Walk(variablesFullPath, func(path string, info os.FileInfo, err error) error {
+		log.Errorf("AQUIIIIII 2222 %+v", variablesFullPath)
+		if info.IsDir() {
+			return nil
+		}
+
+		if err := io.Append(path, content); err != nil {
+			log.Errorf("Unable to append variables content to file %s. %v", path, err)
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		log.Errorf("Error while walking all variable files. %v", err)
+	}
+
+	return err
 }
