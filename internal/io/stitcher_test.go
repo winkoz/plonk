@@ -10,8 +10,9 @@ import (
 func Test_stitcher_Stitch(t *testing.T) {
 	fixturesPath := "../fixtures/stitcher"
 	targetPath := "/tmp/plonk/tests/deploy"
-	DeletePath(targetPath)
-	CreatePath(targetPath)
+	service := service{}
+	service.DeletePath(targetPath)
+	service.CreatePath(targetPath)
 
 	type args struct {
 		sourcePath     string
@@ -76,7 +77,7 @@ func Test_stitcher_Stitch(t *testing.T) {
 				t.Errorf("stitcher.Stitch() error = %v, wantErr %v", err, tt.wantErr)
 			} else if !tt.wantErr {
 				outputPath := fmt.Sprintf("%s/%s", tt.args.targetPath, tt.args.targetFilename)
-				outputBytes, err := ReadFile(outputPath)
+				outputBytes, err := service.ReadFile(outputPath)
 				if err != nil {
 					t.Errorf("stitcher.Stitch() output_read_error = %v", err)
 				}

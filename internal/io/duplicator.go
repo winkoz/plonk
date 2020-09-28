@@ -7,7 +7,9 @@ import (
 	"github.com/winkoz/plonk/internal/io/log"
 )
 
-type duplicator struct{}
+type duplicator struct {
+	service Service
+}
 
 // Duplicator duplicates files from one directory to another
 type Duplicator interface {
@@ -15,12 +17,14 @@ type Duplicator interface {
 }
 
 // NewDuplicator returns a fully initialised Duplicator
-func NewDuplicator() Duplicator {
-	return duplicator{}
+func NewDuplicator(service Service) Duplicator {
+	return duplicator{
+		service: service,
+	}
 }
 
 func (d duplicator) copy(source string, target string, transformator Transformator) error {
-	input, err := ReadFile(source)
+	input, err := d.service.ReadFile(source)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -42,7 +46,7 @@ func (d duplicator) copy(source string, target string, transformator Transformat
 // CopyMultiple copies a series of files from a specific path into another
 func (d duplicator) CopyMultiple(targetPath string, sourcePaths []FileLocation, transformator Transformator) error {
 	// validate target path
-	if err := isValidPath(targetPath); err != nil {
+	if err := d.service.IsValidPath(targetPath); err != nil {
 		log.Error(err)
 		return err
 	}

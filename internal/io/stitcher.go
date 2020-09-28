@@ -7,7 +7,9 @@ import (
 	"github.com/winkoz/plonk/internal/io/log"
 )
 
-type stitcher struct{}
+type stitcher struct {
+	service Service
+}
 
 // Stitcher creates a new file by joining the contents of several text files.
 type Stitcher interface {
@@ -16,7 +18,9 @@ type Stitcher interface {
 
 // NewStitcher returns a fully initialised Stitcher
 func NewStitcher() Stitcher {
-	return stitcher{}
+	return stitcher{
+		service: NewService(),
+	}
 }
 
 // Stitch checks existence of source and target paths; then stitches all source files together and saves it to target file name after applying the passed in transformation
@@ -51,7 +55,7 @@ func (s stitcher) mergeFiles(sourcePath string, filePaths []string) ([]byte, err
 		filePath := fmt.Sprintf("%s/%s", sourcePath, source)
 
 		var fileContents []byte
-		fileContents, err = ReadFile(filePath)
+		fileContents, err = s.service.ReadFile(filePath)
 		if err != nil {
 			log.Error(err)
 			return nil, err
@@ -66,13 +70,13 @@ func (s stitcher) mergeFiles(sourcePath string, filePaths []string) ([]byte, err
 
 func (s stitcher) validate(sourcePath string, targetPath string) error {
 	// validate source path
-	if err := isValidPath(sourcePath); err != nil {
+	if err := s.service.IsValidPath(sourcePath); err != nil {
 		log.Error(err)
 		return err
 	}
 
 	// validate target path
-	if err := isValidPath(targetPath); err != nil {
+	if err := s.service.IsValidPath(targetPath); err != nil {
 		log.Error(err)
 		return err
 	}
