@@ -17,6 +17,7 @@ type variableReader struct {
 	baseFileName   string
 	yamlReader     YamlReader
 	interpolator   Interpolator
+	service        Service
 }
 
 // DeployVariables variables used for interpolating the script templates
@@ -26,13 +27,15 @@ type DeployVariables struct {
 
 // NewVariableReader returns a fully configure VariableReader
 func NewVariableReader() VariableReader {
-	path := GetCurrentDir()
+	service := NewService()
+	path := service.GetCurrentDir()
 	return variableReader{
 		path:           path,
 		baseFileName:   "base",
 		customFileName: "custom",
 		yamlReader:     NewYamlReader(),
 		interpolator:   NewInterpolator(),
+		service:        service,
 	}
 }
 
@@ -65,7 +68,7 @@ func (vr variableReader) GetVariables(stackName string) (map[string]string, erro
 func (vr variableReader) read(fileName string) (map[string]string, error) {
 	fullName := fmt.Sprintf("%s.%s", fileName, YAMLExtension)
 	filePath := fmt.Sprintf("%s/%s", vr.path, fullName)
-	if !FileExists(filePath) {
+	if !vr.service.FileExists(filePath) {
 		err := NewParseVariableError(fmt.Sprintf("%s not found at location: %s", fullName, vr.path))
 		log.Error(err)
 		return nil, err

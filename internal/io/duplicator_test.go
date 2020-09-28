@@ -9,7 +9,8 @@ import (
 func Test_duplicator_CopyMultiple(t *testing.T) {
 	fixturesPath := "../fixtures/scripts"
 	testTargetPath := "/tmp/plonk/tests/deploy"
-	CreatePath(testTargetPath)
+	service := service{}
+	service.CreatePath(testTargetPath)
 	type args struct {
 		targetPath      string
 		sourceLocations []FileLocation
@@ -93,5 +94,5 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 			}
 		})
 	}
-	DeletePath(testTargetPath)
+	service.DeletePath(testTargetPath)
 }

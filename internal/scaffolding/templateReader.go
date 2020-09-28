@@ -16,6 +16,7 @@ type templateReader struct {
 	defaultTemplatePath string
 	customTemplatePath  string
 	yamlReader          io.YamlReader
+	service             io.Service
 }
 
 // TemplateData contains the list of script files
@@ -34,6 +35,7 @@ func NewTemplateReader(defaultTemplatePath string, customTemplatePath string) Te
 		defaultTemplatePath: defaultTemplatePath,
 		customTemplatePath:  customTemplatePath,
 		yamlReader:          io.NewYamlReader(),
+		service:             io.NewService(),
 	}
 }
 
@@ -90,7 +92,7 @@ func (tr templateReader) Read(templateName string) (TemplateData, error) {
 	}
 
 	if len(templateData.VariablesFileName) > 0 {
-		variablesData, err := io.ReadFile(templateData.VariablesFileName)
+		variablesData, err := tr.service.ReadFile(templateData.VariablesFileName)
 		if err != nil {
 			log.Error(err)
 			return templateData, err
@@ -118,13 +120,13 @@ func (tr templateReader) fileLocator(templateName string, fileName string) (stri
 	filePath := fmt.Sprintf("%s/%s", templateName, fileName)
 	if tr.customTemplatePath != "" {
 		customPath := fmt.Sprintf("%s/%s", tr.customTemplatePath, filePath)
-		if io.FileExists(customPath) {
+		if tr.service.FileExists(customPath) {
 			return customPath, nil
 		}
 	}
 
 	defaultPath := fmt.Sprintf("%s/%s", tr.defaultTemplatePath, filePath)
-	if io.FileExists(defaultPath) {
+	if tr.service.FileExists(defaultPath) {
 		return defaultPath, nil
 	}
 

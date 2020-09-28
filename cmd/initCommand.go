@@ -36,9 +36,10 @@ func addInitCommand(rootCmd *cobra.Command) {
 
 func newInitCommandHandler() CobraHandler {
 	return func(cmd *cobra.Command, args []string) {
-		targetPath := io.GetCurrentDir()
+		ioService := io.NewService()
+		targetPath := ioService.GetCurrentDir()
 		// TODO: Remove the /test from the target
-		s := scaffolding.NewScaffolder(defaultTemplatesPath, defaultCustomTemplatesPath, deployFolderName, deployVariablesPath, targetPath+"/test")
+		s := scaffolding.NewScaffolder(ioService, defaultTemplatesPath, defaultCustomTemplatesPath, deployFolderName, deployVariablesPath, targetPath+"/test")
 		s.Install("default")
 	}
 }
