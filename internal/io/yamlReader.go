@@ -17,9 +17,9 @@ type yamlReader struct {
 }
 
 // NewYamlReader returns a fully initialised YamlReader
-func NewYamlReader() YamlReader {
+func NewYamlReader(service Service) YamlReader {
 	return yamlReader{
-		service: NewService(),
+		service: service,
 	}
 }
 

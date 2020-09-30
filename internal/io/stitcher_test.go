@@ -27,6 +27,7 @@ func Test_stitcher_Stitch(t *testing.T) {
 		wantErr     bool
 		wantChannel []byte
 		want        string
+		service     Service
 	}{
 		{
 			name: "succeeds in merging all sources into a single output.yml file",
@@ -49,6 +50,7 @@ func Test_stitcher_Stitch(t *testing.T) {
 - line 1
 - line 2
 `,
+			service: service,
 		},
 		{
 			name: "checks the transformator is used correctly",
@@ -68,11 +70,14 @@ func Test_stitcher_Stitch(t *testing.T) {
 			wantErr:     false,
 			wantChannel: nil,
 			want:        "something else",
+			service:     service,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := stitcher{}
+			s := stitcher{
+				service: tt.service,
+			}
 			if err := s.Stitch(tt.args.sourcePath, tt.args.targetPath, tt.args.targetFilename, tt.args.filePaths, tt.args.transformator); (err != nil) != tt.wantErr {
 				t.Errorf("stitcher.Stitch() error = %v, wantErr %v", err, tt.wantErr)
 			} else if !tt.wantErr {

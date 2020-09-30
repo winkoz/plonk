@@ -33,7 +33,7 @@ func NewVariableReader() VariableReader {
 		path:           path,
 		baseFileName:   "base",
 		customFileName: "custom",
-		yamlReader:     NewYamlReader(),
+		yamlReader:     NewYamlReader(service),
 		interpolator:   NewInterpolator(),
 		service:        service,
 	}

@@ -31,11 +31,12 @@ type TemplateData struct {
 
 // NewTemplateReader returns a fully configure TemplateReader
 func NewTemplateReader(defaultTemplatePath string, customTemplatePath string) TemplateReader {
+	ioService := io.NewService()
 	return templateReader{
 		defaultTemplatePath: defaultTemplatePath,
 		customTemplatePath:  customTemplatePath,
-		yamlReader:          io.NewYamlReader(),
-		service:             io.NewService(),
+		yamlReader:          io.NewYamlReader(ioService),
+		service:             ioService,
 	}
 }
 

@@ -11,11 +11,13 @@ import (
 func Test_templateReader_Read(t *testing.T) {
 	defaultTemplatePath := "../fixtures/templateReader/defaultTemplates"
 	customTemplatePath := "../fixtures/templateReader/customTemplates"
-	yamlReader := io.NewYamlReader()
+	ioService := io.NewService()
+	yamlReader := io.NewYamlReader(ioService)
 	type fields struct {
 		defaultTemplatePath string
 		customTemplatePath  string
 		yamlReader          io.YamlReader
+		ioService           io.Service
 	}
 	type args struct {
 		templateName string
@@ -32,6 +34,7 @@ func Test_templateReader_Read(t *testing.T) {
 			fields: fields{
 				defaultTemplatePath: defaultTemplatePath,
 				customTemplatePath:  customTemplatePath,
+				ioService:           ioService,
 				yamlReader:          yamlReader,
 			},
 			args: args{
@@ -60,6 +63,7 @@ func Test_templateReader_Read(t *testing.T) {
 			fields: fields{
 				defaultTemplatePath: defaultTemplatePath,
 				customTemplatePath:  customTemplatePath,
+				ioService:           ioService,
 				yamlReader:          yamlReader,
 			},
 			args: args{
@@ -88,6 +92,7 @@ func Test_templateReader_Read(t *testing.T) {
 			fields: fields{
 				defaultTemplatePath: defaultTemplatePath,
 				customTemplatePath:  customTemplatePath,
+				ioService:           ioService,
 				yamlReader:          yamlReader,
 			},
 			args: args{
@@ -114,6 +119,7 @@ func Test_templateReader_Read(t *testing.T) {
 			fields: fields{
 				defaultTemplatePath: defaultTemplatePath,
 				customTemplatePath:  customTemplatePath,
+				ioService:           ioService,
 				yamlReader:          yamlReader,
 			},
 			args: args{
@@ -130,6 +136,7 @@ func Test_templateReader_Read(t *testing.T) {
 			fields: fields{
 				defaultTemplatePath: defaultTemplatePath,
 				customTemplatePath:  customTemplatePath,
+				ioService:           ioService,
 				yamlReader:          yamlReader,
 			},
 			args: args{
@@ -146,6 +153,7 @@ func Test_templateReader_Read(t *testing.T) {
 			fields: fields{
 				defaultTemplatePath: defaultTemplatePath,
 				customTemplatePath:  customTemplatePath,
+				ioService:           ioService,
 				yamlReader:          yamlReader,
 			},
 			args: args{
@@ -162,6 +170,7 @@ func Test_templateReader_Read(t *testing.T) {
 			fields: fields{
 				defaultTemplatePath: defaultTemplatePath,
 				customTemplatePath:  customTemplatePath,
+				ioService:           ioService,
 				yamlReader:          yamlReader,
 			},
 			args: args{
@@ -181,6 +190,7 @@ func Test_templateReader_Read(t *testing.T) {
 			fields: fields{
 				defaultTemplatePath: defaultTemplatePath,
 				customTemplatePath:  customTemplatePath,
+				ioService:           ioService,
 				yamlReader:          yamlReader,
 			},
 			args: args{
@@ -200,6 +210,7 @@ func Test_templateReader_Read(t *testing.T) {
 			fields: fields{
 				defaultTemplatePath: defaultTemplatePath,
 				customTemplatePath:  customTemplatePath,
+				ioService:           ioService,
 				yamlReader:          yamlReader,
 			},
 			args: args{
@@ -220,6 +231,7 @@ func Test_templateReader_Read(t *testing.T) {
 			tf := templateReader{
 				defaultTemplatePath: tt.fields.defaultTemplatePath,
 				customTemplatePath:  tt.fields.customTemplatePath,
+				service:             tt.fields.ioService,
 				yamlReader:          tt.fields.yamlReader,
 			}
 			got, err := tf.Read(tt.args.templateName)

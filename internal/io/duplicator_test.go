@@ -20,6 +20,7 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 		name    string
 		args    args
 		wantErr bool
+		service Service
 	}{
 		{
 			name: "succeeds by copying all sources from one path to the other",
@@ -34,6 +35,7 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 				transformator: NoOpTransformator,
 			},
 			wantErr: false,
+			service: service,
 		},
 		{
 			name: "throws error when the sourcePath doesn't exist",
@@ -47,6 +49,7 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 				},
 			},
 			wantErr: true,
+			service: service,
 		},
 		{
 			name: "throws error when the targetPath doesn't exist",
@@ -60,6 +63,7 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 				},
 			},
 			wantErr: true,
+			service: service,
 		},
 		{
 			name: "throws error when one of the source files doesn't exist",
@@ -77,11 +81,14 @@ func Test_duplicator_CopyMultiple(t *testing.T) {
 				},
 			},
 			wantErr: true,
+			service: service,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := duplicator{}
+			d := duplicator{
+				service: tt.service,
+			}
 			if err := d.CopyMultiple(tt.args.targetPath, tt.args.sourceLocations, tt.args.transformator); (err != nil) != tt.wantErr {
 				t.Errorf("duplicator.CopyMultiple() error = %v, wantErr %v", err, tt.wantErr)
 			} else if !tt.wantErr {
