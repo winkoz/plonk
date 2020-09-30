@@ -1,6 +1,7 @@
 package scaffolding
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/winkoz/plonk/internal/io"
@@ -49,7 +50,11 @@ func Test_scaffolder_Install(t *testing.T) {
 		wantIOServiceMock      wantIOServiceMock
 	}{
 		{
-			name: "succesfully scaffolds the default template",
+			name: "succesfully install the default template",
+			args: args{
+				name: "test",
+			},
+			wantErr: false,
 			fields: fields{
 				targetPath:               "/tmp/plonk/tests/scripts",
 				customTemplatePath:       "../fixtures/scripts",
@@ -79,6 +84,86 @@ func Test_scaffolder_Install(t *testing.T) {
 				directoryExistsReturn: true,
 				createPathReturn:      nil,
 				walkReturn:            nil,
+				paramFullPath:         "/tmp/plonk/tests/scripts/deploy/variables",
+				err:                   nil,
+			},
+		},
+		{
+			name: "fails when directory creation fails",
+			args: args{
+				name: "test",
+			},
+			wantErr: true,
+			fields: fields{
+				targetPath:               "/tmp/plonk/tests/scripts",
+				customTemplatePath:       "../fixtures/scripts",
+				templateReader:           new(templateReaderMock),
+				duplicator:               new(io.DuplicatorMock),
+				destinationDeployDirName: "deploy",
+				destinationVariablesPath: "deploy/variables",
+				ioService:                new(sharedtesting.IOServiceMock),
+			},
+			wantTemplateReaderMock: wantTemplateReaderMock{
+				shouldTest: true,
+				templatedata: TemplateData{
+					Name:              "",
+					Files:             []string{},
+					FilesLocation:     []io.FileLocation{},
+					VariablesFileName: "",
+					VariablesContents: "",
+					Manifests:         []string{},
+				},
+			},
+			wantDuplicatorMock: wantDuplicatorMock{
+				shouldTest: false,
+			},
+			wantIOServiceMock: wantIOServiceMock{
+				shouldTest:            true,
+				directoryExistsReturn: false,
+				createPathReturn:      fmt.Errorf("Failed to create path"),
+				walkReturn:            nil,
+				paramFullPath:         "/tmp/plonk/tests/scripts/deploy/variables",
+				err:                   nil,
+			},
+		},
+		{
+			name: "fails when duplicator copy multiple fails",
+			args: args{
+				name: "test",
+			},
+			wantErr: true,
+			fields: fields{
+				targetPath:               "/tmp/plonk/tests/scripts",
+				customTemplatePath:       "../fixtures/scripts",
+				templateReader:           new(templateReaderMock),
+				duplicator:               new(io.DuplicatorMock),
+				destinationDeployDirName: "deploy",
+				destinationVariablesPath: "deploy/variables",
+				ioService:                new(sharedtesting.IOServiceMock),
+			},
+			wantTemplateReaderMock: wantTemplateReaderMock{
+				shouldTest: true,
+				templatedata: TemplateData{
+					Name:  "",
+					Files: []string{},
+					FilesLocation: []io.FileLocation{
+						{
+							OriginalFilePath: "",
+							ResolvedFilePath: "",
+						},
+					},
+					VariablesFileName: "",
+					VariablesContents: "",
+					Manifests:         []string{},
+				},
+			},
+			wantDuplicatorMock: wantDuplicatorMock{
+				shouldTest: true,
+				err:        fmt.Errorf("Failed CopyMultiple"),
+			},
+			wantIOServiceMock: wantIOServiceMock{
+				shouldTest:            true,
+				directoryExistsReturn: true,
 				paramFullPath:         "/tmp/plonk/tests/scripts/deploy/variables",
 				err:                   nil,
 			},
@@ -121,7 +206,7 @@ func Test_scaffolder_Install(t *testing.T) {
 				)
 				tt.fields.ioService.On(
 					"CreatePath",
-					tt.fields.targetPath,
+					tt.wantIOServiceMock.paramFullPath,
 				).Return(
 					tt.wantIOServiceMock.createPathReturn,
 				)
