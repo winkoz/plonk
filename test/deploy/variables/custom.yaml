@@ -1,4 +1,5 @@
+# custom.yaml
 plonk:
-  - NAME: "custom-name"
+  - NAME: "$NAME"
   - APP_ENV: "$APP_ENV"
   - NAMESPACE: "$STACK-$NAME"

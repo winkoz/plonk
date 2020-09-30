@@ -48,6 +48,13 @@ func (i *IOServiceMock) ReadFile(path string) ([]byte, error) {
 // Walk mocks Walk
 func (i *IOServiceMock) Walk(root string, walkFn io.WalkFunc) error {
 	args := i.Called(root)
+	mockFileInfo := new(FileInfoMock)
+	mockFileInfo.On(
+		"IsDir",
+	).Return(
+		false,
+	)
+	walkFn(root, mockFileInfo, nil)
 	return args.Error(0)
 }
 

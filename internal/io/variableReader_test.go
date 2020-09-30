@@ -8,7 +8,8 @@ import (
 
 func Test_variableReader_GetVariables(t *testing.T) {
 	fixturesDir := "../fixtures/variables"
-	yamlReader := NewYamlReader()
+	service := NewService()
+	yamlReader := NewYamlReader(service)
 	interpolator := NewInterpolator()
 	type args struct {
 		stackName string
@@ -19,6 +20,7 @@ func Test_variableReader_GetVariables(t *testing.T) {
 		customFileName string
 		yamlReader     YamlReader
 		interpolator   Interpolator
+		service        Service
 	}
 	tests := []struct {
 		name    string
@@ -34,6 +36,7 @@ func Test_variableReader_GetVariables(t *testing.T) {
 				baseFileName: "notFound",
 				yamlReader:   yamlReader,
 				interpolator: interpolator,
+				service:      service,
 			},
 			args: args{
 				stackName: "production",
@@ -49,6 +52,7 @@ func Test_variableReader_GetVariables(t *testing.T) {
 				customFileName: "invalidYaml",
 				yamlReader:     yamlReader,
 				interpolator:   interpolator,
+				service:        service,
 			},
 			args: args{
 				stackName: "production",
@@ -64,6 +68,7 @@ func Test_variableReader_GetVariables(t *testing.T) {
 				customFileName: "test",
 				yamlReader:     yamlReader,
 				interpolator:   interpolator,
+				service:        service,
 			},
 			args: args{
 				stackName: "production",
@@ -82,6 +87,7 @@ func Test_variableReader_GetVariables(t *testing.T) {
 				customFileName: "all_new_variables",
 				yamlReader:     yamlReader,
 				interpolator:   interpolator,
+				service:        service,
 			},
 			args: args{
 				stackName: "production",
@@ -103,6 +109,7 @@ func Test_variableReader_GetVariables(t *testing.T) {
 				customFileName: "custom_stackname_var",
 				yamlReader:     yamlReader,
 				interpolator:   interpolator,
+				service:        service,
 			},
 			args: args{
 				stackName: "production",
@@ -125,6 +132,7 @@ func Test_variableReader_GetVariables(t *testing.T) {
 				baseFileName:   tt.fields.baseFileName,
 				yamlReader:     tt.fields.yamlReader,
 				interpolator:   tt.fields.interpolator,
+				service:        tt.fields.service,
 			}
 			got, err := sut.GetVariables(tt.args.stackName)
 			if (tt.wantErr != nil && err == nil) || (tt.wantErr == nil && err != nil) {
