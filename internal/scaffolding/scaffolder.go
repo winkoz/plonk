@@ -92,6 +92,10 @@ func (s scaffolder) createDirectoryIfNeeded(directoryName string) error {
 func (s scaffolder) appendToAllVariablesFiles(content string) error {
 	variablesFullPath := fmt.Sprintf("%s/%s", s.targetPath, s.destinationVariablesPath)
 	err := s.ioService.Walk(variablesFullPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
 		if info.IsDir() {
 			return nil
 		}

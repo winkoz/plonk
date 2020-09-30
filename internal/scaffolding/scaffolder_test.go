@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/winkoz/plonk/internal/io"
+	"github.com/winkoz/plonk/internal/sharedtesting"
 )
 
 func Test_scaffolder_Install(t *testing.T) {
@@ -15,6 +16,7 @@ func Test_scaffolder_Install(t *testing.T) {
 		templatePaths            []string
 		destinationDeployDirName string
 		destinationVariablesPath string
+		ioService                *sharedtesting.IOServiceMock
 	}
 	type args struct {
 		name string
@@ -28,6 +30,14 @@ func Test_scaffolder_Install(t *testing.T) {
 		templatedata TemplateData
 		err          error
 	}
+	type wantIOServiceMock struct {
+		shouldTest            bool
+		directoryExistsReturn bool
+		createPathReturn      error
+		walkReturn            error
+		err                   error
+	}
+
 	tests := []struct {
 		name                   string
 		fields                 fields
@@ -35,6 +45,7 @@ func Test_scaffolder_Install(t *testing.T) {
 		wantErr                bool
 		wantTemplateReaderMock wantTemplateReaderMock
 		wantDuplicatorMock     wantDuplicatorMock
+		wantIOServiceMock      wantIOServiceMock
 	}{
 		{
 			name: "succesfully scaffolds the default template",
@@ -45,6 +56,7 @@ func Test_scaffolder_Install(t *testing.T) {
 				duplicator:               new(io.DuplicatorMock),
 				destinationDeployDirName: "",
 				destinationVariablesPath: "",
+				ioService:                new(sharedtesting.IOServiceMock),
 			},
 			wantTemplateReaderMock: wantTemplateReaderMock{
 				shouldTest: true,
@@ -61,6 +73,13 @@ func Test_scaffolder_Install(t *testing.T) {
 				shouldTest: true,
 				err:        nil,
 			},
+			wantIOServiceMock: wantIOServiceMock{
+				shouldTest:            true,
+				directoryExistsReturn: true,
+				createPathReturn:      nil,
+				walkReturn:            nil,
+				err:                   nil,
+			},
 		},
 	}
 	for _, tt := range tests {
@@ -72,6 +91,7 @@ func Test_scaffolder_Install(t *testing.T) {
 				duplicator:               tt.fields.duplicator,
 				destinationDeployDirName: tt.fields.destinationDeployDirName,
 				destinationVariablesPath: tt.fields.destinationVariablesPath,
+				ioService:                tt.fields.ioService,
 			}
 			if tt.wantTemplateReaderMock.shouldTest {
 				tt.fields.templateReader.On(
@@ -88,6 +108,26 @@ func Test_scaffolder_Install(t *testing.T) {
 					tt.wantTemplateReaderMock.templatedata.FilesLocation,
 				).Return(
 					tt.wantDuplicatorMock.err,
+				)
+			}
+			if tt.wantIOServiceMock.shouldTest {
+				tt.fields.ioService.On(
+					"DirectoryExists",
+					tt.fields.targetPath+"/",
+				).Return(
+					tt.wantIOServiceMock.directoryExistsReturn,
+				)
+				tt.fields.ioService.On(
+					"CreatePath",
+					tt.fields.targetPath,
+				).Return(
+					tt.wantIOServiceMock.createPathReturn,
+				)
+				tt.fields.ioService.On(
+					"Walk",
+					tt.fields.targetPath+"/",
+				).Return(
+					tt.wantIOServiceMock.walkReturn,
 				)
 			}
 			if err := s.Install(tt.args.name); (err != nil) != tt.wantErr {
