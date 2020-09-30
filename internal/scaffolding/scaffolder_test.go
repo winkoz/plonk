@@ -32,9 +32,10 @@ func Test_scaffolder_Install(t *testing.T) {
 	}
 	type wantIOServiceMock struct {
 		shouldTest            bool
-		directoryExistsReturn bool
 		createPathReturn      error
+		directoryExistsReturn bool
 		walkReturn            error
+		paramFullPath         string
 		err                   error
 	}
 
@@ -54,8 +55,8 @@ func Test_scaffolder_Install(t *testing.T) {
 				customTemplatePath:       "../fixtures/scripts",
 				templateReader:           new(templateReaderMock),
 				duplicator:               new(io.DuplicatorMock),
-				destinationDeployDirName: "",
-				destinationVariablesPath: "",
+				destinationDeployDirName: "deploy",
+				destinationVariablesPath: "deploy/variables",
 				ioService:                new(sharedtesting.IOServiceMock),
 			},
 			wantTemplateReaderMock: wantTemplateReaderMock{
@@ -78,6 +79,7 @@ func Test_scaffolder_Install(t *testing.T) {
 				directoryExistsReturn: true,
 				createPathReturn:      nil,
 				walkReturn:            nil,
+				paramFullPath:         "/tmp/plonk/tests/scripts/deploy/variables",
 				err:                   nil,
 			},
 		},
@@ -113,7 +115,7 @@ func Test_scaffolder_Install(t *testing.T) {
 			if tt.wantIOServiceMock.shouldTest {
 				tt.fields.ioService.On(
 					"DirectoryExists",
-					tt.fields.targetPath+"/",
+					tt.wantIOServiceMock.paramFullPath,
 				).Return(
 					tt.wantIOServiceMock.directoryExistsReturn,
 				)
@@ -125,7 +127,7 @@ func Test_scaffolder_Install(t *testing.T) {
 				)
 				tt.fields.ioService.On(
 					"Walk",
-					tt.fields.targetPath+"/",
+					tt.wantIOServiceMock.paramFullPath,
 				).Return(
 					tt.wantIOServiceMock.walkReturn,
 				)
