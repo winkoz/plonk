@@ -65,6 +65,7 @@ func (s scaffolder) Install(name string) error {
 	if len(template.FilesLocation) > 0 {
 		if err := s.duplicator.CopyMultiple(s.targetPath, template.FilesLocation, io.NoOpTransformator); err != nil {
 			log.Errorf("Failed scaffolding files of template %s: %s", name, err)
+			return err
 		}
 	}
 
