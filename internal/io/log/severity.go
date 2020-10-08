@@ -8,9 +8,8 @@ var Severity SeverityLevel = "INFO"
 
 // Set implements pflag.Value
 func (s *SeverityLevel) Set(value string) error {
-	Severity = SeverityLevel(value)
 	// Configure logging level
-	if err := SetLevel(value); err != nil {
+	if err := Base().SetLevel(value); err != nil {
 		panic(err.Error())
 	}
 
