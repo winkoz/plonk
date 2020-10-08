@@ -25,6 +25,32 @@ func Test_templateParser_Parse(t *testing.T) {
 			wantErr: false,
 			want:    "value == value and value2 == value2",
 		},
+		{
+			name: "successfully replaces all available keys from the map with their respective values on the contents parameter & ignores the rest",
+			args: args{
+				variables: map[string]string{
+					"key":  "value",
+					"key2": "value2",
+					"key3": "value2",
+					"key4": "value2",
+				},
+				content: "{{.key}} == value and value2 == {{.key2}}",
+			},
+			wantErr: false,
+			want:    "value == value and value2 == value2",
+		},
+		{
+			name: "returns an error when the template cannot be parsed",
+			args: args{
+				variables: map[string]string{
+					"key":  "value",
+					"key2": "value2",
+				},
+				content: "{{key}} == value and value2 == {{.key2}}",
+			},
+			wantErr: true,
+			want:    "",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
