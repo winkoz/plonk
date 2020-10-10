@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
 )
@@ -24,22 +25,17 @@ type Scaffolder interface {
 }
 
 // NewScaffolder returns a fully initialised Scaffolder
-func NewScaffolder(
-	ioService io.Service,
-	defaultTemplatePath string,
-	customTemplatePath string,
-	deployDirName string,
-	variablesPath string,
-	targetPath string) Scaffolder {
-	templateReader := NewTemplateReader(defaultTemplatePath, customTemplatePath)
+func NewScaffolder(ctx config.Context) Scaffolder {
+
+	templateReader := NewTemplateReader(ctx.DefaultTemplatesPath, ctx.DefaultCustomTemplatesPath)
 	return scaffolder{
-		targetPath:               targetPath,
-		customTemplatePath:       customTemplatePath,
-		destinationDeployDirName: deployDirName,
-		destinationVariablesPath: variablesPath,
+		targetPath:               ctx.TargetPath,
+		customTemplatePath:       ctx.DefaultCustomTemplatesPath,
+		destinationDeployDirName: ctx.DeployFolderName,
+		destinationVariablesPath: ctx.DeployVariablesPath,
 		templateReader:           templateReader,
-		duplicator:               io.NewDuplicator(ioService),
-		ioService:                ioService,
+		duplicator:               io.NewDuplicator(ctx.IOService),
+		ioService:                ctx.IOService,
 	}
 }
 

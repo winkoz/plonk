@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io/log"
 )
 
@@ -20,12 +21,16 @@ var rootCmd = &cobra.Command{
 // Execute executes command
 func Execute() {
 	rootCmd := newRootCommand()
+	plonkCtx, err := config.NewContext()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Logger Verbosity Configuration
 	addVerbosity(rootCmd)
 
 	// Commands
-	addInitCommand(rootCmd)
+	addInitCommand(rootCmd, plonkCtx)
 
 	// Execute
 	if err := rootCmd.Execute(); err != nil {

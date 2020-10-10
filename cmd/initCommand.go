@@ -1,3 +1,5 @@
+package cmd
+
 /*
 Copyright © 2020 Winkoz
 
@@ -13,33 +15,30 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/winkoz/plonk/internal/io"
+	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/scaffolding"
 )
 
-func addInitCommand(rootCmd *cobra.Command) {
+func addInitCommand(rootCmd *cobra.Command, ctx config.Context) {
 	var initCmd = &cobra.Command{
 		Use:   "init",
 		Short: "Initialize a project deployable by plonk.",
 		Long: `This triggers a questionnaire for the basic information of a project
 		and then generates the deploy folder with the basic project files.
 		`,
-		Run:     newInitCommandHandler(),
+		Run:     newInitCommandHandler(ctx),
 		Example: "plonk init",
 	}
 	rootCmd.AddCommand(initCmd)
 }
 
-func newInitCommandHandler() CobraHandler {
+func newInitCommandHandler(ctx config.Context) CobraHandler {
 	return func(cmd *cobra.Command, args []string) {
-		ioService := io.NewService()
-		targetPath := ioService.GetCurrentDir()
-		// TODO: Remove the /test from the target
-		s := scaffolding.NewScaffolder(ioService, defaultTemplatesPath, defaultCustomTemplatesPath, deployFolderName, deployVariablesPath, targetPath+"/test")
+
+		s := scaffolding.NewScaffolder(ctx)
 		s.Install("default")
 	}
 }
