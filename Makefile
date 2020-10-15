@@ -33,6 +33,6 @@ docker-build:
 run: build
 	$(DOCKER) /go/bin/plonk
 
-ssh:
+ssh: build
 	$(DOCKER) bash
 
