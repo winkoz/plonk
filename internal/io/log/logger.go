@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sirupsen/logrus"
+	"github.com/apex/log"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -21,8 +21,8 @@ var setSyslogFormatter func(logger, string, string) error
 // setEventlogFormatter is nil if the target OS does not support Eventlog (i.e., is not Windows).
 var setEventlogFormatter func(logger, string, bool) error
 
-func setJSONFormatter() {
-	origLogger.Formatter = &logrus.JSONFormatter{}
+	log.SetHandler(NewPlonkHandler(os.Stderr))
+	log.SetLevel(log.InfoLevel)
 }
 
 type loggerSettings struct {
@@ -30,7 +30,7 @@ type loggerSettings struct {
 	format string
 }
 
-func (s *loggerSettings) apply(ctx *kingpin.ParseContext) error {
+func SetLoggerSeverity(severity SeverityLevel) {
 	err := baseLogger.SetLevel(s.level)
 	if err != nil {
 		return err
@@ -43,7 +43,7 @@ func (s *loggerSettings) apply(ctx *kingpin.ParseContext) error {
 // To use the default Kingpin application, call AddFlags(kingpin.CommandLine)
 func AddFlags(a *kingpin.Application) {
 	s := loggerSettings{}
-	a.Flag("log.level", "Only log messages with the given severity or above. Valid levels: [debug, info, warn, error, fatal]").
+	log.SetLevel(log.Level(severity))
 		Default(origLogger.Level.String()).
 		StringVar(&s.level)
 	defaultFormat := url.URL{Scheme: "logger", Opaque: "stderr"}
@@ -259,7 +259,7 @@ func With(key string, value interface{}) Logger {
 
 // Debug logs a message at level Debug on the standard logger.
 func Debug(args ...interface{}) {
-	baseLogger.sourced().Debug(args...)
+	sourced().Debug(fmt.Sprintf("%+v", args...))
 }
 
 // Debugln logs a message at level Debug on the standard logger.
@@ -269,12 +269,12 @@ func Debugln(args ...interface{}) {
 
 // Debugf logs a message at level Debug on the standard logger.
 func Debugf(format string, args ...interface{}) {
-	baseLogger.sourced().Debugf(format, args...)
+	sourced().Debugf(format, args...)
 }
 
 // Info logs a message at level Info on the standard logger.
 func Info(args ...interface{}) {
-	baseLogger.sourced().Info(args...)
+	sourced().Info(fmt.Sprintf("%+v", args...))
 }
 
 // Infoln logs a message at level Info on the standard logger.
@@ -284,42 +284,32 @@ func Infoln(args ...interface{}) {
 
 // Infof logs a message at level Info on the standard logger.
 func Infof(format string, args ...interface{}) {
-	baseLogger.sourced().Infof(format, args...)
+	sourced().Infof(format, args...)
 }
 
 // Warn logs a message at level Warn on the standard logger.
 func Warn(args ...interface{}) {
-	baseLogger.sourced().Warn(args...)
-}
-
-// Warnln logs a message at level Warn on the standard logger.
-func Warnln(args ...interface{}) {
-	baseLogger.sourced().Warnln(args...)
+	sourced().Warn(fmt.Sprintf("%+v", args...))
 }
 
 // Warnf logs a message at level Warn on the standard logger.
 func Warnf(format string, args ...interface{}) {
-	baseLogger.sourced().Warnf(format, args...)
+	sourced().Warnf(format, args...)
 }
 
 // Error logs a message at level Error on the standard logger.
 func Error(args ...interface{}) {
-	baseLogger.sourced().Error(args...)
-}
-
-// Errorln logs a message at level Error on the standard logger.
-func Errorln(args ...interface{}) {
-	baseLogger.sourced().Errorln(args...)
+	sourced().Error(fmt.Sprintf("%+v", args...))
 }
 
 // Errorf logs a message at level Error on the standard logger.
 func Errorf(format string, args ...interface{}) {
-	baseLogger.sourced().Errorf(format, args...)
+	sourced().Errorf(format, args...)
 }
 
 // Fatal logs a message at level Fatal on the standard logger.
 func Fatal(args ...interface{}) {
-	baseLogger.sourced().Fatal(args...)
+	sourced().Fatal(fmt.Sprintf("%+v", args...))
 }
 
 // Fatalln logs a message at level Fatal on the standard logger.
@@ -329,23 +319,31 @@ func Fatalln(args ...interface{}) {
 
 // Fatalf logs a message at level Fatal on the standard logger.
 func Fatalf(format string, args ...interface{}) {
-	baseLogger.sourced().Fatalf(format, args...)
+	sourced().Fatalf(format, args...)
 }
 
-// AddHook adds hook to Prometheus' original logger.
-func AddHook(hook logrus.Hook) {
-	origLogger.Hooks.Add(hook)
+// StartTrace logs an info message and returns a signal to be used when calling stop
+func StarTrace(message string) interface{} {
+	return sourced().Trace(message)
 }
 
-type errorLogWriter struct{}
-
-func (errorLogWriter) Write(b []byte) (int, error) {
-	baseLogger.sourced().Error(string(b))
-	return len(b), nil
+// StopTrace uses the passed in signal to calculate the duration of the trace. Adds the error if any.
+func StopTrace(signal interface{}, err error) {
+	signal.(*log.Entry).Stop(&err)
 }
 
-// NewErrorLogger returns a log.Logger that is meant to be used
-// in the ErrorLog field of an http.Server to log HTTP server errors.
-func NewErrorLogger() *log.Logger {
-	return log.New(&errorLogWriter{}, "", 0)
+func sourced() *log.Entry {
+	_, file, line, ok := runtime.Caller(3)
+	if !ok {
+		file = "<???>"
+		line = 1
+	} else {
+		slash := strings.LastIndex(file, "/")
+		file = file[slash+1:]
+}
+
+	return log.WithFields(log.Fields{
+		"file": file,
+		"line": line,
+	})
 }
