@@ -44,9 +44,12 @@ func (d duplicator) copy(source string, target string, transformator Transformat
 }
 
 // CopyMultiple copies a series of files from a specific path into another
-func (d duplicator) CopyMultiple(targetPath string, sourcePaths []FileLocation, transformator Transformator) error {
+func (d duplicator) CopyMultiple(targetPath string, sourcePaths []FileLocation, transformator Transformator) (err error) {
+	signal := log.StarTrace("CopyMultiple")
+	defer log.StopTrace(signal, err)
+
 	// validate target path
-	if err := d.service.IsValidPath(targetPath); err != nil {
+	if err = d.service.IsValidPath(targetPath); err != nil {
 		log.Error(err)
 		return err
 	}
@@ -56,7 +59,7 @@ func (d duplicator) CopyMultiple(targetPath string, sourcePaths []FileLocation, 
 	for _, sourceFileLocation := range sourcePaths {
 		targetFilePath = fmt.Sprintf("%s/%s", targetPath, sourceFileLocation.OriginalFilePath)
 		log.Debugf("Duplicating %s into %s", sourceFileLocation.OriginalFilePath, targetFilePath)
-		if err := d.copy(sourceFileLocation.ResolvedFilePath, targetFilePath, transformator); err != nil {
+		if err = d.copy(sourceFileLocation.ResolvedFilePath, targetFilePath, transformator); err != nil {
 			log.Error(err)
 			return err
 		}

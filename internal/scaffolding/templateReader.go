@@ -40,8 +40,11 @@ func NewTemplateReader(defaultTemplatePath string, customTemplatePath string) Te
 	}
 }
 
-func (tr templateReader) Read(templateName string) (TemplateData, error) {
-	templateData := TemplateData{
+func (tr templateReader) Read(templateName string) (templateData TemplateData, err error) {
+	signal := log.StarTrace("Read")
+	defer log.StopTrace(signal, err)
+
+	templateData = TemplateData{
 		FilesLocation: []io.FileLocation{},
 		Files:         []string{},
 	}

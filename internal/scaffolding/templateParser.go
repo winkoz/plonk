@@ -14,19 +14,23 @@ type TemplateParser interface {
 
 type templateParser struct{}
 
-func (t templateParser) Parse(variables map[string]string, templateContent string) (string, error) {
+func (t templateParser) Parse(variables map[string]string, templateContent string) (result string, err error) {
+	signal := log.StarTrace("Parse")
+	defer log.StopTrace(signal, err)
+
 	template, err := template.New("memory_template").Parse(templateContent)
 	if err != nil {
 		log.Errorf("Unable to parse template. %v", err)
-		return "", err
+		return result, err
 	}
 
 	buf := &bytes.Buffer{}
 	err = template.Execute(buf, variables)
 	if err != nil {
 		log.Errorf("Unable to replace variables on template. %v", err)
-		return "", err
+		return result, err
 	}
 
-	return buf.String(), nil
+	result = buf.String()
+	return result, nil
 }

@@ -24,7 +24,9 @@ func NewYamlReader(service Service) YamlReader {
 }
 
 // Read a Yaml file into the passed in structure after validating its existence
-func (yr yamlReader) Read(filePath string, output interface{}) error {
+func (yr yamlReader) Read(filePath string, output interface{}) (err error) {
+	signal := log.StarTrace("Read")
+	defer log.StopTrace(signal, err)
 	log.Debugf("Reading file %s", filePath)
 	data, err := yr.service.ReadFile(filePath)
 	if err != nil {
@@ -40,5 +42,5 @@ func (yr yamlReader) Read(filePath string, output interface{}) error {
 		return internalErr
 	}
 
-	return nil
+	return err
 }
