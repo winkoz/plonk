@@ -5,12 +5,10 @@ import (
 	"github.com/winkoz/plonk/internal/io/log"
 )
 
-// AddVerbosity adds a --verbose and --quiet flag to the command and all subcommands.
+// AddVerbosity adds a --verbosity flag
 func addVerbosity(cmd *cobra.Command) {
-	verboseFlag := cmd.PersistentFlags().VarPF(&log.Severity, "verbose", "v", "More verbose output")
-	quiteFlag := cmd.PersistentFlags().VarPF(&log.Severity, "quiet", "q", "Less verbose output")
+	verbosityFlag := cmd.PersistentFlags().VarPF(&log.Severity, "verbosity", "v", "Define verbosity level [debug, info, warn, error, fatal]")
 
-	// Allow using the flags without arguments, since we don't want an argument in the first place. This makes `sc -q -q -q` work.
-	verboseFlag.NoOptDefVal = "DEBUG"
-	quiteFlag.NoOptDefVal = "INFO"
+	verbosityFlag.DefValue = "info"
+	verbosityFlag.Value.Set("info")
 }

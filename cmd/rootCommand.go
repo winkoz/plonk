@@ -21,7 +21,7 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	rootCmd := newRootCommand()
 
-	// Configuration
+	// Logger Verbosity Configuration
 	addVerbosity(rootCmd)
 
 	// Commands
