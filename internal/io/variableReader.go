@@ -40,7 +40,9 @@ func NewVariableReader() VariableReader {
 }
 
 // GetVariables reads the variables from a stack flattening with base and returning a map
-func (vr variableReader) GetVariables(stackName string) (map[string]string, error) {
+func (vr variableReader) GetVariables(stackName string) (result map[string]string, err error) {
+	signal := log.StarTrace("GetVariables")
+	defer log.StopTrace(signal, err)
 	baseVariables, err := vr.read(vr.baseFileName)
 	if err != nil {
 		log.Error(err)
@@ -60,7 +62,7 @@ func (vr variableReader) GetVariables(stackName string) (map[string]string, erro
 		"STACK": stackName,
 	}
 
-	result := vr.interpolator.SubstituteValuesInMap(stackNameVars, mergedResult)
+	result = vr.interpolator.SubstituteValuesInMap(stackNameVars, mergedResult)
 
 	return result, nil
 }

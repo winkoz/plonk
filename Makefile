@@ -1,7 +1,8 @@
 PROJECT_NAME=winkoz-plonk
 VERSION=$(shell git rev-parse --short HEAD)
 TAG=winkoz/plonk:$(VERSION)
-DOCKER=docker run -it -v ${PWD}:/go $(TAG)
+INTERACTIVE?=-it
+DOCKER=docker run $(INTERACTIVE) -v ${PWD}:/go $(TAG)
 
 .PHONY: clean build test ssh go-build go-test docker-build run
 # -----------------------------------------------
@@ -33,6 +34,6 @@ docker-build:
 run: build
 	$(DOCKER) /go/bin/plonk
 
-ssh:
+ssh: build
 	$(DOCKER) bash
 

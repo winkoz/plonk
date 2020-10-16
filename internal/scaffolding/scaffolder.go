@@ -31,7 +31,6 @@ func NewScaffolder(
 	deployDirName string,
 	variablesPath string,
 	targetPath string) Scaffolder {
-
 	templateReader := NewTemplateReader(defaultTemplatePath, customTemplatePath)
 	return scaffolder{
 		targetPath:               targetPath,
@@ -45,7 +44,9 @@ func NewScaffolder(
 }
 
 // Init initializes the basic structure of a plonk project
-func (s scaffolder) Install(name string) error {
+func (s scaffolder) Install(name string) (err error) {
+	signal := log.StarTrace("Install")
+	defer log.StopTrace(signal, err)
 	log.Debugf("Install Scaffolder: [%s] - [%s] - [%s]", s.targetPath, s.customTemplatePath, name)
 
 	// Read Template
@@ -75,7 +76,7 @@ func (s scaffolder) Install(name string) error {
 		return err
 	}
 
-	return nil
+	return err
 }
 
 func (s scaffolder) createDirectoryIfNeeded(directoryName string) error {
