@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
 )
@@ -28,7 +30,7 @@ type Context struct {
 // NewContext create a context object by reading the plonk.yml
 func NewContext() (Context, error) {
 	ioService := io.NewService()
-	deployFolderPath := ioService.GetCurrentDir() + deployFolderName
+	deployFolderPath := fmt.Sprintf("%s/%s", ioService.GetCurrentDir(), deployFolderName)
 	deployConfigFilePath := deployFolderPath + "/plonk." + io.YAMLExtension
 
 	configFile, err := loadPlonkConfigFile(ioService, deployConfigFilePath)
