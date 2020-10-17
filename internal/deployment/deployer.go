@@ -29,14 +29,10 @@ func (d deployer) Execute(ctx config.Context, env string) (err error) {
 	// load variables
 	variables, err := d.varReader.GetVariables(ctx.ProjectName, env)
 	log.Debug(variables)
+
 	// join file
 
 	// execute in kubectl
 
 	return nil
-}
-
-func (d deployer) fetchVariables(env string) (map[string]string, error) {
-
-	return nil, nil
 }
