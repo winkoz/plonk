@@ -1,0 +1,2 @@
+environment:
+  DOMAIN: production.example.com

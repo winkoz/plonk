@@ -1,9 +1,9 @@
 package io
 
 import (
-	"fmt"
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_variableReader_GetVariables(t *testing.T) {
@@ -12,25 +12,25 @@ func Test_variableReader_GetVariables(t *testing.T) {
 	yamlReader := NewYamlReader(service)
 	interpolator := NewInterpolator()
 	type args struct {
-		stackName string
+		projectName string
+		env         string
 	}
 	type fields struct {
-		path           string
-		baseFileName   string
-		customFileName string
-		yamlReader     YamlReader
-		interpolator   Interpolator
-		service        Service
+		path         string
+		baseFileName string
+		yamlReader   YamlReader
+		interpolator Interpolator
+		service      Service
 	}
 	tests := []struct {
 		name    string
 		fields  fields
 		args    args
-		want    map[string]string
-		wantErr error
+		want    DeployVariables
+		wantErr ErrorCode
 	}{
 		{
-			name: "return a ParseVariableError with 'file not found' when file doesn't exist",
+			name: "return a FileNotFound error when the base file doesn't exist",
 			fields: fields{
 				path:         fixturesDir,
 				baseFileName: "notFound",
@@ -39,114 +39,97 @@ func Test_variableReader_GetVariables(t *testing.T) {
 				service:      service,
 			},
 			args: args{
-				stackName: "production",
+				projectName: "plonk-test",
+				env:         "production",
 			},
-			want:    nil,
-			wantErr: NewParseVariableError(fmt.Sprintf("notFound.yaml not found at location: %s", fixturesDir)),
+			want:    DeployVariables{},
+			wantErr: FileNotFoundError,
 		},
 		{
-			name: "returns ParseVariableError with 'unable to parse file' when yaml file is wrong",
+			name: "returns ParseVariableError when the yaml file is invalid",
 			fields: fields{
-				path:           fixturesDir,
-				baseFileName:   "base",
-				customFileName: "invalidYaml",
-				yamlReader:     yamlReader,
-				interpolator:   interpolator,
-				service:        service,
+				path:         fixturesDir,
+				baseFileName: "invalidYaml",
+				yamlReader:   yamlReader,
+				interpolator: interpolator,
+				service:      service,
 			},
 			args: args{
-				stackName: "production",
+				projectName: "plonk-test",
+				env:         "production",
 			},
-			want:    nil,
-			wantErr: NewParseVariableError(fmt.Sprintf("Unable to parse %s/invalidYaml.yaml", fixturesDir)),
+			want:    DeployVariables{},
+			wantErr: ParseVariableError,
 		},
 		{
-			name: "uses the value of the custom variables when the same key is present in the base and the stack configurations",
+			name: "uses the value of the env file when the same key is present in the base",
 			fields: fields{
-				path:           fixturesDir,
-				baseFileName:   "base",
-				customFileName: "test",
-				yamlReader:     yamlReader,
-				interpolator:   interpolator,
-				service:        service,
+				path:         fixturesDir,
+				baseFileName: "base",
+				yamlReader:   yamlReader,
+				interpolator: interpolator,
+				service:      service,
 			},
 			args: args{
-				stackName: "production",
+				projectName: "plonk-test",
+				env:         "production",
 			},
-			want: map[string]string{
-				"profile_pictures": "profile-pictures-dev",
-				"second_val":       "merged_value",
+			want: DeployVariables{
+				Build: map[string]string{
+					"USE_LOAD_BALANCER": "true",
+				},
+				Environment: map[string]string{
+					"DOMAIN":     "production.example.com",
+					"FILES_PATH": "/tmp/files",
+				},
 			},
-			wantErr: nil,
+			wantErr: NoError,
 		},
 		{
-			name: "successfully returns all the values from the custom stack plus the values in the base",
+			name: "uses the base file with interpolated variables when the env files doesn't exists",
 			fields: fields{
-				path:           fixturesDir,
-				baseFileName:   "base",
-				customFileName: "all_new_variables",
-				yamlReader:     yamlReader,
-				interpolator:   interpolator,
-				service:        service,
+				path:         fixturesDir,
+				baseFileName: "base",
+				yamlReader:   yamlReader,
+				interpolator: interpolator,
+				service:      service,
 			},
 			args: args{
-				stackName: "production",
+				projectName: "plonk-test",
+				env:         "staging",
 			},
-			want: map[string]string{
-				"profile_pictures": "profile-pictures-dev",
-				"second_val":       "test",
-				"newVal1":          "val1",
-				"newVal2":          "val2",
-				"newVal3":          "val3",
+			want: DeployVariables{
+				Build: map[string]string{
+					"USE_LOAD_BALANCER": "true",
+				},
+				Environment: map[string]string{
+					"DOMAIN":     "staging.plonk-test.example.com",
+					"FILES_PATH": "/tmp/files",
+				},
 			},
-			wantErr: nil,
-		},
-		{
-			name: "successfully returns all the values from the custom stack plus the values in the base after interpolating the passed STACK name",
-			fields: fields{
-				path:           fixturesDir,
-				baseFileName:   "base",
-				customFileName: "custom_stackname_var",
-				yamlReader:     yamlReader,
-				interpolator:   interpolator,
-				service:        service,
-			},
-			args: args{
-				stackName: "production",
-			},
-			want: map[string]string{
-				"profile_pictures": "profile-pictures-production-$NAME",
-				"second_val":       "test",
-				"newVal1":          "val1",
-				"newVal2":          "val2",
-				"newVal3":          "val3",
-			},
-			wantErr: nil,
+			wantErr: NoError,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			sut := variableReader{
-				path:           tt.fields.path,
-				customFileName: tt.fields.customFileName,
-				baseFileName:   tt.fields.baseFileName,
-				yamlReader:     tt.fields.yamlReader,
-				interpolator:   tt.fields.interpolator,
-				service:        tt.fields.service,
+				path:         tt.fields.path,
+				baseFileName: tt.fields.baseFileName,
+				yamlReader:   tt.fields.yamlReader,
+				interpolator: tt.fields.interpolator,
+				service:      tt.fields.service,
 			}
-			got, err := sut.GetVariables(tt.args.stackName)
-			if (tt.wantErr != nil && err == nil) || (tt.wantErr == nil && err != nil) {
+			got, err := sut.GetVariables(tt.args.projectName, tt.args.env)
+			if (tt.wantErr != NoError && err == nil) || (tt.wantErr == NoError && err != nil) {
 				t.Errorf("variableReader.GetVariables() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if tt.wantErr != nil && err != nil && err.Error() != tt.wantErr.Error() {
+			if tt.wantErr != NoError && err != nil && err.(*Error).Code() != tt.wantErr {
 				t.Errorf("variableReader.GetVariables() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("variableReader.GetVariables() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

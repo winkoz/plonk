@@ -1,9 +1,9 @@
 package io
 
-func mergeMap(left map[string]string, right map[string]string) map[string]string {
-	for key, value := range right {
-		left[key] = value
+func mergeMap(source map[string]string, target map[string]string) map[string]string {
+	for key, value := range source {
+		target[key] = value
 	}
 
-	return left
+	return target
 }
