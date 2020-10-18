@@ -54,6 +54,7 @@ func Test_templateParser_Parse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			tp := templateParser{}
 			got, err := tp.Parse(tt.args.variables, tt.args.content)
 			if (err != nil) != tt.wantErr {

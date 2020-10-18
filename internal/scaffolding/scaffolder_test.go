@@ -239,6 +239,7 @@ func Test_scaffolder_Install(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			s := scaffolder{
 				targetPath:               tt.fields.targetPath,
 				customTemplatePath:       tt.fields.customTemplatePath,

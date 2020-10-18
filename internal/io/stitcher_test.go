@@ -75,6 +75,7 @@ func Test_stitcher_Stitch(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			s := stitcher{
 				service: tt.service,
 			}

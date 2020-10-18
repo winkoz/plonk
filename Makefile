@@ -16,7 +16,7 @@ go-build: clean
 	@echo "Plonk built successfully!"
 
 go-test:
-	GO111MODULE=on richgo test -v -cover ./...
+	GO111MODULE=on richgo test -v -parallel 6 -cover ./...
 	@echo "Plonk finished testing!"
 
 build: clean docker-build
