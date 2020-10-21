@@ -9,10 +9,10 @@ const defaultDeployCommand = "kubectl"
 
 // PlonkConfigFile structure
 type PlonkConfigFile struct {
-	Name         string   `yaml:"name"`
-	Command      string   `yaml:"command,omitempty"`
-	TemplatesDir string   `yaml:"templates_dir,omitempty"`
-	Templates    []string `yaml:"templates,omitempty"`
+	Name         string              `yaml:"name"`
+	Command      string              `yaml:"command,omitempty"`
+	TemplatesDir string              `yaml:"templates_dir,omitempty"`
+	Environments map[string][]string `yaml:"environments,omitempty"`
 }
 
 func loadPlonkConfigFile(ioService io.Service, filePath string) (PlonkConfigFile, error) {

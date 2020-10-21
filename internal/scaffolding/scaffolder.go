@@ -27,7 +27,7 @@ type Scaffolder interface {
 // NewScaffolder returns a fully initialised Scaffolder
 func NewScaffolder(ctx config.Context) Scaffolder {
 
-	templateReader := NewTemplateReader(ctx.DefaultTemplatesPath, ctx.DefaultCustomTemplatesPath)
+	templateReader := NewTemplateReader(ctx)
 	return scaffolder{
 		targetPath:               ctx.TargetPath,
 		customTemplatePath:       ctx.DefaultCustomTemplatesPath,

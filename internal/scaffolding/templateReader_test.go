@@ -5,19 +5,23 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
 )
 
 func Test_templateReader_Read(t *testing.T) {
 	defaultTemplatePath := "../fixtures/templateReader/defaultTemplates"
 	customTemplatePath := "../fixtures/templateReader/customTemplates"
+	ctx := config.Context{
+		DefaultCustomTemplatesPath: customTemplatePath,
+		DefaultTemplatesPath:       defaultTemplatePath,
+	}
 	ioService := io.NewService()
 	yamlReader := io.NewYamlReader(ioService)
 	type fields struct {
-		defaultTemplatePath string
-		customTemplatePath  string
-		yamlReader          io.YamlReader
-		ioService           io.Service
+		ctx        config.Context
+		yamlReader io.YamlReader
+		ioService  io.Service
 	}
 	type args struct {
 		templateName string
@@ -32,10 +36,9 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "successfully loads a template data file located in the default template folder into a TemplateData structure",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "default",
@@ -61,10 +64,9 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "successfully loads a template data file located in the custom template folder into a TemplateData structure",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "custom",
@@ -90,10 +92,9 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "successfully loads a template data file with files from custom & default template folders into a TemplateData structure",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "mixed",
@@ -117,10 +118,9 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "returns an error when the configuration file cannot be located",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "non-existent-config-file",
@@ -134,10 +134,9 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "returns an error when the configuration file is invalid",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "invalid",
@@ -151,10 +150,9 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "returns an error when the configuration file points to a non-existent file within the default path",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "missingFiles",
@@ -168,10 +166,9 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "returns an error when the configuration file points to a non-existent file within variables",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "missingVariables",
@@ -188,10 +185,9 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "returns an error when the configuration file points to a non-existent file within scripts",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "missingManifests",
@@ -208,10 +204,9 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "returns an error when the configuration file points to a non-existent file within scripts",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "missingManifests",
@@ -230,10 +225,9 @@ func Test_templateReader_Read(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			tf := templateReader{
-				defaultTemplatePath: tt.fields.defaultTemplatePath,
-				customTemplatePath:  tt.fields.customTemplatePath,
-				service:             tt.fields.ioService,
-				yamlReader:          tt.fields.yamlReader,
+				ctx:        ctx,
+				service:    tt.fields.ioService,
+				yamlReader: tt.fields.yamlReader,
 			}
 			got, err := tf.Read(tt.args.templateName)
 			if (tt.wantErr == nil && err != nil) || (tt.wantErr != nil && err == nil) {

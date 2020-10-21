@@ -44,7 +44,7 @@ func newDeployCommandHandler(ctx config.Context) CobraHandler {
 			log.Fatalf("Can't execute deploy without: %s", cmdFlagEnvironment)
 		}
 
-		d := deployment.NewDeployer()
+		d := deployment.NewDeployer(ctx)
 		d.Execute(ctx, env)
 	}
 }

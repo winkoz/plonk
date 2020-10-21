@@ -4,6 +4,7 @@ import (
 	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
+	"github.com/winkoz/plonk/internal/scaffolding"
 )
 
 // Deployer creates a manifest file from templates and executes it with the deploy command.
@@ -12,13 +13,17 @@ type Deployer interface {
 }
 
 type deployer struct {
-	varReader io.VariableReader
+	ctx            config.Context
+	varReader      io.VariableReader
+	templateReader scaffolding.TemplateReader
 }
 
 // NewDeployer creates a deployer object
-func NewDeployer() Deployer {
+func NewDeployer(ctx config.Context) Deployer {
 	return deployer{
-		varReader: io.NewVariableReader(),
+		ctx:            ctx,
+		varReader:      io.NewVariableReader(),
+		templateReader: scaffolding.NewTemplateReader(ctx),
 	}
 }
 

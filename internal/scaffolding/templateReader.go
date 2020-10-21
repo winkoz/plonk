@@ -3,6 +3,7 @@ package scaffolding
 import (
 	"fmt"
 
+	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
 )
@@ -13,10 +14,9 @@ type TemplateReader interface {
 }
 
 type templateReader struct {
-	defaultTemplatePath string
-	customTemplatePath  string
-	yamlReader          io.YamlReader
-	service             io.Service
+	ctx        config.Context
+	yamlReader io.YamlReader
+	service    io.Service
 }
 
 // TemplateData contains the list of script files
@@ -30,13 +30,12 @@ type TemplateData struct {
 }
 
 // NewTemplateReader returns a fully configure TemplateReader
-func NewTemplateReader(defaultTemplatePath string, customTemplatePath string) TemplateReader {
+func NewTemplateReader(ctx config.Context) TemplateReader {
 	ioService := io.NewService()
 	return templateReader{
-		defaultTemplatePath: defaultTemplatePath,
-		customTemplatePath:  customTemplatePath,
-		yamlReader:          io.NewYamlReader(ioService),
-		service:             ioService,
+		ctx:        ctx,
+		yamlReader: io.NewYamlReader(ioService),
+		service:    ioService,
 	}
 }
 
@@ -122,19 +121,19 @@ func (tr templateReader) locateFiles(templateName string, filePaths []string) ([
 
 func (tr templateReader) fileLocator(templateName string, fileName string) (string, error) {
 	filePath := fmt.Sprintf("%s/%s", templateName, fileName)
-	if tr.customTemplatePath != "" {
-		customPath := fmt.Sprintf("%s/%s", tr.customTemplatePath, filePath)
+	if tr.ctx.DefaultCustomTemplatesPath != "" {
+		customPath := fmt.Sprintf("%s/%s", tr.ctx.DefaultCustomTemplatesPath, filePath)
 		if tr.service.FileExists(customPath) {
 			return customPath, nil
 		}
 	}
 
-	defaultPath := fmt.Sprintf("%s/%s", tr.defaultTemplatePath, filePath)
+	defaultPath := fmt.Sprintf("%s/%s", tr.ctx.DefaultTemplatesPath, filePath)
 	if tr.service.FileExists(defaultPath) {
 		return defaultPath, nil
 	}
 
-	err := NewScaffolderFileNotFound(fmt.Sprintf("Template not found %s. Locations [%s, %s]", fileName, tr.customTemplatePath, tr.defaultTemplatePath))
+	err := NewScaffolderFileNotFound(fmt.Sprintf("Template not found %s. Locations [%s, %s]", fileName, tr.ctx.DefaultCustomTemplatesPath, tr.ctx.DefaultTemplatesPath))
 	log.Error(err)
 
 	return "", err

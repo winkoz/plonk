@@ -12,7 +12,7 @@ type Context struct {
 	// Project Config
 	ProjectName   string
 	DeployCommand string
-	Templates     []string
+	Environments  map[string][]string
 
 	// Templates Config
 	DefaultTemplatesPath       string
@@ -43,7 +43,7 @@ func NewContext() (Context, error) {
 		// Project Config
 		ProjectName:   configFile.Name,
 		DeployCommand: configFile.Command,
-		Templates:     configFile.Templates,
+		Environments:  configFile.Environments,
 
 		// Templates Config
 		DefaultTemplatesPath:       defaultTemplatesPath,
