@@ -22,6 +22,7 @@ type Service interface {
 	ReadFile(path string) ([]byte, error)
 	Walk(root string, walkFn WalkFunc) error
 	Append(targetFilePath string, content string) error
+	Write(targetFilePath string, content string) error
 	IsValidPath(path string) error
 }
 
@@ -124,6 +125,12 @@ func (s service) Append(targetFilePath string, content string) error {
 	}
 
 	return nil
+}
+
+// Write creates file at `targetFilePath` and appends the `content` to it. Deletes the file if it already exists
+func (s service) Write(targetFilePath string, content string) error {
+	s.DeletePath(targetFilePath)
+	return s.Append(targetFilePath, content)
 }
 
 func (s service) IsValidPath(path string) error {

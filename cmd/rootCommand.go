@@ -31,6 +31,7 @@ func Execute() {
 
 	// Commands
 	addInitCommand(rootCmd, plonkCtx)
+	addDeployCommand(rootCmd, plonkCtx)
 
 	// Execute
 	if err := rootCmd.Execute(); err != nil {

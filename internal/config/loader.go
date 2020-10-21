@@ -12,7 +12,7 @@ type PlonkConfigFile struct {
 	Name         string              `yaml:"name"`
 	Command      string              `yaml:"command,omitempty"`
 	TemplatesDir string              `yaml:"templates_dir,omitempty"`
-	Environments map[string][]string `yaml:"environments,omitempty"`
+	Environments map[string][]string `yaml:"environments"`
 }
 
 func loadPlonkConfigFile(ioService io.Service, filePath string) (PlonkConfigFile, error) {
@@ -23,6 +23,7 @@ func loadPlonkConfigFile(ioService io.Service, filePath string) (PlonkConfigFile
 
 	yamlReader := io.NewYamlReader(ioService)
 	err := yamlReader.Read(filePath, &config)
+	log.Errorf("Config: %+v", config)
 	if err != nil {
 		log.Errorf("Couldn't load plonk config file in: %s, error: %v", filePath, err)
 		return config, err

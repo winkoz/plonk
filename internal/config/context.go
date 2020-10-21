@@ -30,7 +30,8 @@ type Context struct {
 // NewContext create a context object by reading the plonk.yml
 func NewContext() (Context, error) {
 	ioService := io.NewService()
-	deployFolderPath := fmt.Sprintf("%s/%s", ioService.GetCurrentDir(), deployFolderName)
+	//TODO: Remove the '/test' part
+	deployFolderPath := fmt.Sprintf("%s/test/%s", ioService.GetCurrentDir(), deployFolderName)
 	deployConfigFilePath := deployFolderPath + "/plonk." + io.YAMLExtension
 
 	configFile, err := loadPlonkConfigFile(ioService, deployConfigFilePath)

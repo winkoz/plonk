@@ -26,9 +26,8 @@ type DeployVariables struct {
 }
 
 // NewVariableReader returns a fully configure VariableReader
-func NewVariableReader() VariableReader {
+func NewVariableReader(path string) VariableReader {
 	service := NewService()
-	path := service.GetCurrentDir()
 	return variableReader{
 		path:         path,
 		baseFileName: "base",

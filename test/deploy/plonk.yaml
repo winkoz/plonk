@@ -1,0 +1,10 @@
+name: $NAME
+command: kubectl
+templates_dir: ~/.templates
+environments:
+  production:
+    - service
+    - ingress
+  custom:
+    - service
+    - ingress

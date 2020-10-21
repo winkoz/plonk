@@ -4,7 +4,7 @@ import "testing"
 
 func Test_templateParser_Parse(t *testing.T) {
 	type args struct {
-		variables map[string]string
+		variables map[string]interface{}
 		content   string
 	}
 	tests := []struct {
@@ -16,7 +16,7 @@ func Test_templateParser_Parse(t *testing.T) {
 		{
 			name: "successfully replaces all keys from the map with their respective values on the contents parameter",
 			args: args{
-				variables: map[string]string{
+				variables: map[string]interface{}{
 					"key":  "value",
 					"key2": "value2",
 				},
@@ -28,7 +28,7 @@ func Test_templateParser_Parse(t *testing.T) {
 		{
 			name: "successfully replaces all available keys from the map with their respective values on the contents parameter & ignores the rest",
 			args: args{
-				variables: map[string]string{
+				variables: map[string]interface{}{
 					"key":  "value",
 					"key2": "value2",
 					"key3": "value2",
@@ -42,7 +42,7 @@ func Test_templateParser_Parse(t *testing.T) {
 		{
 			name: "returns an error when the template cannot be parsed",
 			args: args{
-				variables: map[string]string{
+				variables: map[string]interface{}{
 					"key":  "value",
 					"key2": "value2",
 				},

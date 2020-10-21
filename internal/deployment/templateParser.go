@@ -9,12 +9,17 @@ import (
 
 // TemplateParser parses a template file with the appropiate values.
 type TemplateParser interface {
-	Parse(variables map[string]string, templateContent string) (string, error)
+	Parse(variables map[string]interface{}, templateContent string) (string, error)
 }
 
 type templateParser struct{}
 
-func (t templateParser) Parse(variables map[string]string, templateContent string) (result string, err error) {
+// NewTemplateParser returns a fully initialised TemplateParser
+func NewTemplateParser() TemplateParser {
+	return templateParser{}
+}
+
+func (t templateParser) Parse(variables map[string]interface{}, templateContent string) (result string, err error) {
 	signal := log.StarTrace("Parse")
 	defer log.StopTrace(signal, err)
 
