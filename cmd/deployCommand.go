@@ -24,14 +24,14 @@ import (
 	"github.com/winkoz/plonk/internal/io/log"
 )
 
-func addDeployCommand(rootCmd *cobra.Command, ctx config.Context) {
+func addDeployCommand(rootCmd *cobra.Command) {
 	var deployCmd = &cobra.Command{
 		Use:   "deploy",
 		Short: "Initialize a project deployable by plonk.",
 		Long: `This triggers a questionnaire for the basic information of a project
 		and then generates the deploy folder with the basic project files.
 		`,
-		Run:     newDeployCommandHandler(ctx),
+		Run:     newDeployCommandHandler(),
 		Example: "plonk deploy",
 	}
 
@@ -45,8 +45,13 @@ func addDeployCommand(rootCmd *cobra.Command, ctx config.Context) {
 	rootCmd.AddCommand(deployCmd)
 }
 
-func newDeployCommandHandler(ctx config.Context) CobraHandler {
+func newDeployCommandHandler() CobraHandler {
 	return func(cmd *cobra.Command, args []string) {
+		ctx, err := config.NewContextFromFile()
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		env, err := cmd.PersistentFlags().GetString(cmdFlagEnvironment)
 		if err != nil {
 			log.Fatalf("Can't execute deploy without: %s", cmdFlagEnvironment)
