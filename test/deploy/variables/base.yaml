@@ -1,5 +1,0 @@
-build:
-  USE_LOAD_BALANCER: true
-environment:
-  DOMAIN:  $ENV.$NAME.example.com
-  FILES_PATH: "/tmp/files"

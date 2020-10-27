@@ -1,0 +1,5 @@
+build:
+  - NAME: "$NAME"
+  - NAMESPACE: "$STACK-$NAME"
+environment:
+  - APP_ENV: "$APP_ENV"

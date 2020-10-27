@@ -3,4 +3,4 @@ variables: vars.yaml
 files:
   - plonk.yaml
   - deploy/variables/production.yaml
-  - deploy/variables/custom.yaml
+  - deploy/variables/base.yaml

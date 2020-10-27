@@ -4,4 +4,3 @@ plonk:
   templates: ~/.templates
   components:
     - service
-    - ingress
