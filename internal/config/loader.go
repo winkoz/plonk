@@ -23,7 +23,7 @@ func loadPlonkConfigFile(ioService io.Service, filePath string) (PlonkConfigFile
 
 	yamlReader := io.NewYamlReader(ioService)
 	err := yamlReader.Read(filePath, &config)
-	log.Errorf("Config: %+v", config)
+	log.Debugf("Config: %+v", config)
 	if err != nil {
 		log.Errorf("Couldn't load plonk config file in: %s, error: %v", filePath, err)
 		return config, err

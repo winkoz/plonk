@@ -37,7 +37,7 @@ func (d deployer) Execute(ctx config.Context, env string) (err error) {
 	signal := log.StarTrace("Execute")
 	defer log.StopTrace(signal, err)
 
-	log.Errorf("Ctx: \n%+v", ctx)
+	log.Debugf("Ctx: \n%+v", ctx)
 
 	// load variables
 	variables, err := d.varReader.GetVariables(ctx.ProjectName, env)
@@ -55,7 +55,7 @@ func (d deployer) Execute(ctx config.Context, env string) (err error) {
 		log.Errorf("Unable to join all manifest files. %v", err)
 		return err
 	}
-	log.Errorf("Main Deploy File: \n%s", mainDeployFile)
+	log.Debugf("Main Deploy File: \n%s", mainDeployFile)
 
 	deployFilePath := fmt.Sprintf("%s/%s/deploy.%s", d.ctx.TargetPath, d.ctx.DeployFolderName, io.YAMLExtension)
 	err = d.ioService.Write(deployFilePath, mainDeployFile)
