@@ -1,3 +1,0 @@
-ingress:
-  - HOSTNAME: "$HOSTNAME"
-  - SERVICE_PORT: "80"

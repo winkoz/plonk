@@ -17,4 +17,7 @@ spec:
         image: {{.DOCKER_IMAGE}}
         ports:
         - containerPort: {{.MAIN_PORT}}
-        env: {{.ENVIRONMENT_VARIABLES}}
+        env: 
+        {{range $k, $v := .ENVIRONMENT_VARIABLES}}
+        - {{$k}}: {{$v}}
+        {{end}}

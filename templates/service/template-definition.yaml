@@ -1,4 +1,4 @@
-name: api
+name: service
 variables: vars.yaml
 manifests:
   - api.yaml

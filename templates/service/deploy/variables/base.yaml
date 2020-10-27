@@ -1,0 +1,7 @@
+# base.yaml
+build:
+  - SERVICE_PORT: 8080
+  - DOCKER_IMAGE: ""
+  - MAIN_PORT: 80
+environment:
+  - PORT: 80
