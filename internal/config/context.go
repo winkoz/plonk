@@ -15,8 +15,8 @@ type Context struct {
 	Environments  map[string][]string
 
 	// Templates Config
-	DefaultTemplatesPath       string
-	DefaultCustomTemplatesPath string
+	TemplatesPath       string
+	CustomTemplatesPath string
 
 	// Deploy Config
 	DeployFolderName    string
@@ -27,8 +27,31 @@ type Context struct {
 	IOService io.Service
 }
 
-// NewContext create a context object by reading the plonk.yml
-func NewContext() (Context, error) {
+// NewContext create a context object with the passed in project name and default values.
+func NewContext(projectName string) (Context, error) {
+	ioService := io.NewService()
+
+	return Context{
+		// Project Config
+		ProjectName:   projectName,
+		DeployCommand: deployDeployCommand,
+
+		// Templates Config
+		TemplatesPath:       defaultTemplatesPath,
+		CustomTemplatesPath: defaultCustomTemplatesPath,
+
+		// Deploy Config
+		DeployFolderName:    deployFolderName,
+		DeployVariablesPath: deployVariablesPath,
+		// TODO: Remove /test
+		TargetPath: ioService.GetCurrentDir() + "/test",
+
+		// Services
+		IOService: ioService,
+	}, nil
+}
+
+func NewContextFromFile() (Context, error) {
 	ioService := io.NewService()
 	//TODO: Remove the '/test' part
 	deployFolderPath := fmt.Sprintf("%s/test/%s", ioService.GetCurrentDir(), deployFolderName)
@@ -47,13 +70,14 @@ func NewContext() (Context, error) {
 		Environments:  configFile.Environments,
 
 		// Templates Config
-		DefaultTemplatesPath:       defaultTemplatesPath,
-		DefaultCustomTemplatesPath: defaultCustomTemplatesPath,
+		TemplatesPath:       configFile.TemplatesDir,
+		CustomTemplatesPath: defaultCustomTemplatesPath,
 
 		// Deploy Config
 		DeployFolderName:    deployFolderName,
 		DeployVariablesPath: deployVariablesPath,
-		TargetPath:          ioService.GetCurrentDir() + "/test",
+		// TODO: Remove /test
+		TargetPath: ioService.GetCurrentDir() + "/test",
 
 		// Services
 		IOService: ioService,

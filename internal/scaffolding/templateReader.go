@@ -121,19 +121,19 @@ func (tr templateReader) locateFiles(templateName string, filePaths []string) ([
 
 func (tr templateReader) fileLocator(templateName string, fileName string) (string, error) {
 	filePath := fmt.Sprintf("%s/%s", templateName, fileName)
-	if tr.ctx.DefaultCustomTemplatesPath != "" {
-		customPath := fmt.Sprintf("%s/%s", tr.ctx.DefaultCustomTemplatesPath, filePath)
+	if tr.ctx.CustomTemplatesPath != "" {
+		customPath := fmt.Sprintf("%s/%s", tr.ctx.CustomTemplatesPath, filePath)
 		if tr.service.FileExists(customPath) {
 			return customPath, nil
 		}
 	}
 
-	defaultPath := fmt.Sprintf("%s/%s", tr.ctx.DefaultTemplatesPath, filePath)
+	defaultPath := fmt.Sprintf("%s/%s", tr.ctx.TemplatesPath, filePath)
 	if tr.service.FileExists(defaultPath) {
 		return defaultPath, nil
 	}
 
-	err := NewScaffolderFileNotFound(fmt.Sprintf("Template not found %s. Locations [%s, %s]", fileName, tr.ctx.DefaultCustomTemplatesPath, tr.ctx.DefaultTemplatesPath))
+	err := NewScaffolderFileNotFound(fmt.Sprintf("Template not found %s. Locations [%s, %s]", fileName, tr.ctx.CustomTemplatesPath, tr.ctx.TemplatesPath))
 	log.Error(err)
 
 	return "", err

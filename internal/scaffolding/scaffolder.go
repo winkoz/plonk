@@ -30,7 +30,7 @@ func NewScaffolder(ctx config.Context) Scaffolder {
 	templateReader := NewTemplateReader(ctx)
 	return scaffolder{
 		targetPath:               ctx.TargetPath,
-		customTemplatePath:       ctx.DefaultCustomTemplatesPath,
+		customTemplatePath:       ctx.CustomTemplatesPath,
 		destinationDeployDirName: ctx.DeployFolderName,
 		destinationVariablesPath: ctx.DeployVariablesPath,
 		templateReader:           templateReader,

@@ -21,7 +21,7 @@ var rootCmd = &cobra.Command{
 // Execute executes command
 func Execute() {
 	rootCmd := newRootCommand()
-	plonkCtx, err := config.NewContext()
+	plonkCtx, err := config.NewContextFromFile()
 	if err != nil {
 		log.Fatal(err)
 	}
