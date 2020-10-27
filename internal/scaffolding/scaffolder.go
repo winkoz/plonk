@@ -67,6 +67,7 @@ func (s scaffolder) Install(name string) (err error) {
 	}
 
 	// Append to Vars
+	// TODO: Append only base.yaml (do not call walk)
 	if err := s.appendToAllVariablesFiles(template.VariablesContents); err != nil {
 		log.Errorf("Cannot append to all variable files. %v", err)
 		return err
