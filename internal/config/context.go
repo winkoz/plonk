@@ -51,15 +51,16 @@ func NewContext(projectName string) (Context, error) {
 	}, nil
 }
 
+// NewContextFromFile Create context from the plonk.yml
 func NewContextFromFile() (Context, error) {
 	ioService := io.NewService()
 	//TODO: Remove the '/test' part
-	deployFolderPath := fmt.Sprintf("%s/test/%s", ioService.GetCurrentDir(), deployFolderName)
-	deployConfigFilePath := deployFolderPath + "/plonk." + io.YAMLExtension
+	targetFolderPath := fmt.Sprintf("%s/test", ioService.GetCurrentDir())
+	targetConfigFilePath := targetFolderPath + "/plonk." + io.YAMLExtension
 
-	configFile, err := loadPlonkConfigFile(ioService, deployConfigFilePath)
+	configFile, err := loadPlonkConfigFile(ioService, targetConfigFilePath)
 	if err != nil {
-		log.Errorf("Failed to load %s: %v", deployConfigFilePath, err)
+		log.Errorf("Failed to load %s: %v", targetConfigFilePath, err)
 		return Context{}, err
 	}
 
