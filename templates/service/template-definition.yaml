@@ -1,5 +1,9 @@
 name: service
-variables: vars.yaml
+variables: 
+  build:
+    SDASDFAS: 2323
+  environment:
+
 manifests:
   - api.yaml
   - service.yaml

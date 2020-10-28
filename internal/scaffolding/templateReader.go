@@ -21,12 +21,10 @@ type templateReader struct {
 
 // TemplateData contains the list of script files
 type TemplateData struct {
-	Name              string `yaml:"name"`
-	VariablesFileName string `yaml:"variables,omitempty"`
-	VariablesContents string
-	Manifests         []string `yaml:"manifests,omitempty"`
-	FilesLocation     []io.FileLocation
-	Files             []string `yaml:"files,omitempty"`
+	Name          string   `yaml:"name"`
+	Manifests     []string `yaml:"manifests,omitempty"`
+	FilesLocation []io.FileLocation
+	Files         []string `yaml:"files,omitempty"`
 }
 
 // NewTemplateReader returns a fully configure TemplateReader
@@ -86,21 +84,6 @@ func (tr templateReader) Read(templateName string) (templateData TemplateData, e
 	if err != nil {
 		log.Error(err)
 		return templateData, err
-	}
-
-	templateData.VariablesFileName, err = tr.fileLocator(templateName, templateData.VariablesFileName)
-	if err != nil {
-		log.Error(err)
-		return templateData, err
-	}
-
-	if len(templateData.VariablesFileName) > 0 {
-		variablesData, err := tr.service.ReadFile(templateData.VariablesFileName)
-		if err != nil {
-			log.Error(err)
-			return templateData, err
-		}
-		templateData.VariablesContents = string(variablesData)
 	}
 
 	return templateData, nil

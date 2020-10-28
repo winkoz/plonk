@@ -67,12 +67,10 @@ func Test_scaffolder_Install(t *testing.T) {
 			wantTemplateReaderMock: wantTemplateReaderMock{
 				shouldTest: true,
 				templatedata: TemplateData{
-					Name:              "",
-					Files:             []string{},
-					FilesLocation:     []io.FileLocation{},
-					VariablesFileName: "",
-					VariablesContents: "",
-					Manifests:         []string{},
+					Name:          "",
+					Files:         []string{},
+					FilesLocation: []io.FileLocation{},
+					Manifests:     []string{},
 				},
 			},
 			wantDuplicatorMock: wantDuplicatorMock{
@@ -105,12 +103,10 @@ func Test_scaffolder_Install(t *testing.T) {
 			wantTemplateReaderMock: wantTemplateReaderMock{
 				shouldTest: true,
 				templatedata: TemplateData{
-					Name:              "",
-					Files:             []string{},
-					FilesLocation:     []io.FileLocation{},
-					VariablesFileName: "",
-					VariablesContents: "variable contents",
-					Manifests:         []string{},
+					Name:          "",
+					Files:         []string{},
+					FilesLocation: []io.FileLocation{},
+					Manifests:     []string{},
 				},
 			},
 			wantDuplicatorMock: wantDuplicatorMock{
@@ -141,12 +137,10 @@ func Test_scaffolder_Install(t *testing.T) {
 			wantTemplateReaderMock: wantTemplateReaderMock{
 				shouldTest: true,
 				templatedata: TemplateData{
-					Name:              "",
-					Files:             []string{},
-					FilesLocation:     []io.FileLocation{},
-					VariablesFileName: "",
-					VariablesContents: "",
-					Manifests:         []string{},
+					Name:          "",
+					Files:         []string{},
+					FilesLocation: []io.FileLocation{},
+					Manifests:     []string{},
 				},
 			},
 			wantDuplicatorMock: wantDuplicatorMock{
@@ -186,9 +180,7 @@ func Test_scaffolder_Install(t *testing.T) {
 							ResolvedFilePath: "",
 						},
 					},
-					VariablesFileName: "",
-					VariablesContents: "",
-					Manifests:         []string{},
+					Manifests: []string{},
 				},
 			},
 			wantDuplicatorMock: wantDuplicatorMock{
@@ -199,41 +191,6 @@ func Test_scaffolder_Install(t *testing.T) {
 				shouldTest:            true,
 				directoryExistsReturn: true,
 				paramFullPath:         "/tmp/plonk/tests/scripts/deploy/variables",
-			},
-		},
-		{
-			name: "fails when unable to append variables",
-			args: args{
-				name: "test",
-			},
-			wantErr: true,
-			fields: fields{
-				targetPath:               "/tmp/plonk/tests/scripts",
-				customTemplatePath:       "../fixtures/scripts",
-				templateReader:           new(templateReaderMock),
-				duplicator:               new(io.DuplicatorMock),
-				destinationDeployDirName: "deploy",
-				destinationVariablesPath: "deploy/variables",
-				ioService:                new(sharedtesting.IOServiceMock),
-			},
-			wantTemplateReaderMock: wantTemplateReaderMock{
-				shouldTest: true,
-				templatedata: TemplateData{
-					Name:              "",
-					Files:             []string{},
-					FilesLocation:     []io.FileLocation{},
-					VariablesFileName: "",
-					VariablesContents: "",
-					Manifests:         []string{},
-				},
-			},
-			wantDuplicatorMock: wantDuplicatorMock{
-				shouldTest: false,
-			},
-			wantIOServiceMock: wantIOServiceMock{
-				shouldTest:    true,
-				paramFullPath: "/tmp/plonk/tests/scripts/deploy/variables",
-				walkReturn:    fmt.Errorf("Failed while walking"),
 			},
 		},
 	}
@@ -278,19 +235,6 @@ func Test_scaffolder_Install(t *testing.T) {
 					tt.wantIOServiceMock.paramFullPath,
 				).Return(
 					tt.wantIOServiceMock.createPathReturn,
-				)
-				tt.fields.ioService.On(
-					"Walk",
-					tt.wantIOServiceMock.paramFullPath,
-				).Return(
-					tt.wantIOServiceMock.walkReturn,
-				)
-				tt.fields.ioService.On(
-					"Append",
-					tt.wantIOServiceMock.paramFullPath,
-					"\n"+tt.wantTemplateReaderMock.templatedata.VariablesContents,
-				).Return(
-					tt.wantIOServiceMock.appendReturn,
 				)
 			}
 			if err := s.Install(tt.args.name); (err != nil) != tt.wantErr {

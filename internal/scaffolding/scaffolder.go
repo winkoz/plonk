@@ -2,7 +2,6 @@ package scaffolding
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
@@ -66,13 +65,6 @@ func (s scaffolder) Install(name string) (err error) {
 		}
 	}
 
-	// Append to Vars
-	// TODO: Append only base.yaml (do not call walk)
-	if err := s.appendToAllVariablesFiles(template.VariablesContents); err != nil {
-		log.Errorf("Cannot append to all variable files. %v", err)
-		return err
-	}
-
 	return err
 }
 
@@ -86,30 +78,4 @@ func (s scaffolder) createDirectoryIfNeeded(directoryName string) error {
 	}
 
 	return nil
-}
-
-func (s scaffolder) appendToAllVariablesFiles(content string) error {
-	variablesFullPath := fmt.Sprintf("%s/%s", s.targetPath, s.destinationVariablesPath)
-	err := s.ioService.Walk(variablesFullPath, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if info.IsDir() {
-			return nil
-		}
-
-		if err := s.ioService.Append(path, fmt.Sprintf("\n%s", content)); err != nil {
-			log.Errorf("Unable to append variables content to file %s. %v", path, err)
-			return err
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		log.Errorf("Error while walking all variable files. %v", err)
-	}
-
-	return err
 }
