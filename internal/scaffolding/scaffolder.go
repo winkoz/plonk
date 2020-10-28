@@ -40,7 +40,7 @@ func NewScaffolder(ctx config.Context) Scaffolder {
 
 // Init initializes the basic structure of a plonk project
 func (s scaffolder) Install(name string) (err error) {
-	signal := log.StarTrace("Install")
+	signal := log.StartTrace("Install")
 	defer log.StopTrace(signal, err)
 	log.Debugf("Install Scaffolder: [%s] - [%s] - [%s]", s.targetPath, s.customTemplatePath, name)
 

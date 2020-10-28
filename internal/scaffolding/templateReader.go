@@ -38,7 +38,7 @@ func NewTemplateReader(ctx config.Context) TemplateReader {
 }
 
 func (tr templateReader) Read(templateName string) (templateData TemplateData, err error) {
-	signal := log.StarTrace("Read")
+	signal := log.StartTrace("Read")
 	defer log.StopTrace(signal, err)
 
 	templateData = TemplateData{

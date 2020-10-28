@@ -34,7 +34,7 @@ func NewDeployer(ctx config.Context) Deployer {
 }
 
 func (d deployer) Execute(ctx config.Context, env string) (err error) {
-	signal := log.StarTrace("Execute")
+	signal := log.StartTrace("Execute")
 	defer log.StopTrace(signal, err)
 
 	log.Debugf("Ctx: \n%+v", ctx)

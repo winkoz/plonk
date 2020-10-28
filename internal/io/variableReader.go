@@ -37,10 +37,10 @@ func NewVariableReader(path string) VariableReader {
 	}
 }
 
-// GetVariables reads the variables from a environment flattening with base and returning a map
-func (vr variableReader) GetVariables(projectName string, env string) (result DeployVariables, err error) {
+// GetVariablesFromFile reads the variables from a environment flattening with base and returning a map
+func (vr variableReader) GetVariablesFromFile(projectName string, env string) (result DeployVariables, err error) {
 	vars := DeployVariables{}
-	signal := log.StarTrace("GetVariables")
+	signal := log.StartTrace("GetVariablesFromFile")
 	defer log.StopTrace(signal, err)
 	baseVariables, err := vr.read(vr.baseFileName)
 	if err != nil {

@@ -69,7 +69,7 @@ func Fatalf(format string, args ...interface{}) {
 }
 
 // StartTrace logs an info message and returns a signal to be used when calling stop
-func StarTrace(message string) interface{} {
+func StartTrace(message string) interface{} {
 	return sourced().Trace(message)
 }
 

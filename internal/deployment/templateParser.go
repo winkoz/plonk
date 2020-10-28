@@ -20,7 +20,7 @@ func NewTemplateParser() TemplateParser {
 }
 
 func (t templateParser) Parse(variables map[string]interface{}, templateContent string) (result string, err error) {
-	signal := log.StarTrace("Parse")
+	signal := log.StartTrace("Parse")
 	defer log.StopTrace(signal, err)
 
 	template, err := template.New("memory_template").Parse(templateContent)
