@@ -76,6 +76,17 @@ func Test_templateReader_Read(t *testing.T) {
 				},
 				Files:     []string{"plonk.yaml"},
 				Manifests: []string{},
+				DefaultVariables: struct {
+					Build       map[string]string `yaml:"build,omitempty"`
+					Environment map[string]string `yaml:"environment,omitempty"`
+				}{
+					Build: map[string]string{
+						"TEST_BUILD_VAR": "custom-template-build",
+					},
+					Environment: map[string]string{
+						"TEST_ENV_VAR": "custom-template-env",
+					},
+				},
 			},
 			wantErr: nil,
 		},
@@ -96,6 +107,17 @@ func Test_templateReader_Read(t *testing.T) {
 				Manifests: []string{
 					customTemplatePath + "/mixed/manifest3.yaml",
 					defaultTemplatePath + "/mixed/manifest2.yaml",
+				},
+				DefaultVariables: struct {
+					Build       map[string]string `yaml:"build,omitempty"`
+					Environment map[string]string `yaml:"environment,omitempty"`
+				}{
+					Build: map[string]string{
+						"TEST_BUILD_VAR": "custom-mixed-template-build",
+					},
+					Environment: map[string]string{
+						"TEST_ENV_VAR": "custom-mixed-template-env",
+					},
 				},
 			},
 			wantErr: nil,
@@ -149,24 +171,6 @@ func Test_templateReader_Read(t *testing.T) {
 			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found template-definition.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
 		},
 		{
-			name: "returns an error when the configuration file points to a non-existent file within variables",
-			fields: fields{
-				ctx:        ctx,
-				ioService:  ioService,
-				yamlReader: yamlReader,
-			},
-			args: args{
-				templateName: "missingVariables",
-			},
-			want: TemplateData{
-				Name:          "missing-variables",
-				FilesLocation: []io.FileLocation{},
-				Files:         []string{},
-				Manifests:     []string{},
-			},
-			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found vars.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
-		},
-		{
 			name: "returns an error when the configuration file points to a non-existent file within scripts",
 			fields: fields{
 				ctx:        ctx,
@@ -212,6 +216,7 @@ func Test_templateReader_Read(t *testing.T) {
 				yamlReader: tt.fields.yamlReader,
 			}
 			got, err := tf.Read(tt.args.templateName)
+
 			if (tt.wantErr == nil && err != nil) || (tt.wantErr != nil && err == nil) {
 				t.Errorf("templateReader.Read() error = %v, wantErr %v", err, tt.wantErr)
 				return

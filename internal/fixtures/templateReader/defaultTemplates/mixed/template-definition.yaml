@@ -1,5 +1,9 @@
 name: default-mixed-template
-variables: vars.yaml
+variables:
+  build:
+    TEST_BUILD_VAR: "default-mixed-template-build"
+  environment:
+    TEST_ENV_VAR: "default-mixed-template-env"
 manifests:
   - manifest.yaml
   - manifest2.yaml

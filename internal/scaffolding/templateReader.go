@@ -21,10 +21,14 @@ type templateReader struct {
 
 // TemplateData contains the list of script files
 type TemplateData struct {
-	Name          string   `yaml:"name"`
-	Manifests     []string `yaml:"manifests,omitempty"`
-	FilesLocation []io.FileLocation
-	Files         []string `yaml:"files,omitempty"`
+	Name             string   `yaml:"name"`
+	Manifests        []string `yaml:"manifests,omitempty"`
+	FilesLocation    []io.FileLocation
+	Files            []string `yaml:"files,omitempty"`
+	DefaultVariables struct {
+		Build       map[string]string `yaml:"build,omitempty"`
+		Environment map[string]string `yaml:"environment,omitempty"`
+	} `yaml:"variables,omitempty"`
 }
 
 // NewTemplateReader returns a fully configure TemplateReader

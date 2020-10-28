@@ -1,5 +1,4 @@
 name: api
-variables: vars.yaml
 files:
   - plonk.yaml
   - deploy/variables/production.yaml
