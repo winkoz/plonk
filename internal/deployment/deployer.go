@@ -40,7 +40,7 @@ func (d deployer) Execute(ctx config.Context, env string) (err error) {
 	log.Debugf("Ctx: \n%+v", ctx)
 
 	// load variables
-	variables, err := d.varReader.GetVariables(ctx.ProjectName, env)
+	variables, err := d.varReader.GetVariablesFromFile(ctx.ProjectName, env)
 	log.Debug(variables)
 
 	// join file

@@ -8,7 +8,7 @@ import (
 
 // VariableReader reads the variables from a stack flattening with base and returning a map
 type VariableReader interface {
-	GetVariables(projectName string, env string) (DeployVariables, error)
+	GetVariablesFromFile(projectName string, env string) (DeployVariables, error)
 }
 
 type variableReader struct {

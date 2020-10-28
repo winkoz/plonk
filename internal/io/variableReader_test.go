@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_variableReader_GetVariables(t *testing.T) {
+func Test_variableReader_GetVariablesFromFile(t *testing.T) {
 	fixturesDir := "../fixtures/variables"
 	service := NewService()
 	yamlReader := NewYamlReader(service)
@@ -120,13 +120,13 @@ func Test_variableReader_GetVariables(t *testing.T) {
 				interpolator: tt.fields.interpolator,
 				service:      tt.fields.service,
 			}
-			got, err := sut.GetVariables(tt.args.projectName, tt.args.env)
+			got, err := sut.GetVariablesFromFile(tt.args.projectName, tt.args.env)
 			if (tt.wantErr != NoError && err == nil) || (tt.wantErr == NoError && err != nil) {
-				t.Errorf("variableReader.GetVariables() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("variableReader.GetVariablesFromFile() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if tt.wantErr != NoError && err != nil && err.(*Error).Code() != tt.wantErr {
-				t.Errorf("variableReader.GetVariables() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("variableReader.GetVariablesFromFile() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			assert.Equal(t, tt.want, got)
