@@ -9,13 +9,11 @@ import (
 )
 
 type scaffolder struct {
-	targetPath               string
-	customTemplatePath       string
-	templateReader           TemplateReader
-	duplicator               io.Duplicator
-	destinationDeployDirName string
-	destinationVariablesPath string
-	ioService                io.Service
+	ctx            config.Context
+	templateParser io.TemplateParser
+	templateReader TemplateReader
+	duplicator     io.Duplicator
+	ioService      io.Service
 }
 
 // Scaffolder runs the scaffolding logic to generate new plonk services
@@ -28,13 +26,11 @@ func NewScaffolder(ctx config.Context) Scaffolder {
 
 	templateReader := NewTemplateReader(ctx)
 	return scaffolder{
-		targetPath:               ctx.TargetPath,
-		customTemplatePath:       ctx.CustomTemplatesPath,
-		destinationDeployDirName: ctx.DeployFolderName,
-		destinationVariablesPath: ctx.DeployVariablesPath,
-		templateReader:           templateReader,
-		duplicator:               io.NewDuplicator(ctx.IOService),
-		ioService:                ctx.IOService,
+		ctx:            ctx,
+		templateReader: templateReader,
+		templateParser: io.NewTemplateParser(),
+		duplicator:     io.NewDuplicator(ctx.IOService),
+		ioService:      ctx.IOService,
 	}
 }
 
@@ -42,7 +38,7 @@ func NewScaffolder(ctx config.Context) Scaffolder {
 func (s scaffolder) Install(name string) (err error) {
 	signal := log.StartTrace("Install")
 	defer log.StopTrace(signal, err)
-	log.Debugf("Install Scaffolder: [%s] - [%s] - [%s]", s.targetPath, s.customTemplatePath, name)
+	log.Debugf("Install Scaffolder: [%s] - [%s] - [%s]", s.ctx.TargetPath, s.ctx.CustomTemplatesPath, name)
 
 	// Read Template
 	template, err := s.templateReader.Read(name)
@@ -52,14 +48,31 @@ func (s scaffolder) Install(name string) (err error) {
 	}
 
 	// Create required structure
-	if err := s.createDirectoryIfNeeded(s.destinationVariablesPath); err != nil { // Creates target/deploy/variables if needed
-		log.Errorf("Cannot create folder %s. %v", s.destinationVariablesPath, err)
+	if err := s.createDirectoryIfNeeded(s.ctx.DeployVariablesPath); err != nil { // Creates target/deploy/variables if needed
+		log.Errorf("Cannot create folder %s. %v", s.ctx.DeployVariablesPath, err)
 		return err
 	}
 
 	// Duplicate Files
 	if len(template.FilesLocation) > 0 {
-		if err := s.duplicator.CopyMultiple(s.targetPath, template.FilesLocation, io.NoOpTransformator); err != nil {
+
+		templateParser := io.NewTemplateParser()
+
+		scaffolderTransformator := func(input []byte) []byte {
+			templatingVars := map[string]interface{}{
+				"NAME": s.ctx.ProjectName,
+			}
+
+			res, err := templateParser.Parse(templatingVars, string(input))
+			if err != nil {
+				log.Error("Could not parse template: %s, err = %v", name, err)
+				return input
+			}
+
+			return []byte(res)
+		}
+
+		if err := s.duplicator.CopyMultiple(s.ctx.TargetPath, template.FilesLocation, scaffolderTransformator); err != nil {
 			log.Errorf("Failed scaffolding files of template %s: %s", name, err)
 			return err
 		}
@@ -69,7 +82,7 @@ func (s scaffolder) Install(name string) (err error) {
 }
 
 func (s scaffolder) createDirectoryIfNeeded(directoryName string) error {
-	fullPath := fmt.Sprintf("%s/%s", s.targetPath, directoryName)
+	fullPath := fmt.Sprintf("%s/%s", s.ctx.TargetPath, directoryName)
 	if !s.ioService.DirectoryExists(fullPath) {
 		if err := s.ioService.CreatePath(fullPath); err != nil {
 			log.Error(err)

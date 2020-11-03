@@ -33,6 +33,7 @@ func Test_templateReader_Read(t *testing.T) {
 		want    TemplateData
 		wantErr error
 	}{
+		// TODO: (jseravalli): Add failing files test for default template
 		{
 			name: "successfully loads a template data file located in the default template folder into a TemplateData structure",
 			fields: fields{

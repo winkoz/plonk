@@ -19,7 +19,7 @@ type deployer struct {
 	varReader      io.VariableReader
 	templateReader scaffolding.TemplateReader
 	ioService      io.Service
-	templateParser TemplateParser
+	templateParser io.TemplateParser
 }
 
 // NewDeployer creates a deployer object
@@ -29,7 +29,7 @@ func NewDeployer(ctx config.Context) Deployer {
 		varReader:      io.NewVariableReader(ctx.TargetPath + "/" + ctx.DeployVariablesPath),
 		templateReader: scaffolding.NewTemplateReader(ctx),
 		ioService:      io.NewService(),
-		templateParser: NewTemplateParser(),
+		templateParser: io.NewTemplateParser(),
 	}
 }
 

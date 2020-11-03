@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/sharedtesting"
 )
@@ -39,7 +40,6 @@ func Test_scaffolder_Install(t *testing.T) {
 		appendReturn          error
 		paramFullPath         string
 	}
-
 	tests := []struct {
 		name                   string
 		fields                 fields
@@ -198,13 +198,15 @@ func Test_scaffolder_Install(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			s := scaffolder{
-				targetPath:               tt.fields.targetPath,
-				customTemplatePath:       tt.fields.customTemplatePath,
-				templateReader:           tt.fields.templateReader,
-				duplicator:               tt.fields.duplicator,
-				destinationDeployDirName: tt.fields.destinationDeployDirName,
-				destinationVariablesPath: tt.fields.destinationVariablesPath,
-				ioService:                tt.fields.ioService,
+				ctx: config.Context{
+					TargetPath:          tt.fields.targetPath,
+					CustomTemplatesPath: tt.fields.customTemplatePath,
+					DeployVariablesPath: tt.fields.destinationVariablesPath,
+				},
+				templateReader: tt.fields.templateReader,
+				duplicator:     tt.fields.duplicator,
+
+				ioService: tt.fields.ioService,
 			}
 			if tt.wantTemplateReaderMock.shouldTest {
 				tt.fields.templateReader.On(
