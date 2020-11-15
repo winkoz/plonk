@@ -1,7 +1,0 @@
-plonk:
-  name: $NAME
-  command: kubectl
-  templates: ~/.templates
-  components:
-    - service
-    - ingress

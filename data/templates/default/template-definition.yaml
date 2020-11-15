@@ -1,4 +1,4 @@
-name: api
+name: default
 files:
   - plonk.yaml
   - deploy/variables/production.yaml

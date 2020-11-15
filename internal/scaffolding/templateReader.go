@@ -121,7 +121,8 @@ func (tr templateReader) fileLocator(templateName string, fileName string) (stri
 		return fmt.Sprintf("%s/templates/%s", io.BinaryFile, filePath), nil
 	}
 
-	err = NewScaffolderFileNotFound(fmt.Sprintf("Template not found %s. Locations [%s], error [%v]", fileName, tr.ctx.CustomTemplatesPath, err))
+	log.Debugf("Template asset error: %+v", err)
+	err = NewScaffolderFileNotFound(fmt.Sprintf("Template not found %s. Locations [%s]", fileName, tr.ctx.CustomTemplatesPath))
 	log.Error(err)
 
 	return "", err

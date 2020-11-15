@@ -1,9 +1,0 @@
-name: custom-mixed-template
-variables: 
-  build:
-    TEST_BUILD_VAR: "custom-mixed-template-build"
-  environment:
-    TEST_ENV_VAR: "custom-mixed-template-env"
-manifests:
-  - manifest3.yaml
-  - manifest2.yaml

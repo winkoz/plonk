@@ -18,7 +18,7 @@ go-build: clean go-build-assets
 	GO111MODULE=on go build -ldflags="-s -w" -o bin/plonk main.go
 	@echo "Plonk built successfully!"
 
-go-test:
+go-test: go-build-assets
 	GO111MODULE=on richgo test -parallel 6 -cover ./...
 	@echo "Plonk finished testing!"
 
