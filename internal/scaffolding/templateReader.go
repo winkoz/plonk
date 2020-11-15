@@ -3,6 +3,7 @@ package scaffolding
 import (
 	"fmt"
 
+	"github.com/winkoz/plonk/data"
 	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
@@ -115,12 +116,12 @@ func (tr templateReader) fileLocator(templateName string, fileName string) (stri
 		}
 	}
 
-	defaultPath := fmt.Sprintf("%s/%s", tr.ctx.TemplatesPath, filePath)
-	if tr.service.FileExists(defaultPath) {
-		return defaultPath, nil
+	_, err := data.Asset(fmt.Sprintf("templates/%s", filePath))
+	if err == nil {
+		return fmt.Sprintf("%s/templates/%s", io.BinaryFile, filePath), nil
 	}
 
-	err := NewScaffolderFileNotFound(fmt.Sprintf("Template not found %s. Locations [%s, %s]", fileName, tr.ctx.CustomTemplatesPath, tr.ctx.TemplatesPath))
+	err = NewScaffolderFileNotFound(fmt.Sprintf("Template not found %s. Locations [%s], error [%v]", fileName, tr.ctx.CustomTemplatesPath, err))
 	log.Error(err)
 
 	return "", err

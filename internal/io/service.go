@@ -5,7 +5,9 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
+	"github.com/winkoz/plonk/data"
 	"github.com/winkoz/plonk/internal/io/log"
 )
 
@@ -81,18 +83,25 @@ func (s service) DeletePath(path string) {
 
 // ReadFile reads a file
 func (s service) ReadFile(path string) ([]byte, error) {
-	if !s.FileExists(path) {
-		err := fmt.Errorf("File does not exist at path: %s", path)
+	var resData []byte
+	var err error
+
+	if strings.Contains(path, BinaryFile) {
+		binaryPath := strings.TrimPrefix(path, BinaryFile+"/")
+		resData, err = data.Asset(binaryPath)
+	} else if !s.FileExists(path) {
+		err = fmt.Errorf("File does not exist at path: %s", path)
 		log.Error(err)
-		return nil, err
+	} else {
+		resData, err = ioutil.ReadFile(path)
 	}
 
-	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Errorf("Error reading file %s: %+v", path, err)
 		return []byte{}, err
 	}
-	return data, nil
+
+	return resData, nil
 }
 
 // Walk walks the entire file structure for `root` and calls `walkFn` for each item it finds

@@ -14,7 +14,6 @@ func Test_templateReader_Read(t *testing.T) {
 	customTemplatePath := "../fixtures/templateReader/customTemplates"
 	ctx := config.Context{
 		CustomTemplatesPath: customTemplatePath,
-		TemplatesPath:       defaultTemplatePath,
 	}
 	ioService := io.NewService()
 	yamlReader := io.NewYamlReader(ioService)

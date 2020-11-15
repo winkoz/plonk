@@ -28,6 +28,9 @@ type Error struct {
 	msg  string
 }
 
+// BinaryFile indicates if the file is included in the current binary
+const BinaryFile = "BIN_FILE"
+
 // FileLocation describes the original file name and it's resolved path
 type FileLocation struct {
 	OriginalFilePath string

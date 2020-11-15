@@ -18,7 +18,7 @@ type PlonkConfigFile struct {
 func loadPlonkConfigFile(ioService io.Service, filePath string) (PlonkConfigFile, error) {
 	config := PlonkConfigFile{
 		Command:      deployDeployCommand,
-		TemplatesDir: defaultTemplatesPath,
+		TemplatesDir: defaultCustomTemplatesPath,
 	}
 
 	yamlReader := io.NewYamlReader(ioService)
