@@ -51,3 +51,4 @@ Temporary Items
 # Plonk specific ignores
 /bin
 test
+data/data.go
