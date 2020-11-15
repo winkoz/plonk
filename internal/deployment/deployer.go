@@ -41,10 +41,11 @@ func (d deployer) Execute(ctx config.Context, env string) (err error) {
 
 	// load variables
 	variables, err := d.varReader.GetVariablesFromFile(ctx.ProjectName, env)
-	log.Debug(variables)
+	log.Debugf("Loaded variables: %v", variables)
 
 	// join file
 	templates, err := d.environmentTemplates(env)
+	log.Debugf("Loaded templates: %v", templates)
 	if err != nil {
 		log.Errorf("Unable to load templates for environment: %s. %v", env, err)
 		return err
@@ -55,7 +56,6 @@ func (d deployer) Execute(ctx config.Context, env string) (err error) {
 		log.Errorf("Unable to join all manifest files. %v", err)
 		return err
 	}
-	log.Debugf("Main Deploy File: \n%s", mainDeployFile)
 
 	deployFilePath := fmt.Sprintf("%s/%s/deploy.%s", d.ctx.TargetPath, d.ctx.DeployFolderName, io.YAMLExtension)
 	err = d.ioService.Write(deployFilePath, mainDeployFile)
@@ -75,10 +75,13 @@ func (d deployer) environmentTemplates(env string) ([]scaffolding.TemplateData, 
 	if desiredEnv := d.ctx.Environments[env]; desiredEnv != nil {
 		templateNames = desiredEnv
 	}
+	log.Debugf("Loaded templates for '%s': %v", env, templateNames)
 
-	templateNames = d.ctx.Environments[customEnvironmentKey]
+	customTemplateNames := d.ctx.Environments[customEnvironmentKey]
+	templateNames = append(templateNames, customTemplateNames...)
 	result := make([]scaffolding.TemplateData, len(templateNames))
 	for _, templateName := range templateNames {
+		log.Debugf("Loading template: %s", templateName)
 		template, err := d.templateReader.Read(templateName)
 		if err != nil {
 			return nil, err
@@ -106,15 +109,13 @@ func (d deployer) manifestMerger(templates []scaffolding.TemplateData, deployVar
 				return "", err
 			}
 			contents := string(data)
-			log.Errorf("Contents: \n%s", contents)
 
 			parsedTemplate, err := d.templateParser.Parse(substitutionVariables, contents)
-			log.Errorf("Parsed template: \n%s", parsedTemplate)
 			if err != nil {
 				return "", err
 			}
 			result += parsedTemplate
-			result += "\n"
+			result += "\n---\n"
 		}
 	}
 

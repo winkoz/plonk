@@ -36,6 +36,7 @@ func (yr yamlReader) Read(filePath string, output interface{}) (err error) {
 	}
 
 	err = yaml.Unmarshal(data, output)
+	log.Debugf("Unmarshalled yaml: %v", output)
 	if err != nil {
 		internalErr := NewParseYamlError(fmt.Sprintf("Unable to parse %s", filePath))
 		log.Errorf("Error: %+v\t%+v", internalErr, err)

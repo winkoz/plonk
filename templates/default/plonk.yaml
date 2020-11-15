@@ -1,7 +1,6 @@
-plonk:
-  name: {{.NAME}}
-  command: kubectl
-  templates: ~/.templates
-  environments:
-    production:
-      - service
+name: {{.NAME}}
+command: kubectl
+templates: ~/.templates
+environments:
+  production:
+    - service
