@@ -3,7 +3,7 @@ package cmd
 import "github.com/spf13/cobra"
 
 const (
-	cmdFlagEnvironment = "environment"
+	defaultDeployEnvironment = "production"
 )
 
 // CobraHandler handler interface for a cobra command

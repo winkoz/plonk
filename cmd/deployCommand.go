@@ -18,7 +18,6 @@ limitations under the License.
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/deployment"
 	"github.com/winkoz/plonk/internal/io/log"
@@ -33,15 +32,9 @@ func addDeployCommand(rootCmd *cobra.Command) {
 		`,
 		Run:     newDeployCommandHandler(),
 		Example: "plonk deploy",
+		Args:    cobra.MaximumNArgs(1),
 	}
 
-	environmentFlag := &pflag.Flag{
-		Name:     cmdFlagEnvironment,
-		Usage:    "",
-		Value:    deployment.Environment,
-		DefValue: "production",
-	}
-	deployCmd.PersistentFlags().AddFlag(environmentFlag)
 	rootCmd.AddCommand(deployCmd)
 }
 
@@ -52,9 +45,9 @@ func newDeployCommandHandler() CobraHandler {
 			log.Fatal(err)
 		}
 
-		env, err := cmd.PersistentFlags().GetString(cmdFlagEnvironment)
-		if err != nil {
-			log.Fatalf("Can't execute deploy without: %s", cmdFlagEnvironment)
+		env := defaultDeployEnvironment
+		if len(args) == 1 {
+			env = args[0]
 		}
 
 		d := deployment.NewDeployer(ctx)
