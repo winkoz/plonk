@@ -1,6 +1,6 @@
 package deployment
 
-const customEnvironmentKey string = "custom"
+const baseEnvironmentKey string = "base"
 const environmentVariablesKey string = "ENVIRONMENT_VARIABLES"
 const projectNameKey string = "NAME"
 const environmentKey string = "ENV"

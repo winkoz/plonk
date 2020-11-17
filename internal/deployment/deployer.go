@@ -77,8 +77,8 @@ func (d deployer) environmentTemplates(env string) ([]scaffolding.TemplateData, 
 	}
 	log.Debugf("Loaded templates for '%s': %v", env, templateNames)
 
-	customTemplateNames := d.ctx.Environments[customEnvironmentKey]
-	templateNames = append(templateNames, customTemplateNames...)
+	baseTemplateNames := d.ctx.Environments[baseEnvironmentKey]
+	templateNames = append(templateNames, baseTemplateNames...)
 	result := make([]scaffolding.TemplateData, len(templateNames))
 	for _, templateName := range templateNames {
 		log.Debugf("Loading template: %s", templateName)
@@ -103,6 +103,14 @@ func (d deployer) manifestMerger(templates []scaffolding.TemplateData, deployVar
 	substitutionVariables[projectNameKey] = d.ctx.ProjectName
 
 	for _, template := range templates {
+		templateVariables := map[string]interface{}{}
+		for key, value := range template.DefaultVariables.Build {
+			if _, exists := substitutionVariables[key]; !exists {
+				templateVariables[key] = value
+			}
+		}
+
+		mergedVariables := io.MergeMap(templateVariables, substitutionVariables)
 		for _, manifestFileName := range template.Manifests {
 			data, err := d.ioService.ReadFile(manifestFileName)
 			if err != nil {
@@ -110,7 +118,7 @@ func (d deployer) manifestMerger(templates []scaffolding.TemplateData, deployVar
 			}
 			contents := string(data)
 
-			parsedTemplate, err := d.templateParser.Parse(substitutionVariables, contents)
+			parsedTemplate, err := d.templateParser.Parse(mergedVariables, contents)
 			if err != nil {
 				return "", err
 			}
