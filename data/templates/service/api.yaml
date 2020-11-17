@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: $NAME-deployment
+  name: {{.NAME}}-deployment
 spec:
   replicas: 3
   selector:
@@ -18,6 +18,4 @@ spec:
         ports:
         - containerPort: {{.MAIN_PORT}}
         env: 
-        {{range $k, $v := .ENVIRONMENT_VARIABLES}}
-        - {{$k}}: {{$v}}
-        {{end}}
+        {{range $k, $v := .ENVIRONMENT_VARIABLES}}- {{$k}}: {{$v}}{{end}}
