@@ -57,8 +57,8 @@ func (vr variableReader) GetVariablesFromFile(projectName string, env string) (r
 		}
 	}
 
-	buildVariables := mergeMap(envVars.Build, baseVariables.Build)
-	environmentVariables := mergeMap(envVars.Environment, baseVariables.Environment)
+	buildVariables := MergeStringMap(envVars.Build, baseVariables.Build)
+	environmentVariables := MergeStringMap(envVars.Environment, baseVariables.Environment)
 
 	interpolateVars := map[string]string{
 		"ENV":  env,
