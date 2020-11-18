@@ -26,9 +26,9 @@ func (e executor) Run(command string) error {
 	cmd.Stdout = cmdOutput
 	err := cmd.Run()
 	if err != nil {
-		log.Errorf("Command could not be executed successfully. error = %v", err)
+		log.Debugf("[Internal Error] Command could not be executed successfully. error = %v", err)
 		return err
 	}
-	log.Infof("Executed command: %s", string(cmdOutput.Bytes()))
+	log.Debugf("[INFO] Executed command: %s", string(cmdOutput.Bytes()))
 	return nil
 }
