@@ -3,6 +3,7 @@ package deployment
 import (
 	"fmt"
 
+	"github.com/winkoz/plonk/internal/commands"
 	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
@@ -15,11 +16,12 @@ type Deployer interface {
 }
 
 type deployer struct {
-	ctx            config.Context
-	varReader      io.VariableReader
-	templateReader scaffolding.TemplateReader
-	ioService      io.Service
-	templateParser io.TemplateParser
+	ctx                 config.Context
+	varReader           io.VariableReader
+	templateReader      scaffolding.TemplateReader
+	ioService           io.Service
+	templateParser      io.TemplateParser
+	orchestratorCommand commands.OrchestratorCommand
 }
 
 // NewDeployer creates a deployer object
@@ -30,6 +32,8 @@ func NewDeployer(ctx config.Context) Deployer {
 		templateReader: scaffolding.NewTemplateReader(ctx),
 		ioService:      io.NewService(),
 		templateParser: io.NewTemplateParser(),
+		//TODO: change this
+		orchestratorCommand: commands.NewOrchestrator("kubectl"),
 	}
 }
 
@@ -65,7 +69,13 @@ func (d deployer) Execute(ctx config.Context, env string) (err error) {
 	}
 
 	// execute in kubectl
-	// exec.Command(ctx.DeployCommand, "-f", deployFilePath)
+	err = d.orchestratorCommand.Deploy(env, deployFilePath, d.ctx)
+	if err != nil {
+		log.Errorf("Cannot execute deploy command %s. error = %+v", d.ctx.DeployCommand, err)
+		return err
+	}
+
+	// TODO: Cleanup deploy file after success
 
 	return nil
 }
