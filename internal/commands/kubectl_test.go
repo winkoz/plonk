@@ -10,7 +10,9 @@ import (
 
 func Test_kubecltCommand_Deploy(t *testing.T) {
 	executorMock := new(sharedtesting.ExecutorMock)
-	ctx := config.Context{}
+	ctx := config.Context{
+		DeployCommand: "notKubeCtl",
+	}
 	type fields struct {
 		executor *sharedtesting.ExecutorMock
 	}
@@ -36,13 +38,13 @@ func Test_kubecltCommand_Deploy(t *testing.T) {
 				manifestPath: "this/is/not/a/real/path",
 				ctx:          ctx,
 			},
-			wantCommand: "kubectl -f this/is/not/a/real/path",
+			wantCommand: "notKubeCtl apply -f this/is/not/a/real/path",
 			wantErr:     false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			k := kubecltCommand{
+			k := kubectlCommand{
 				executor: tt.fields.executor,
 			}
 
