@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
 )
@@ -41,8 +39,7 @@ func NewContext(projectName string) (Context, error) {
 		// Deploy Config
 		DeployFolderName:    deployFolderName,
 		DeployVariablesPath: deployVariablesPath,
-		// TODO: Remove /test
-		TargetPath: ioService.GetCurrentDir() + "/test",
+		TargetPath:          ioService.GetCurrentDir(),
 
 		// Services
 		IOService: ioService,
@@ -52,8 +49,7 @@ func NewContext(projectName string) (Context, error) {
 // NewContextFromFile Create context from the plonk.yml
 func NewContextFromFile() (Context, error) {
 	ioService := io.NewService()
-	//TODO: Remove the '/test' part
-	targetFolderPath := fmt.Sprintf("%s/test", ioService.GetCurrentDir())
+	targetFolderPath := ioService.GetCurrentDir()
 	targetConfigFilePath := targetFolderPath + "/plonk." + io.YAMLExtension
 
 	configFile, err := loadPlonkConfigFile(ioService, targetConfigFilePath)
@@ -74,8 +70,7 @@ func NewContextFromFile() (Context, error) {
 		// Deploy Config
 		DeployFolderName:    deployFolderName,
 		DeployVariablesPath: deployVariablesPath,
-		// TODO: Remove /test
-		TargetPath: ioService.GetCurrentDir() + "/test",
+		TargetPath:          ioService.GetCurrentDir(),
 
 		// Services
 		IOService: ioService,
