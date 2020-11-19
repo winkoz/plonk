@@ -1,7 +1,12 @@
 package config
 
+import "path/filepath"
+
 // Constants
-const defaultCustomTemplatesPath = "$HOME/.plonk/templates"
+var defaultCustomTemplatesPath = filepath.Join("$HOME", ".plonk", "templates")
+
 const deployFolderName = "deploy"
-const deployVariablesPath = deployFolderName + "/variables"
+
+var deployVariablesPath = filepath.Join(deployFolderName, "variables")
+
 const deployDeployCommand = "kubectl"

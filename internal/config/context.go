@@ -1,6 +1,8 @@
 package config
 
 import (
+	"path/filepath"
+
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
 )
@@ -50,7 +52,7 @@ func NewContext(projectName string) (Context, error) {
 func NewContextFromFile() (Context, error) {
 	ioService := io.NewService()
 	targetFolderPath := ioService.GetCurrentDir()
-	targetConfigFilePath := targetFolderPath + "/plonk." + io.YAMLExtension
+	targetConfigFilePath := filepath.Join(targetFolderPath, "plonk."+io.YAMLExtension)
 
 	configFile, err := loadPlonkConfigFile(ioService, targetConfigFilePath)
 	if err != nil {

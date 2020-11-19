@@ -1,7 +1,7 @@
 package scaffolding
 
 import (
-	"fmt"
+	"path/filepath"
 
 	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
@@ -82,7 +82,7 @@ func (s scaffolder) Install(name string) (err error) {
 }
 
 func (s scaffolder) createDirectoryIfNeeded(directoryName string) error {
-	fullPath := fmt.Sprintf("%s/%s", s.ctx.TargetPath, directoryName)
+	fullPath := filepath.Join(s.ctx.TargetPath, directoryName)
 	if !s.ioService.DirectoryExists(fullPath) {
 		if err := s.ioService.CreatePath(fullPath); err != nil {
 			log.Error(err)

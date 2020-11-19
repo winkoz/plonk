@@ -2,6 +2,7 @@ package deployment
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"github.com/winkoz/plonk/internal/commands"
 	"github.com/winkoz/plonk/internal/config"
@@ -28,7 +29,7 @@ type deployer struct {
 func NewDeployer(ctx config.Context) Deployer {
 	return deployer{
 		ctx:            ctx,
-		varReader:      io.NewVariableReader(ctx.TargetPath + "/" + ctx.DeployVariablesPath),
+		varReader:      io.NewVariableReader(filepath.Join(ctx.TargetPath, ctx.DeployVariablesPath)),
 		templateReader: scaffolding.NewTemplateReader(ctx),
 		ioService:      io.NewService(),
 		templateParser: io.NewTemplateParser(),
@@ -61,7 +62,7 @@ func (d deployer) Execute(ctx config.Context, env string) (err error) {
 		return err
 	}
 
-	deployFilePath := fmt.Sprintf("%s/%s/deploy.%s", d.ctx.TargetPath, d.ctx.DeployFolderName, io.YAMLExtension)
+	deployFilePath := filepath.Join(d.ctx.TargetPath, d.ctx.DeployFolderName, fmt.Sprintf("deploy.%s", io.YAMLExtension))
 	err = d.ioService.Write(deployFilePath, mainDeployFile)
 	if err != nil {
 		log.Errorf("Cannot save main deploy file. %+v", err)

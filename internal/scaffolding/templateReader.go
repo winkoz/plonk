@@ -2,6 +2,7 @@ package scaffolding
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"github.com/winkoz/plonk/data"
 	"github.com/winkoz/plonk/internal/config"
@@ -108,17 +109,17 @@ func (tr templateReader) locateFiles(templateName string, filePaths []string) ([
 }
 
 func (tr templateReader) fileLocator(templateName string, fileName string) (string, error) {
-	filePath := fmt.Sprintf("%s/%s", templateName, fileName)
+	filePath := filepath.Join(templateName, fileName)
 	if tr.ctx.CustomTemplatesPath != "" {
-		customPath := fmt.Sprintf("%s/%s", tr.ctx.CustomTemplatesPath, filePath)
+		customPath := filepath.Join(tr.ctx.CustomTemplatesPath, filePath)
 		if tr.service.FileExists(customPath) {
 			return customPath, nil
 		}
 	}
 
-	_, err := data.Asset(fmt.Sprintf("templates/%s", filePath))
+	_, err := data.Asset(filepath.Join("templates", filePath))
 	if err == nil {
-		return fmt.Sprintf("%s/templates/%s", io.BinaryFile, filePath), nil
+		return filepath.Join(io.BinaryFile, "templates", filePath), nil
 	}
 
 	log.Debugf("Template asset error: %+v", err)
