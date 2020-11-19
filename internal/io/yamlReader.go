@@ -25,7 +25,7 @@ func NewYamlReader(service Service) YamlReader {
 
 // Read a Yaml file into the passed in structure after validating its existence
 func (yr yamlReader) Read(filePath string, output interface{}) (err error) {
-	signal := log.StarTrace("Read")
+	signal := log.StartTrace("Read")
 	defer log.StopTrace(signal, err)
 	log.Debugf("Reading file %s", filePath)
 	data, err := yr.service.ReadFile(filePath)
@@ -36,6 +36,7 @@ func (yr yamlReader) Read(filePath string, output interface{}) (err error) {
 	}
 
 	err = yaml.Unmarshal(data, output)
+	log.Debugf("Unmarshalled yaml: %v", output)
 	if err != nil {
 		internalErr := NewParseYamlError(fmt.Sprintf("Unable to parse %s", filePath))
 		log.Errorf("Error: %+v\t%+v", internalErr, err)

@@ -1,4 +1,8 @@
 name: custom-template
-variables: vars.yaml
+variables:
+  build:
+    TEST_BUILD_VAR: "custom-template-build"
+  environment:
+    TEST_ENV_VAR: "custom-template-env"
 files:
   - plonk.yaml

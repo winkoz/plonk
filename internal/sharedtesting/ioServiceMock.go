@@ -64,6 +64,12 @@ func (i *IOServiceMock) Append(targetFilePath string, content string) error {
 	return args.Error(0)
 }
 
+// Write mocks Write
+func (i *IOServiceMock) Write(targetFilePath string, content string) error {
+	args := i.Called(targetFilePath, content)
+	return args.Error(0)
+}
+
 // IsValidPath mocks IsValidPath
 func (i *IOServiceMock) IsValidPath(path string) error {
 	args := i.Called(path)

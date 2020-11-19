@@ -69,7 +69,7 @@ func Fatalf(format string, args ...interface{}) {
 }
 
 // StartTrace logs an info message and returns a signal to be used when calling stop
-func StarTrace(message string) interface{} {
+func StartTrace(message string) interface{} {
 	return sourced().Trace(message)
 }
 
@@ -79,7 +79,7 @@ func StopTrace(signal interface{}, err error) {
 }
 
 func sourced() *log.Entry {
-	_, file, line, ok := runtime.Caller(3)
+	_, file, line, ok := runtime.Caller(2)
 	if !ok {
 		file = "<???>"
 		line = 1

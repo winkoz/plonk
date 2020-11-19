@@ -27,7 +27,7 @@ func NewInterpolator() Interpolator {
 
 // SubstituteValues replaces all instances of 'key' with its respective 'value' from the `source` map in the `target` string and returns the applied target `string`.
 func (i interpolator) SubstituteValues(source map[string]string, target string) string {
-	signal := log.StarTrace("SubstituteValues")
+	signal := log.StartTrace("SubstituteValues")
 	defer log.StopTrace(signal, nil)
 
 	result := target
@@ -50,7 +50,7 @@ func (i interpolator) SubstituteValues(source map[string]string, target string) 
 
 // SubstituteValuesInMap replaces all instances of 'key' with its respective 'value' from the `source` map in the `target` map and returns the applied target `map`.
 func (i interpolator) SubstituteValuesInMap(source map[string]string, target map[string]string) map[string]string {
-	signal := log.StarTrace("SubstituteValuesInMap")
+	signal := log.StartTrace("SubstituteValuesInMap")
 	defer log.StopTrace(signal, nil)
 
 	interpolatedMap := map[string]string{}

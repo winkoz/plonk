@@ -4,19 +4,22 @@ TAG=winkoz/plonk:$(VERSION)
 INTERACTIVE?=-it
 DOCKER=docker run $(INTERACTIVE) -v ${PWD}:/go $(TAG)
 
-.PHONY: clean build test ssh go-build go-test docker-build run
+.PHONY: clean build test ssh go-build go-test docker-build run go-build-assets
 # -----------------------------------------------
 # Top-level targets
 
 clean:
 	rm -rf ./bin
 
-go-build: clean
+go-build-assets:
+	GO111MODULE=on go-bindata -prefix "data/" -pkg data -o data/data.go data/...
+
+go-build: clean go-build-assets
 	GO111MODULE=on go build -ldflags="-s -w" -o bin/plonk main.go
 	@echo "Plonk built successfully!"
 
-go-test:
-	GO111MODULE=on richgo test -v -parallel 6 -cover ./...
+go-test: go-build-assets
+	GO111MODULE=on richgo test -cover ./...
 	@echo "Plonk finished testing!"
 
 build: clean docker-build

@@ -1,5 +1,0 @@
-name: custom-mixed-template
-variables: vars.yaml
-manifests:
-  - manifest3.yaml
-  - manifest2.yaml

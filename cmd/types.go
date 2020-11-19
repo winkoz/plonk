@@ -2,10 +2,9 @@ package cmd
 
 import "github.com/spf13/cobra"
 
-type CobraHandler func(cmd *cobra.Command, args []string)
+const (
+	defaultDeployEnvironment = "production"
+)
 
-// Constants
-const defaultTemplatesPath = "./templates"
-const defaultCustomTemplatesPath = "$HOME/plonk/templates"
-const deployFolderName = "deploy"
-const deployVariablesPath = deployFolderName + "/variables"
+// CobraHandler handler interface for a cobra command
+type CobraHandler func(cmd *cobra.Command, args []string)

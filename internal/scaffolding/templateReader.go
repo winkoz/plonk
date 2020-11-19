@@ -3,6 +3,8 @@ package scaffolding
 import (
 	"fmt"
 
+	"github.com/winkoz/plonk/data"
+	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
 )
@@ -13,35 +15,35 @@ type TemplateReader interface {
 }
 
 type templateReader struct {
-	defaultTemplatePath string
-	customTemplatePath  string
-	yamlReader          io.YamlReader
-	service             io.Service
+	ctx        config.Context
+	yamlReader io.YamlReader
+	service    io.Service
 }
 
 // TemplateData contains the list of script files
 type TemplateData struct {
-	Name              string `yaml:"name"`
-	VariablesFileName string `yaml:"variables,omitempty"`
-	VariablesContents string
-	Manifests         []string `yaml:"manifests,omitempty"`
-	FilesLocation     []io.FileLocation
-	Files             []string `yaml:"files,omitempty"`
+	Name             string   `yaml:"name"`
+	Manifests        []string `yaml:"manifests,omitempty"`
+	FilesLocation    []io.FileLocation
+	Files            []string `yaml:"files,omitempty"`
+	DefaultVariables struct {
+		Build       map[string]string `yaml:"build,omitempty"`
+		Environment map[string]string `yaml:"environment,omitempty"`
+	} `yaml:"variables,omitempty"`
 }
 
 // NewTemplateReader returns a fully configure TemplateReader
-func NewTemplateReader(defaultTemplatePath string, customTemplatePath string) TemplateReader {
+func NewTemplateReader(ctx config.Context) TemplateReader {
 	ioService := io.NewService()
 	return templateReader{
-		defaultTemplatePath: defaultTemplatePath,
-		customTemplatePath:  customTemplatePath,
-		yamlReader:          io.NewYamlReader(ioService),
-		service:             ioService,
+		ctx:        ctx,
+		yamlReader: io.NewYamlReader(ioService),
+		service:    ioService,
 	}
 }
 
 func (tr templateReader) Read(templateName string) (templateData TemplateData, err error) {
-	signal := log.StarTrace("Read")
+	signal := log.StartTrace("Read")
 	defer log.StopTrace(signal, err)
 
 	templateData = TemplateData{
@@ -89,21 +91,6 @@ func (tr templateReader) Read(templateName string) (templateData TemplateData, e
 		return templateData, err
 	}
 
-	templateData.VariablesFileName, err = tr.fileLocator(templateName, templateData.VariablesFileName)
-	if err != nil {
-		log.Error(err)
-		return templateData, err
-	}
-
-	if len(templateData.VariablesFileName) > 0 {
-		variablesData, err := tr.service.ReadFile(templateData.VariablesFileName)
-		if err != nil {
-			log.Error(err)
-			return templateData, err
-		}
-		templateData.VariablesContents = string(variablesData)
-	}
-
 	return templateData, nil
 }
 
@@ -122,19 +109,20 @@ func (tr templateReader) locateFiles(templateName string, filePaths []string) ([
 
 func (tr templateReader) fileLocator(templateName string, fileName string) (string, error) {
 	filePath := fmt.Sprintf("%s/%s", templateName, fileName)
-	if tr.customTemplatePath != "" {
-		customPath := fmt.Sprintf("%s/%s", tr.customTemplatePath, filePath)
+	if tr.ctx.CustomTemplatesPath != "" {
+		customPath := fmt.Sprintf("%s/%s", tr.ctx.CustomTemplatesPath, filePath)
 		if tr.service.FileExists(customPath) {
 			return customPath, nil
 		}
 	}
 
-	defaultPath := fmt.Sprintf("%s/%s", tr.defaultTemplatePath, filePath)
-	if tr.service.FileExists(defaultPath) {
-		return defaultPath, nil
+	_, err := data.Asset(fmt.Sprintf("templates/%s", filePath))
+	if err == nil {
+		return fmt.Sprintf("%s/templates/%s", io.BinaryFile, filePath), nil
 	}
 
-	err := NewScaffolderFileNotFound(fmt.Sprintf("Template not found %s. Locations [%s, %s]", fileName, tr.customTemplatePath, tr.defaultTemplatePath))
+	log.Debugf("Template asset error: %+v", err)
+	err = NewScaffolderFileNotFound(fmt.Sprintf("Template not found %s. Locations [%s]", fileName, tr.ctx.CustomTemplatesPath))
 	log.Error(err)
 
 	return "", err

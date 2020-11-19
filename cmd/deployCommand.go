@@ -19,32 +19,38 @@ limitations under the License.
 import (
 	"github.com/spf13/cobra"
 	"github.com/winkoz/plonk/internal/config"
+	"github.com/winkoz/plonk/internal/deployment"
 	"github.com/winkoz/plonk/internal/io/log"
-	"github.com/winkoz/plonk/internal/scaffolding"
 )
 
-func addInitCommand(rootCmd *cobra.Command) {
-	var initCmd = &cobra.Command{
-		Use:   "init <project name>",
+func addDeployCommand(rootCmd *cobra.Command) {
+	var deployCmd = &cobra.Command{
+		Use:   "deploy",
 		Short: "Initialize a project deployable by plonk.",
-		Long: `This initialises the plonk.yaml file & the deploy folder with the basic project files.
+		Long: `This triggers a questionnaire for the basic information of a project
+		and then generates the deploy folder with the basic project files.
 		`,
-		Run:     newInitCommandHandler(),
-		Example: "plonk init",
-		Args:    cobra.ExactArgs(1),
+		Run:     newDeployCommandHandler(),
+		Example: "plonk deploy",
+		Args:    cobra.MaximumNArgs(1),
 	}
-	rootCmd.AddCommand(initCmd)
+
+	rootCmd.AddCommand(deployCmd)
 }
 
-func newInitCommandHandler() CobraHandler {
+func newDeployCommandHandler() CobraHandler {
 	return func(cmd *cobra.Command, args []string) {
-		projectName := args[0]
-		ctx, err := config.NewContext(projectName)
+		ctx, err := config.NewContextFromFile()
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		s := scaffolding.NewScaffolder(ctx)
-		s.Install("default")
+		env := defaultDeployEnvironment
+		if len(args) == 1 {
+			env = args[0]
+		}
+
+		d := deployment.NewDeployer(ctx)
+		d.Execute(ctx, env)
 	}
 }

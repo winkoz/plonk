@@ -1,5 +1,0 @@
-name: default-mixed-template
-variables: vars.yaml
-manifests:
-  - manifest.yaml
-  - manifest2.yaml

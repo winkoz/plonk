@@ -1,5 +1,0 @@
-name: api
-variables: vars.yaml
-manifests:
-  - api.yaml
-  - service.yaml

@@ -45,7 +45,7 @@ func (d duplicator) copy(source string, target string, transformator Transformat
 
 // CopyMultiple copies a series of files from a specific path into another
 func (d duplicator) CopyMultiple(targetPath string, sourcePaths []FileLocation, transformator Transformator) (err error) {
-	signal := log.StarTrace("CopyMultiple")
+	signal := log.StartTrace("CopyMultiple")
 	defer log.StopTrace(signal, err)
 
 	// validate target path

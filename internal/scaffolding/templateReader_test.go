@@ -5,19 +5,22 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
 )
 
 func Test_templateReader_Read(t *testing.T) {
-	defaultTemplatePath := "../fixtures/templateReader/defaultTemplates"
+	defaultTemplatePath := io.BinaryFile + "/templates"
 	customTemplatePath := "../fixtures/templateReader/customTemplates"
+	ctx := config.Context{
+		CustomTemplatesPath: customTemplatePath,
+	}
 	ioService := io.NewService()
 	yamlReader := io.NewYamlReader(ioService)
 	type fields struct {
-		defaultTemplatePath string
-		customTemplatePath  string
-		yamlReader          io.YamlReader
-		ioService           io.Service
+		ctx        config.Context
+		yamlReader io.YamlReader
+		ioService  io.Service
 	}
 	type args struct {
 		templateName string
@@ -29,31 +32,38 @@ func Test_templateReader_Read(t *testing.T) {
 		want    TemplateData
 		wantErr error
 	}{
+		// TODO: (jseravalli): Add failing files test for default template
 		{
 			name: "successfully loads a template data file located in the default template folder into a TemplateData structure",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "default",
 			},
 			want: TemplateData{
-				Name: "default-template",
+				Name: "default",
 				FilesLocation: []io.FileLocation{
 					{
 						ResolvedFilePath: defaultTemplatePath + "/default/plonk.yaml",
 						OriginalFilePath: "plonk.yaml",
 					},
+					{
+						ResolvedFilePath: defaultTemplatePath + "/default/deploy/variables/production.yaml",
+						OriginalFilePath: "deploy/variables/production.yaml",
+					},
+					{
+						ResolvedFilePath: defaultTemplatePath + "/default/deploy/variables/base.yaml",
+						OriginalFilePath: "deploy/variables/base.yaml",
+					},
 				},
-				Files:             []string{"plonk.yaml"},
-				VariablesFileName: defaultTemplatePath + "/default/vars.yaml",
-				VariablesContents: `plonk:
-  - NAME: "$NAME"
-  - APP_ENV: "$APP_ENV"
-  - NAMESPACE: "$STACK-$NAME"`,
+				Files: []string{
+					"plonk.yaml",
+					"deploy/variables/production.yaml",
+					"deploy/variables/base.yaml",
+				},
 				Manifests: []string{},
 			},
 			wantErr: nil,
@@ -61,10 +71,9 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "successfully loads a template data file located in the custom template folder into a TemplateData structure",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "custom",
@@ -77,39 +86,18 @@ func Test_templateReader_Read(t *testing.T) {
 						OriginalFilePath: "plonk.yaml",
 					},
 				},
-				Files:             []string{"plonk.yaml"},
-				VariablesFileName: customTemplatePath + "/custom/vars.yaml",
-				VariablesContents: `plonk:
-  - NAME: "custom-name"
-  - APP_ENV: "$APP_ENV"
-  - NAMESPACE: "$STACK-$NAME"`,
+				Files:     []string{"plonk.yaml"},
 				Manifests: []string{},
-			},
-			wantErr: nil,
-		},
-		{
-			name: "successfully loads a template data file with files from custom & default template folders into a TemplateData structure",
-			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
-			},
-			args: args{
-				templateName: "mixed",
-			},
-			want: TemplateData{
-				Name:              "custom-mixed-template",
-				FilesLocation:     []io.FileLocation{},
-				Files:             []string{},
-				VariablesFileName: defaultTemplatePath + "/mixed/vars.yaml",
-				VariablesContents: `plonk:
-  - NAME: "mixed-name"
-  - APP_ENV: "$APP_ENV"
-  - NAMESPACE: "$STACK-$NAME"`,
-				Manifests: []string{
-					customTemplatePath + "/mixed/manifest3.yaml",
-					defaultTemplatePath + "/mixed/manifest2.yaml",
+				DefaultVariables: struct {
+					Build       map[string]string `yaml:"build,omitempty"`
+					Environment map[string]string `yaml:"environment,omitempty"`
+				}{
+					Build: map[string]string{
+						"TEST_BUILD_VAR": "custom-template-build",
+					},
+					Environment: map[string]string{
+						"TEST_ENV_VAR": "custom-template-env",
+					},
 				},
 			},
 			wantErr: nil,
@@ -117,10 +105,9 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "returns an error when the configuration file cannot be located",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "non-existent-config-file",
@@ -129,15 +116,14 @@ func Test_templateReader_Read(t *testing.T) {
 				FilesLocation: []io.FileLocation{},
 				Files:         []string{},
 			},
-			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found template-definition.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
+			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found template-definition.yaml. Locations [%s]", customTemplatePath)),
 		},
 		{
 			name: "returns an error when the configuration file is invalid",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "invalid",
@@ -146,15 +132,14 @@ func Test_templateReader_Read(t *testing.T) {
 				FilesLocation: []io.FileLocation{},
 				Files:         []string{},
 			},
-			wantErr: io.NewParseYamlError(fmt.Sprintf("Unable to parse %s", defaultTemplatePath+"/invalid/template-definition.yaml")),
+			wantErr: io.NewParseYamlError(fmt.Sprintf("Unable to parse %s", customTemplatePath+"/invalid/template-definition.yaml")),
 		},
 		{
 			name: "returns an error when the configuration file points to a non-existent file within the default path",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "missingFiles",
@@ -163,79 +148,54 @@ func Test_templateReader_Read(t *testing.T) {
 				FilesLocation: []io.FileLocation{},
 				Files:         []string{},
 			},
-			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found template-definition.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
-		},
-		{
-			name: "returns an error when the configuration file points to a non-existent file within variables",
-			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
-			},
-			args: args{
-				templateName: "missingVariables",
-			},
-			want: TemplateData{
-				Name:              "missing-variables",
-				FilesLocation:     []io.FileLocation{},
-				Files:             []string{},
-				VariablesFileName: "",
-				Manifests:         []string{},
-			},
-			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found vars.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
+			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found template-definition.yaml. Locations [%s]", customTemplatePath)),
 		},
 		{
 			name: "returns an error when the configuration file points to a non-existent file within scripts",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "missingManifests",
 			},
 			want: TemplateData{
-				Name:              "missing-manifests",
-				FilesLocation:     []io.FileLocation{},
-				Files:             []string{},
-				VariablesFileName: "",
-				Manifests:         []string{},
+				Name:          "missing-manifests",
+				FilesLocation: []io.FileLocation{},
+				Files:         []string{},
+				Manifests:     []string{},
 			},
-			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found missingFile.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
+			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found missingFile.yaml. Locations [%s]", customTemplatePath)),
 		},
 		{
 			name: "returns an error when the configuration file points to a non-existent file within scripts",
 			fields: fields{
-				defaultTemplatePath: defaultTemplatePath,
-				customTemplatePath:  customTemplatePath,
-				ioService:           ioService,
-				yamlReader:          yamlReader,
+				ctx:        ctx,
+				ioService:  ioService,
+				yamlReader: yamlReader,
 			},
 			args: args{
 				templateName: "missingManifests",
 			},
 			want: TemplateData{
-				Name:              "missing-manifests",
-				FilesLocation:     []io.FileLocation{},
-				Files:             []string{},
-				VariablesFileName: "",
-				Manifests:         []string{},
+				Name:          "missing-manifests",
+				FilesLocation: []io.FileLocation{},
+				Files:         []string{},
+				Manifests:     []string{},
 			},
-			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found missingFile.yaml. Locations [%s, %s]", customTemplatePath, defaultTemplatePath)),
+			wantErr: NewScaffolderFileNotFound(fmt.Sprintf("Template not found missingFile.yaml. Locations [%s]", customTemplatePath)),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
 			tf := templateReader{
-				defaultTemplatePath: tt.fields.defaultTemplatePath,
-				customTemplatePath:  tt.fields.customTemplatePath,
-				service:             tt.fields.ioService,
-				yamlReader:          tt.fields.yamlReader,
+				ctx:        ctx,
+				service:    tt.fields.ioService,
+				yamlReader: tt.fields.yamlReader,
 			}
 			got, err := tf.Read(tt.args.templateName)
+
 			if (tt.wantErr == nil && err != nil) || (tt.wantErr != nil && err == nil) {
 				t.Errorf("templateReader.Read() error = %v, wantErr %v", err, tt.wantErr)
 				return

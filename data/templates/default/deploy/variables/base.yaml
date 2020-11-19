@@ -1,0 +1,6 @@
+# base.yaml
+build:
+  NAME: "{{.NAME}}"
+  NAMESPACE: "$ENV-{{.NAME}}"
+environment:
+  APP_ENV: "$ENV"

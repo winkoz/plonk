@@ -8,81 +8,86 @@ import (
 
 // VariableReader reads the variables from a stack flattening with base and returning a map
 type VariableReader interface {
-	GetVariables(stackName string) (map[string]string, error)
+	GetVariablesFromFile(projectName string, env string) (DeployVariables, error)
 }
 
 type variableReader struct {
-	path           string
-	customFileName string
-	baseFileName   string
-	yamlReader     YamlReader
-	interpolator   Interpolator
-	service        Service
+	path         string
+	baseFileName string
+	yamlReader   YamlReader
+	interpolator Interpolator
+	service      Service
 }
 
 // DeployVariables variables used for interpolating the script templates
 type DeployVariables struct {
-	Variables map[string]string `yaml:"variables,omitempty"`
+	Build       map[string]string `yaml:"build,omitempty"`
+	Environment map[string]string `yaml:"environment,omitempty"`
 }
 
 // NewVariableReader returns a fully configure VariableReader
-func NewVariableReader() VariableReader {
+func NewVariableReader(path string) VariableReader {
 	service := NewService()
-	path := service.GetCurrentDir()
 	return variableReader{
-		path:           path,
-		baseFileName:   "base",
-		customFileName: "custom",
-		yamlReader:     NewYamlReader(service),
-		interpolator:   NewInterpolator(),
-		service:        service,
+		path:         path,
+		baseFileName: "base",
+		yamlReader:   NewYamlReader(service),
+		interpolator: NewInterpolator(),
+		service:      service,
 	}
 }
 
-// GetVariables reads the variables from a stack flattening with base and returning a map
-func (vr variableReader) GetVariables(stackName string) (result map[string]string, err error) {
-	signal := log.StarTrace("GetVariables")
+// GetVariablesFromFile reads the variables from a environment flattening with base and returning a map
+func (vr variableReader) GetVariablesFromFile(projectName string, env string) (result DeployVariables, err error) {
+	vars := DeployVariables{}
+	signal := log.StartTrace("GetVariablesFromFile")
 	defer log.StopTrace(signal, err)
 	baseVariables, err := vr.read(vr.baseFileName)
 	if err != nil {
 		log.Error(err)
-		return nil, err
+		return vars, err
 	}
 
-	customVariables, err := vr.read(vr.customFileName)
+	envVars, err := vr.read(env)
 	if err != nil {
-		log.Error(err)
-		return nil, err
+		fullError := err.(*Error)
+		if fullError.Code() != FileNotFoundError {
+			log.Error(fullError)
+			return vars, err
+		}
 	}
 
-	mergedResult := mergeMap(baseVariables, customVariables)
-	log.Debugf("Merged maps: %v", mergedResult)
+	buildVariables := MergeStringMap(envVars.Build, baseVariables.Build)
+	environmentVariables := MergeStringMap(envVars.Environment, baseVariables.Environment)
 
-	stackNameVars := map[string]string{
-		"STACK": stackName,
+	interpolateVars := map[string]string{
+		"ENV":  env,
+		"NAME": projectName,
 	}
 
-	result = vr.interpolator.SubstituteValuesInMap(stackNameVars, mergedResult)
+	vars.Build = vr.interpolator.SubstituteValuesInMap(interpolateVars, buildVariables)
+	vars.Environment = vr.interpolator.SubstituteValuesInMap(interpolateVars, environmentVariables)
 
-	return result, nil
+	return vars, nil
 }
 
-func (vr variableReader) read(fileName string) (map[string]string, error) {
+func (vr variableReader) read(fileName string) (DeployVariables, error) {
+	vars := DeployVariables{
+		Build:       map[string]string{},
+		Environment: map[string]string{},
+	}
 	fullName := fmt.Sprintf("%s.%s", fileName, YAMLExtension)
 	filePath := fmt.Sprintf("%s/%s", vr.path, fullName)
 	if !vr.service.FileExists(filePath) {
-		err := NewParseVariableError(fmt.Sprintf("%s not found at location: %s", fullName, vr.path))
-		log.Error(err)
-		return nil, err
+		err := NewFileNotFoundError(fmt.Sprintf("%s not found at location: %s", fullName, vr.path))
+		return vars, err
 	}
 
-	fileVariables := DeployVariables{}
-	err := vr.yamlReader.Read(filePath, &fileVariables)
+	err := vr.yamlReader.Read(filePath, &vars)
 	if err != nil {
 		internalErr := NewParseVariableError(fmt.Sprintf("Unable to parse %s", filePath))
-		log.Errorf("Error: %+v\t%+v", internalErr, err)
-		return nil, internalErr
+		return vars, internalErr
 	}
 
-	return fileVariables.Variables, nil
+	return vars, nil
 }
