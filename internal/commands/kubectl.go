@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"fmt"
+	"strings"
 
 	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io/log"
@@ -12,23 +12,28 @@ type kubectlCommand struct {
 }
 
 func (k kubectlCommand) Deploy(env string, manifestPath string, ctx config.Context) (err error) {
-	cmd := fmt.Sprintf("%s apply -f %s", ctx.DeployCommand, manifestPath)
-	return k.executeCommand(cmd, "Deploy")
+	return k.executeCommand("Deploy", ctx.DeployCommand, "apply", "-f", manifestPath)
 }
 
 func (k kubectlCommand) Diff(env string, manifestPath string, ctx config.Context) (err error) {
-	cmd := fmt.Sprintf("%s diff -f %s", ctx.DeployCommand, manifestPath)
-	return k.executeCommand(cmd, "Diff")
+	return k.executeCommand("Diff", ctx.DeployCommand, "diff", "-f", manifestPath)
 }
 
 func (k kubectlCommand) Show(env string, ctx config.Context) error {
 	return nil
 }
 
-func (k kubectlCommand) executeCommand(command string, logName string) (err error) {
+func (k kubectlCommand) executeCommand(logName string, command string, args ...string) (err error) {
 	signal := log.StartTrace(logName)
 	defer log.StopTrace(signal, err)
 
-	err = k.executor.Run(command)
+	cmd := strings.Fields(command)
+	if len(cmd) > 1 {
+		args = append(cmd[1:], args...)
+		command = cmd[0]
+	}
+
+	log.Debugf("Executing: %s %v", command, args)
+	err = k.executor.Run(command, args...)
 	return err
 }

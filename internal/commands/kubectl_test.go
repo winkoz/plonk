@@ -26,6 +26,7 @@ func Test_kubecltCommand_Deploy(t *testing.T) {
 		fields      fields
 		args        args
 		wantCommand string
+		wantArgs    []string
 		wantErr     bool
 	}{
 		{
@@ -38,7 +39,8 @@ func Test_kubecltCommand_Deploy(t *testing.T) {
 				manifestPath: "this/is/not/a/real/path",
 				ctx:          ctx,
 			},
-			wantCommand: "notKubeCtl apply -f this/is/not/a/real/path",
+			wantCommand: "notKubeCtl",
+			wantArgs:    []string{"apply", "-f", "this/is/not/a/real/path"},
 			wantErr:     false,
 		},
 	}
@@ -51,6 +53,7 @@ func Test_kubecltCommand_Deploy(t *testing.T) {
 			tt.fields.executor.On(
 				"Run",
 				tt.wantCommand,
+				tt.wantArgs,
 			).Return(
 				nil,
 			)
