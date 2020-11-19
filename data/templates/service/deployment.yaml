@@ -1,21 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{.NAME}}-deployment
+  name: {{.NAME}}-{{.ENV}}-deployment
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: {{.NAME}}
+      app: {{.NAME}}-{{.ENV}}
   template:
     metadata:
       labels:
-        app: {{.NAME}}
+        app: {{.NAME}}-{{.ENV}}
     spec:
       containers:
       - name: {{.NAME}}
         image: {{.DOCKER_IMAGE}}
         ports:
         - containerPort: {{.MAIN_PORT}}
-        env: 
-        {{range $k, $v := .ENVIRONMENT_VARIABLES}}- {{$k}}: {{$v}}{{end}}
+        env: {{range $k, $v := .ENVIRONMENT_VARIABLES}} 
+          - name: {{$k}} 
+            value: "{{$v}}"
+        {{end}}

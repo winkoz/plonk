@@ -7,5 +7,6 @@ variables:
   environment:
     PORT: 80
 manifests:
-  - api.yaml
+  - deployment.yaml
   - service.yaml
+  - ingress.yaml
