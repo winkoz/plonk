@@ -19,7 +19,7 @@ go-build: clean go-build-assets
 	@echo "Plonk built successfully!"
 
 go-test: go-build-assets
-	GO111MODULE=on richgo test -parallel 6 -cover ./...
+	GO111MODULE=on richgo test -cover ./...
 	@echo "Plonk finished testing!"
 
 build: clean docker-build
