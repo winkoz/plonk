@@ -85,11 +85,11 @@ func (d deployer) environmentTemplates(env string) ([]scaffolding.TemplateData, 
 	templateNames := []string{}
 	if desiredEnv := d.ctx.Environments[env]; desiredEnv != nil {
 		templateNames = desiredEnv
+	} else {
+		templateNames = d.ctx.Environments[baseEnvironmentKey]
 	}
 	log.Debugf("Loaded templates for '%s': %v", env, templateNames)
 
-	baseTemplateNames := d.ctx.Environments[baseEnvironmentKey]
-	templateNames = append(templateNames, baseTemplateNames...)
 	result := make([]scaffolding.TemplateData, len(templateNames))
 	for _, templateName := range templateNames {
 		log.Debugf("Loading template: %s", templateName)
