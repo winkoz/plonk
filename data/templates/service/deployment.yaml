@@ -1,9 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{.NAME}}-{{.ENV}}-deployment
+  name: {{.NAME}}-{{.ENV}}-peployment
+  labels:
+    app: {{.NAME}}-{{.ENV}}
 spec:
-  replicas: 3
+  replicas: {{.REPLICAS}}
   selector:
     matchLabels:
       app: {{.NAME}}-{{.ENV}}
@@ -16,7 +18,7 @@ spec:
       - name: {{.NAME}}
         image: {{.DOCKER_IMAGE}}
         ports:
-        - containerPort: {{.MAIN_PORT}}
+        - containerPort: {{.CONTAINER_PORT}}
         env: {{range $k, $v := .ENVIRONMENT_VARIABLES}} 
           - name: {{$k}} 
             value: "{{$v}}"

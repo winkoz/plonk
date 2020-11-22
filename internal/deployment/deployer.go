@@ -62,8 +62,9 @@ func (d deployer) Execute(ctx config.Context, env string) (err error) {
 		return err
 	}
 
-	deployFilePath := filepath.Join(d.ctx.TargetPath, d.ctx.DeployFolderName, fmt.Sprintf("deploy.%s", io.YAMLExtension))
-	err = d.ioService.Write(deployFilePath, mainDeployFile)
+	deployFilePath := filepath.Join(d.ctx.DeployFolderName, fmt.Sprintf("deploy.%s", io.YAMLExtension))
+	deployFullPath := filepath.Join(d.ctx.TargetPath, deployFilePath)
+	err = d.ioService.Write(deployFullPath, mainDeployFile)
 	if err != nil {
 		log.Errorf("Cannot save main deploy file. %+v", err)
 		return err
