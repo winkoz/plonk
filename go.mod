@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/apex/log v1.9.0
 	github.com/fatih/color v1.9.0
+	github.com/jteeuwen/go-bindata v3.0.7+incompatible // indirect
 	github.com/mattn/go-colorable v0.1.8
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/spf13/cobra v1.1.1

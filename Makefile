@@ -15,7 +15,7 @@ go-build-assets:
 	GO111MODULE=on go-bindata -prefix "data/" -pkg data -o data/data.go data/...
 
 go-build: clean go-build-assets
-	GO111MODULE=on go build -ldflags="-s -w" -o bin/plonk main.go
+	GO111MODULE=on GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o bin/plonk main.go
 	@echo "Plonk built successfully!"
 
 go-test: go-build-assets
@@ -39,4 +39,3 @@ run: build
 
 ssh: build
 	$(DOCKER) bash
-
