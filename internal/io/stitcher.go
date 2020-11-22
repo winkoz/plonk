@@ -1,8 +1,8 @@
 package io
 
 import (
-	"fmt"
 	"io/ioutil"
+	"path/filepath"
 
 	"github.com/winkoz/plonk/internal/io/log"
 )
@@ -41,7 +41,7 @@ func (s stitcher) Stitch(sourcePath string, targetPath string, targetFilename st
 
 	transformedBytes := fileTransformator(mergedBytes)
 
-	targetFilePath := fmt.Sprintf("%s/%s", targetPath, targetFilename)
+	targetFilePath := filepath.Join(targetPath, targetFilename)
 	if err := ioutil.WriteFile(targetFilePath, transformedBytes, OwnerPermission); err != nil {
 		log.Error(err)
 		return err
@@ -55,7 +55,7 @@ func (s stitcher) mergeFiles(sourcePath string, filePaths []string) ([]byte, err
 	newLine := byte('\n')
 	buffer := []byte{}
 	for _, source := range filePaths {
-		filePath := fmt.Sprintf("%s/%s", sourcePath, source)
+		filePath := filepath.Join(sourcePath, source)
 
 		var fileContents []byte
 		fileContents, err = s.service.ReadFile(filePath)

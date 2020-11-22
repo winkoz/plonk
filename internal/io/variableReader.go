@@ -2,6 +2,7 @@ package io
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"github.com/winkoz/plonk/internal/io/log"
 )
@@ -77,7 +78,7 @@ func (vr variableReader) read(fileName string) (DeployVariables, error) {
 		Environment: map[string]string{},
 	}
 	fullName := fmt.Sprintf("%s.%s", fileName, YAMLExtension)
-	filePath := fmt.Sprintf("%s/%s", vr.path, fullName)
+	filePath := filepath.Join(vr.path, fullName)
 	if !vr.service.FileExists(filePath) {
 		err := NewFileNotFoundError(fmt.Sprintf("%s not found at location: %s", fullName, vr.path))
 		return vars, err

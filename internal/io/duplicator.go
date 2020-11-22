@@ -1,8 +1,8 @@
 package io
 
 import (
-	"fmt"
 	"io/ioutil"
+	"path/filepath"
 
 	"github.com/winkoz/plonk/internal/io/log"
 )
@@ -57,7 +57,7 @@ func (d duplicator) CopyMultiple(targetPath string, sourcePaths []FileLocation, 
 	// copy sources
 	var targetFilePath string
 	for _, sourceFileLocation := range sourcePaths {
-		targetFilePath = fmt.Sprintf("%s/%s", targetPath, sourceFileLocation.OriginalFilePath)
+		targetFilePath = filepath.Join(targetPath, sourceFileLocation.OriginalFilePath)
 		log.Debugf("Duplicating %s into %s", sourceFileLocation.OriginalFilePath, targetFilePath)
 		if err = d.copy(sourceFileLocation.ResolvedFilePath, targetFilePath, transformator); err != nil {
 			log.Error(err)
