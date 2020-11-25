@@ -1,0 +1,12 @@
+apiVersion: v1
+metadata:
+  name: {{.NAME}}-{{.ENV}}-pvc
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+spec:
+  accessModes:
+    - {{.PVC_ACCESS_MODE}}
+  resources:
+    requests:
+      storage: {{.PVC_STORAGE_SIZE}}
+  storageClassName: {{.PVC_STORAGE_CLASS_NAME}}
