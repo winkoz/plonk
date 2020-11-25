@@ -34,7 +34,7 @@ func NewDeployer(ctx config.Context) Deployer {
 		ioService:      io.NewService(),
 		templateParser: io.NewTemplateParser(),
 		//TODO: change this
-		orchestratorCommand: commands.NewOrchestrator("kubectl"),
+		orchestratorCommand: commands.NewOrchestrator(ctx, "kubectl"),
 	}
 }
 
@@ -71,7 +71,7 @@ func (d deployer) Execute(ctx config.Context, env string) (err error) {
 	}
 
 	// execute in kubectl
-	err = d.orchestratorCommand.Deploy(env, deployFilePath, d.ctx)
+	err = d.orchestratorCommand.Deploy(env, deployFilePath)
 	if err != nil {
 		log.Errorf("Cannot execute deploy command %s. error = %+v", d.ctx.DeployCommand, err)
 		return err

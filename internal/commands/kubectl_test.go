@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/winkoz/plonk/internal/config"
+	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/sharedtesting"
 )
 
@@ -12,6 +13,7 @@ func Test_kubecltCommand_Deploy(t *testing.T) {
 	executorMock := new(sharedtesting.ExecutorMock)
 	ctx := config.Context{
 		DeployCommand: "notKubeCtl",
+		TargetPath:    "",
 	}
 	type fields struct {
 		executor *sharedtesting.ExecutorMock
@@ -43,11 +45,30 @@ func Test_kubecltCommand_Deploy(t *testing.T) {
 			wantArgs:    []string{"apply", "-f", "this/is/not/a/real/path"},
 			wantErr:     false,
 		},
+		{
+			name: "Successfully interpolates the path into the command",
+			fields: fields{
+				executor: executorMock,
+			},
+			args: args{
+				env:          "production",
+				manifestPath: "this/is/not/a/real/path",
+				ctx: config.Context{
+					DeployCommand: "notKubeCtl -p $PWD",
+					TargetPath:    "/this/is/some/path",
+				},
+			},
+			wantCommand: "notKubeCtl",
+			wantArgs:    []string{"-p", "/this/is/some/path", "apply", "-f", "this/is/not/a/real/path"},
+			wantErr:     false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			k := kubectlCommand{
-				executor: tt.fields.executor,
+				executor:     tt.fields.executor,
+				interpolator: io.NewInterpolator(),
+				ctx:          tt.args.ctx,
 			}
 
 			tt.fields.executor.On(
@@ -58,7 +79,7 @@ func Test_kubecltCommand_Deploy(t *testing.T) {
 				nil,
 			)
 
-			err := k.Deploy(tt.args.env, tt.args.manifestPath, tt.args.ctx)
+			err := k.Deploy(tt.args.env, tt.args.manifestPath)
 
 			if tt.wantErr {
 				assert.Error(t, err)
