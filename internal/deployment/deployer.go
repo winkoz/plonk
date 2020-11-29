@@ -107,22 +107,33 @@ func (d deployer) environmentTemplates(env string) ([]scaffolding.TemplateData, 
 func (d deployer) manifestMerger(templates []scaffolding.TemplateData, deployVariables io.DeployVariables, env string) (string, error) {
 	result := ""
 	substitutionVariables := map[string]interface{}{}
+	substitutionEnvironmentVariables := deployVariables.Environment
+
 	for key, value := range deployVariables.Build {
 		substitutionVariables[key] = value
 	}
-	substitutionVariables[environmentVariablesKey] = deployVariables.Environment
+
 	substitutionVariables[environmentKey] = env
 	substitutionVariables[projectNameKey] = d.ctx.ProjectName
 
 	for _, template := range templates {
 		templateVariables := map[string]interface{}{}
+		templateEnvVariables := map[string]string{}
 		for key, value := range template.DefaultVariables.Build {
 			if _, exists := substitutionVariables[key]; !exists {
 				templateVariables[key] = value
 			}
 		}
 
+		for key, value := range template.DefaultVariables.Environment {
+			if _, exists := substitutionVariables[key]; !exists {
+				templateEnvVariables[key] = value
+			}
+		}
+
+		mergedEnvVariables := io.MergeStringMap(templateEnvVariables, substitutionEnvironmentVariables)
 		mergedVariables := io.MergeMap(templateVariables, substitutionVariables)
+		mergedVariables[environmentVariablesKey] = mergedEnvVariables
 		for _, manifestFileName := range template.Manifests {
 			data, err := d.ioService.ReadFile(manifestFileName)
 			if err != nil {
