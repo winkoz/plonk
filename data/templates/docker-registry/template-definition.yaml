@@ -9,7 +9,7 @@ variables:
     PVC_STORAGE_SIZE: 5Gi
     PVC_STORAGE_CLASS_NAME: do-block-storage
     IMAGE_PULLPOLICY: IfNotPresent
-    PROBE_SCHEME: HTTPS
+    PROBE_SCHEME: HTTP
   environment:
     PORT: 5000
     REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /var/lib/registry

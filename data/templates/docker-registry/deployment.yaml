@@ -17,22 +17,23 @@ spec:
       containers:
       - name: {{.NAME}}
         image: {{.DOCKER_IMAGE}}
-        imagePullPolicy: {{.IMAGE_PULLPOLICY }}
+        imagePullPolicy: {{.IMAGE_PULLPOLICY}}
         command:
         - /bin/registry
         - serve
+        - /etc/docker/registry/config.yml
         ports:
         - containerPort: {{.CONTAINER_PORT}}
         livenessProbe:
           httpGet:
             scheme: {{.PROBE_SCHEME}}
             path: /
-            port: {{.PORT}}
+            port: {{.CONTAINER_PORT}}
         readinessProbe:
           httpGet:
             scheme: {{.PROBE_SCHEME}}
             path: /
-            port: {{.PORT}}
+            port: {{.CONTAINER_PORT}}
         env: {{range $k, $v := .ENVIRONMENT_VARIABLES}} 
           - name: {{$k}} 
             value: "{{$v}}"
