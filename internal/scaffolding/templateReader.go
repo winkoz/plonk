@@ -30,6 +30,7 @@ type TemplateData struct {
 	DefaultVariables struct {
 		Build       map[string]string `yaml:"build,omitempty"`
 		Environment map[string]string `yaml:"environment,omitempty"`
+		// Secret      map[string]string `yaml:"secret,omitempty"`
 	} `yaml:"variables,omitempty"`
 }
 
