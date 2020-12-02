@@ -75,3 +75,9 @@ func (i *IOServiceMock) IsValidPath(path string) error {
 	args := i.Called(path)
 	return args.Error(0)
 }
+
+// Base64Encode ...
+func (i *IOServiceMock) Base64Encode(v []byte) (string, error) {
+	args := i.Called(v)
+	return args.String(0), args.Error(1)
+}

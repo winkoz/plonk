@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_secretReader_GetSecretFromFile(t *testing.T) {
+func Test_secretReader_GetSecretsFromFile(t *testing.T) {
 	fixturesDir := "../fixtures/secrets"
 	service := NewService()
 	yamlReader := NewYamlReader(service)
@@ -86,13 +86,13 @@ func Test_secretReader_GetSecretFromFile(t *testing.T) {
 				yamlReader:   tt.fields.yamlReader,
 				service:      tt.fields.service,
 			}
-			got, err := sut.GetSecretFromFile(tt.args.projectName, tt.args.env)
+			got, err := sut.GetSecretsFromFile(tt.args.projectName, tt.args.env)
 			if (tt.wantErr != NoError && err == nil) || (tt.wantErr == NoError && err != nil) {
-				t.Errorf("secretReader.GetSecretFromFile() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("secretReader.GetSecretsFromFile() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if tt.wantErr != NoError && err != nil && err.(*Error).Code() != tt.wantErr {
-				t.Errorf("secretReader.GetSecretFromFile() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("secretReader.GetSecretsFromFile() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			assert.Equal(t, tt.want, got)

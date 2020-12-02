@@ -9,7 +9,7 @@ import (
 
 // SecretReader reads the secrets from a stack flattening with base and returning a map
 type SecretReader interface {
-	GetVariablesFromFile(projectName string, env string) (DeploySecrets, error)
+	GetSecretsFromFile(projectName string, env string) (result DeploySecrets, err error)
 }
 
 type secretReader struct {
@@ -25,19 +25,18 @@ type DeploySecrets struct {
 }
 
 // NewSecretReader returns a fully configure SecretReader
-func NewSecretReader(path string) VariableReader {
+func NewSecretReader(path string) SecretReader {
 	service := NewService()
-	return variableReader{
+	return secretReader{
 		path:         path,
 		baseFileName: "base",
 		yamlReader:   NewYamlReader(service),
-		interpolator: NewInterpolator(),
 		service:      service,
 	}
 }
 
-// GetSecretFromFile reads the secret from a environment flattening with base and returning a map
-func (sr secretReader) GetSecretFromFile(projectName string, env string) (result DeploySecrets, err error) {
+// GetSecretsFromFile reads the secret from a environment flattening with base and returning a map
+func (sr secretReader) GetSecretsFromFile(projectName string, env string) (result DeploySecrets, err error) {
 	secrets := DeploySecrets{}
 	signal := log.StartTrace("DeploySecrets")
 	defer log.StopTrace(signal, err)

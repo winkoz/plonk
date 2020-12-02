@@ -2,6 +2,7 @@ package io
 
 import (
 	"bytes"
+	"strings"
 	"text/template"
 
 	"github.com/winkoz/plonk/internal/io/log"
@@ -12,18 +13,32 @@ type TemplateParser interface {
 	Parse(variables map[string]interface{}, templateContent string) (string, error)
 }
 
-type templateParser struct{}
+type templateParser struct {
+	service Service
+}
 
 // NewTemplateParser returns a fully initialised TemplateParser
 func NewTemplateParser() TemplateParser {
-	return templateParser{}
+	return templateParser{
+		service: NewService(),
+	}
 }
 
 func (t templateParser) Parse(variables map[string]interface{}, templateContent string) (result string, err error) {
 	signal := log.StartTrace("Parse")
 	defer log.StopTrace(signal, err)
 
-	template, err := template.New("memory_template").Parse(templateContent)
+	funcMap := template.FuncMap{
+		// The name "title" is what the function will be called in the template text.
+		"title":        strings.Title,
+		"readFile":     t.service.ReadFile,
+		"base64Encode": t.service.Base64Encode,
+	}
+
+	template, err := template.
+		New("memory_template").
+		Funcs(funcMap).
+		Parse(templateContent)
 	if err != nil {
 		log.Errorf("Unable to parse template. %v", err)
 		return result, err
