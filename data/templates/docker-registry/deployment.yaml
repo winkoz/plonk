@@ -41,8 +41,19 @@ spec:
         volumeMounts:
         - name: data
           mountPath: {{index .ENVIRONMENT_VARIABLES "REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY"}}
+          volumeMounts:
+        - name: auth
+          mountPath: {{.REGISTRY_HTPASSWD_PATH}}
+          readOnly: true
       volumes:
       - name: data
         persistentVolumeClaim:
           claimName: {{.NAME}}-{{.ENV}}-pvc
+      - name: auth
+        secret:
+          secretName: {{.NAME}}-{{.ENV}}-secret
+          items:
+            - key: htpasswd
+              path: htpasswd
+
           
