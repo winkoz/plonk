@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.NAME}}-{{.ENV}}-deployment
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+spec:
+  replicas: {{.REPLICAS}}
+  selector:
+    matchLabels:
+      app: {{.NAME}}-{{.ENV}}
+  template:
+    metadata:
+      labels:
+        app: {{.NAME}}-{{.ENV}}
+    spec:
+      containers:
+      - name: {{.NAME}}
+        image: {{.DOCKER_IMAGE}}
+        imagePullPolicy: {{.IMAGE_PULLPOLICY}}
+        command:
+        - /bin/registry
+        - serve
+        - /etc/docker/registry/config.yml
+        ports:
+        - containerPort: {{.CONTAINER_PORT}}
+        livenessProbe:
+          httpGet:
+            scheme: {{.PROBE_SCHEME}}
+            path: /
+            port: {{.CONTAINER_PORT}}
+        readinessProbe:
+          httpGet:
+            scheme: {{.PROBE_SCHEME}}
+            path: /
+            port: {{.CONTAINER_PORT}}
+        env: {{range $k, $v := .ENVIRONMENT_VARIABLES}} 
+          - name: {{$k}} 
+            value: "{{$v}}"
+        {{end}}
+        volumeMounts:
+        - name: data
+          mountPath: {{index .ENVIRONMENT_VARIABLES "REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY"}}
+          volumeMounts:
+        - name: auth
+          mountPath: {{.REGISTRY_HTPASSWD_PATH}}
+          readOnly: true
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{.NAME}}-{{.ENV}}-pvc
+      - name: auth
+        secret:
+          secretName: {{.NAME}}-{{.ENV}}-secret
+          items:
+            - key: htpasswd
+              path: htpasswd
+
+          

@@ -20,6 +20,7 @@ type Context struct {
 	// Deploy Config
 	DeployFolderName    string
 	DeployVariablesPath string
+	DeploySecretsPath   string
 	TargetPath          string
 
 	// Services
@@ -41,6 +42,7 @@ func NewContext(projectName string) (Context, error) {
 		// Deploy Config
 		DeployFolderName:    deployFolderName,
 		DeployVariablesPath: deployVariablesPath,
+		DeploySecretsPath:   deploySecretsPath,
 		TargetPath:          ioService.GetCurrentDir(),
 
 		// Services
@@ -72,6 +74,7 @@ func NewContextFromFile() (Context, error) {
 		// Deploy Config
 		DeployFolderName:    deployFolderName,
 		DeployVariablesPath: deployVariablesPath,
+		DeploySecretsPath:   deploySecretsPath,
 		TargetPath:          ioService.GetCurrentDir(),
 
 		// Services

@@ -16,6 +16,8 @@ const (
 	BaseError
 	// ParseVariableError happens when a variables file couldn't be parsed
 	ParseVariableError
+	// ParseSecretError happens when a secrets file couldn't be parsed
+	ParseSecretError
 	// FileNotFoundError happens when a file can't be found in disk
 	FileNotFoundError
 	// ParseYamlError happens when a yaml file can't be parsed
@@ -50,6 +52,11 @@ func (e *Error) Code() ErrorCode {
 // NewParseVariableError returns an io.Error representing when failed to retrieve variables for an environment
 func NewParseVariableError(message string) *Error {
 	return &Error{code: ParseVariableError, msg: message}
+}
+
+// NewParseSecretError returns an io.Error representing when failed to retrieve secrets for an environment
+func NewParseSecretError(message string) *Error {
+	return &Error{code: ParseSecretError, msg: message}
 }
 
 // NewFileNotFoundError returns an io.Error representing when failed to retrieve variables for a environment

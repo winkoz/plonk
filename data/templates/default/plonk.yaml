@@ -3,6 +3,6 @@ command: kubectl
 templates: ~/.templates
 environments:
   base:
-    - service
+    - http-service
   production:
-    - service
+    - http-service

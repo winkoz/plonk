@@ -1,6 +1,7 @@
 package io
 
 import (
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -26,6 +27,7 @@ type Service interface {
 	Append(targetFilePath string, content string) error
 	Write(targetFilePath string, content string) error
 	IsValidPath(path string) error
+	Base64Encode(v []byte) (string, error)
 }
 
 type service struct{}
@@ -145,4 +147,8 @@ func (s service) Write(targetFilePath string, content string) error {
 func (s service) IsValidPath(path string) error {
 	_, err := os.Stat(path)
 	return err
+}
+
+func (s service) Base64Encode(v []byte) (string, error) {
+	return base64.StdEncoding.EncodeToString(v), nil
 }

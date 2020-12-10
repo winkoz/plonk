@@ -19,6 +19,7 @@ type Deployer interface {
 type deployer struct {
 	ctx                 config.Context
 	varReader           io.VariableReader
+	secretsReader       io.SecretReader
 	templateReader      scaffolding.TemplateReader
 	ioService           io.Service
 	templateParser      io.TemplateParser
@@ -30,6 +31,7 @@ func NewDeployer(ctx config.Context) Deployer {
 	return deployer{
 		ctx:            ctx,
 		varReader:      io.NewVariableReader(filepath.Join(ctx.TargetPath, ctx.DeployVariablesPath)),
+		secretsReader:  io.NewSecretReader(filepath.Join(ctx.TargetPath, ctx.DeploySecretsPath)),
 		templateReader: scaffolding.NewTemplateReader(ctx),
 		ioService:      io.NewService(),
 		templateParser: io.NewTemplateParser(),
@@ -48,6 +50,10 @@ func (d deployer) Execute(ctx config.Context, env string) (err error) {
 	variables, err := d.varReader.GetVariablesFromFile(ctx.ProjectName, env)
 	log.Debugf("Loaded variables: %v", variables)
 
+	// load secrets
+	secrets, err := d.secretsReader.GetSecretsFromFile(ctx.ProjectName, env)
+	log.Debugf("Loaded secrets: %v", secrets)
+
 	// join file
 	templates, err := d.environmentTemplates(env)
 	log.Debugf("Loaded templates: %v", templates)
@@ -56,7 +62,7 @@ func (d deployer) Execute(ctx config.Context, env string) (err error) {
 		return err
 	}
 
-	mainDeployFile, err := d.manifestMerger(templates, variables, env)
+	mainDeployFile, err := d.manifestMerger(templates, variables, secrets, env)
 	if err != nil {
 		log.Errorf("Unable to join all manifest files. %v", err)
 		return err
@@ -104,25 +110,37 @@ func (d deployer) environmentTemplates(env string) ([]scaffolding.TemplateData, 
 	return result, nil
 }
 
-func (d deployer) manifestMerger(templates []scaffolding.TemplateData, deployVariables io.DeployVariables, env string) (string, error) {
+func (d deployer) manifestMerger(templates []scaffolding.TemplateData, deployVariables io.DeployVariables, deploySecrets io.DeploySecrets, env string) (string, error) {
 	result := ""
 	substitutionVariables := map[string]interface{}{}
+	substitutionEnvironmentVariables := deployVariables.Environment
+
 	for key, value := range deployVariables.Build {
 		substitutionVariables[key] = value
 	}
-	substitutionVariables[environmentVariablesKey] = deployVariables.Environment
+
 	substitutionVariables[environmentKey] = env
 	substitutionVariables[projectNameKey] = d.ctx.ProjectName
 
 	for _, template := range templates {
 		templateVariables := map[string]interface{}{}
+		templateEnvVariables := map[string]string{}
 		for key, value := range template.DefaultVariables.Build {
 			if _, exists := substitutionVariables[key]; !exists {
 				templateVariables[key] = value
 			}
 		}
 
+		for key, value := range template.DefaultVariables.Environment {
+			if _, exists := substitutionVariables[key]; !exists {
+				templateEnvVariables[key] = value
+			}
+		}
+
+		mergedEnvVariables := io.MergeStringMap(templateEnvVariables, substitutionEnvironmentVariables)
 		mergedVariables := io.MergeMap(templateVariables, substitutionVariables)
+		mergedVariables[environmentVariablesKey] = mergedEnvVariables
+		mergedVariables[environmentSecretsKey] = deploySecrets.Secret
 		for _, manifestFileName := range template.Manifests {
 			data, err := d.ioService.ReadFile(manifestFileName)
 			if err != nil {

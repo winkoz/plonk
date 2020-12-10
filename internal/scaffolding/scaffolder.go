@@ -53,6 +53,11 @@ func (s scaffolder) Install(name string) (err error) {
 		return err
 	}
 
+	if err := s.createDirectoryIfNeeded(s.ctx.DeploySecretsPath); err != nil { // Creates target/deploy/secrets if needed
+		log.Errorf("Cannot create folder %s. %v", s.ctx.DeployVariablesPath, err)
+		return err
+	}
+
 	// Duplicate Files
 	if len(template.FilesLocation) > 0 {
 

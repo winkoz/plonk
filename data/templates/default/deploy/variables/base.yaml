@@ -2,5 +2,6 @@
 build:
   NAME: "{{.NAME}}"
   NAMESPACE: "$ENV-{{.NAME}}"
+  HOSTNAME: "{{.NAME}}.example.com"
 environment:
   APP_ENV: "$ENV"

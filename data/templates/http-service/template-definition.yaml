@@ -1,10 +1,11 @@
-name: service
+name: http-service
 variables: 
   build:
     DOCKER_IMAGE: ""
     SERVICE_PORT: 80
     CONTAINER_PORT: 8080
     REPLICAS: 1
+    DOCKER_IMAGE_PULL_SECRET: docker-registry-production-imgpull-secret
   environment:
     PORT: 8090
 manifests:
