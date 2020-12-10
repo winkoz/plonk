@@ -32,13 +32,16 @@ func Test_scaffolder_Install(t *testing.T) {
 		templatedata TemplateData
 		err          error
 	}
-	type wantIOServiceMock struct {
-		shouldTest            bool
+	type mockIOServiceExpectation struct {
 		createPathReturn      error
 		directoryExistsReturn bool
 		walkReturn            error
 		appendReturn          error
 		paramFullPath         string
+	}
+	type wantIOServiceMock struct {
+		shouldTest   bool
+		expectations []mockIOServiceExpectation
 	}
 	tests := []struct {
 		name                   string
@@ -78,11 +81,21 @@ func Test_scaffolder_Install(t *testing.T) {
 				err:        nil,
 			},
 			wantIOServiceMock: wantIOServiceMock{
-				shouldTest:            true,
-				directoryExistsReturn: true,
-				createPathReturn:      nil,
-				walkReturn:            nil,
-				paramFullPath:         "/tmp/plonk/tests/scripts/deploy/variables",
+				shouldTest: true,
+				expectations: []mockIOServiceExpectation{
+					{
+						directoryExistsReturn: true,
+						createPathReturn:      nil,
+						walkReturn:            nil,
+						paramFullPath:         "/tmp/plonk/tests/scripts",
+					},
+					{
+						directoryExistsReturn: true,
+						createPathReturn:      nil,
+						walkReturn:            nil,
+						paramFullPath:         "/tmp/plonk/tests/scripts/deploy/variables",
+					},
+				},
 			},
 		},
 		{
@@ -113,10 +126,20 @@ func Test_scaffolder_Install(t *testing.T) {
 				shouldTest: false,
 			},
 			wantIOServiceMock: wantIOServiceMock{
-				shouldTest:    true,
-				paramFullPath: "/tmp/plonk/tests/scripts/deploy/variables",
-				appendReturn:  nil,
-				walkReturn:    nil,
+				shouldTest: true,
+				expectations: []mockIOServiceExpectation{
+					{
+						directoryExistsReturn: true,
+						createPathReturn:      nil,
+						walkReturn:            nil,
+						paramFullPath:         "/tmp/plonk/tests/scripts",
+					},
+					{
+						paramFullPath: "/tmp/plonk/tests/scripts/deploy/variables",
+						appendReturn:  nil,
+						walkReturn:    nil,
+					},
+				},
 			},
 		},
 		{
@@ -147,11 +170,15 @@ func Test_scaffolder_Install(t *testing.T) {
 				shouldTest: false,
 			},
 			wantIOServiceMock: wantIOServiceMock{
-				shouldTest:            true,
-				directoryExistsReturn: false,
-				createPathReturn:      fmt.Errorf("Failed to create path"),
-				walkReturn:            nil,
-				paramFullPath:         "/tmp/plonk/tests/scripts/deploy/variables",
+				shouldTest: true,
+				expectations: []mockIOServiceExpectation{
+					{
+						directoryExistsReturn: false,
+						createPathReturn:      fmt.Errorf("Failed to create path"),
+						walkReturn:            nil,
+						paramFullPath:         "/tmp/plonk/tests/scripts/deploy/variables",
+					},
+				},
 			},
 		},
 		{
@@ -188,9 +215,19 @@ func Test_scaffolder_Install(t *testing.T) {
 				err:        fmt.Errorf("Failed CopyMultiple"),
 			},
 			wantIOServiceMock: wantIOServiceMock{
-				shouldTest:            true,
-				directoryExistsReturn: true,
-				paramFullPath:         "/tmp/plonk/tests/scripts/deploy/variables",
+				shouldTest: true,
+				expectations: []mockIOServiceExpectation{
+					{
+						directoryExistsReturn: true,
+						createPathReturn:      nil,
+						walkReturn:            nil,
+						paramFullPath:         "/tmp/plonk/tests/scripts",
+					},
+					{
+						directoryExistsReturn: true,
+						paramFullPath:         "/tmp/plonk/tests/scripts/deploy/variables",
+					},
+				},
 			},
 		},
 	}
@@ -225,18 +262,24 @@ func Test_scaffolder_Install(t *testing.T) {
 				)
 			}
 			if tt.wantIOServiceMock.shouldTest {
-				tt.fields.ioService.On(
-					"DirectoryExists",
-					tt.wantIOServiceMock.paramFullPath,
-				).Return(
-					tt.wantIOServiceMock.directoryExistsReturn,
-				)
-				tt.fields.ioService.On(
-					"CreatePath",
-					tt.wantIOServiceMock.paramFullPath,
-				).Return(
-					tt.wantIOServiceMock.createPathReturn,
-				)
+				for _, expectation := range tt.wantIOServiceMock.expectations {
+					tt.fields.ioService.On(
+						"DirectoryExists",
+						expectation.paramFullPath,
+					).
+						Once().
+						Return(
+							expectation.directoryExistsReturn,
+						)
+					tt.fields.ioService.On(
+						"CreatePath",
+						expectation.paramFullPath,
+					).
+						Once().
+						Return(
+							expectation.createPathReturn,
+						)
+				}
 			}
 			if err := s.Install(tt.args.name); (err != nil) != tt.wantErr {
 				t.Errorf("scaffolder.Install() error = %v, wantErr %v", err, tt.wantErr)
