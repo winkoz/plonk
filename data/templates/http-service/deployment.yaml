@@ -23,3 +23,5 @@ spec:
           - name: {{$k}} 
             value: "{{$v}}"
         {{end}}
+      imagePullSecrets:
+        - name: {{.DOCKER_IMAGE_PULL_SECRET}}
