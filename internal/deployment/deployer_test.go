@@ -97,6 +97,22 @@ func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToLoadTheEnviro
 	assert.EqualError(suite.T(), err, expectedErr.Error())
 }
 
+func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToReadManifestFile() {
+	expectedErr := errors.New("TestExecuteMergeManifest")
+	td := &scaffolding.TemplateData{
+		Name:             "TestExecuteSuccess",
+		Manifests:        []string{suite.manifestFileName},
+		FilesLocation:    []io.FileLocation{},
+		Files:            []string{},
+		DefaultVariables: suite.variables,
+	}
+	suite.setupVariablesAndSecretsMocks(nil, nil)
+	suite.setupTemplateReader(td, nil)
+	suite.setupIOServiceReadFile(expectedErr)
+	err := suite.sut.Execute(suite.ctx, suite.env)
+	assert.EqualError(suite.T(), err, expectedErr.Error())
+}
+
 func TestDeployerTestSuite(t *testing.T) {
 	suite.Run(t, new(DeployerTestSuite))
 }
