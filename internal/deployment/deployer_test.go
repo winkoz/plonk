@@ -16,25 +16,45 @@ import (
 
 type DeployerTestSuite struct {
 	suite.Suite
-	manifestFileName    string
-	manifestFile        string
-	env                 string
-	variables           io.DeployVariables
-	secrets             io.DeploySecrets
-	ctx                 config.Context
-	ioService           *sharedtesting.IOServiceMock
-	varReader           *sharedtesting.VariableReaderMock
-	secretReader        *sharedtesting.SecretReaderMock
-	templateReader      *scaffolding.TemplateReaderMock
-	templateParser      *sharedtesting.TemplateParserMock
-	orchestratorCommand *sharedtesting.OrchestratorCommandMock
-	sut                 Deployer
+	manifestFileName      string
+	manifestFile          string
+	env                   string
+	variables             io.DeployVariables
+	defaultBuildVariables map[string]string
+	defaultEnvVariables   map[string]string
+	secrets               io.DeploySecrets
+	ctx                   config.Context
+	ioService             *sharedtesting.IOServiceMock
+	varReader             *sharedtesting.VariableReaderMock
+	secretReader          *sharedtesting.SecretReaderMock
+	templateReader        *scaffolding.TemplateReaderMock
+	templateParser        *sharedtesting.TemplateParserMock
+	orchestratorCommand   *sharedtesting.OrchestratorCommandMock
+	sut                   Deployer
 }
 
 func (suite *DeployerTestSuite) SetupTest() {
 	suite.ioService = new(sharedtesting.IOServiceMock)
 	suite.env = "test"
 	suite.manifestFileName = "template-manifest.yaml"
+	suite.defaultBuildVariables = map[string]string{
+		"var2": "value2",
+		"var1": "changed",
+	}
+	suite.defaultEnvVariables = map[string]string{
+		"env": "test",
+	}
+	suite.variables = io.DeployVariables{
+		Build: map[string]string{
+			"var1": "value1",
+		},
+		Environment: map[string]string{},
+	}
+	suite.secrets = io.DeploySecrets{
+		Secret: map[string]string{
+			"secret1": "value1",
+		},
+	}
 	suite.manifestFile = `name: custom-template
 variables:
 	build:
@@ -43,16 +63,6 @@ variables:
 		TEST_ENV_VAR: "custom-template-env"
 	files:
 	- plonk.yaml`
-	suite.variables = io.DeployVariables{
-		Build: map[string]string{
-			"var1": "value1",
-		},
-	}
-	suite.secrets = io.DeploySecrets{
-		Secret: map[string]string{
-			"secret1": "value1",
-		},
-	}
 	suite.ctx = config.Context{
 		ProjectName:         "deployer_tests",
 		DeployCommand:       "cmd",
@@ -214,11 +224,17 @@ func (suite *DeployerTestSuite) setupTemplateParser(err error) {
 func (suite *DeployerTestSuite) setupHappyPath() {
 	suite.setupVariablesAndSecretsMocks(nil, nil)
 	td := &scaffolding.TemplateData{
-		Name:             "TestExecuteSuccess",
-		Manifests:        []string{suite.manifestFileName},
-		FilesLocation:    []io.FileLocation{},
-		Files:            []string{},
-		DefaultVariables: suite.variables,
+		Name:          "TestExecuteSuccess",
+		Manifests:     []string{suite.manifestFileName},
+		FilesLocation: []io.FileLocation{},
+		Files:         []string{},
+		DefaultVariables: struct {
+			Build       map[string]string `yaml:"build,omitempty"`
+			Environment map[string]string `yaml:"environment,omitempty"`
+		}{
+			Build:       suite.defaultBuildVariables,
+			Environment: suite.defaultEnvVariables,
+		},
 	}
 	suite.setupTemplateReader(td, nil)
 	suite.setupIOServiceWrite(nil)
