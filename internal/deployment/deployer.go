@@ -13,7 +13,7 @@ import (
 
 // Deployer creates a manifest file from templates and executes it with the deploy command.
 type Deployer interface {
-	Execute(ctx config.Context, stackName string, dryrun bool) error
+	Execute(ctx config.Context, stackName string, dryRun bool) error
 }
 
 type deployer struct {
@@ -40,7 +40,7 @@ func NewDeployer(ctx config.Context) Deployer {
 	}
 }
 
-func (d deployer) Execute(ctx config.Context, env string, dryrun bool) (err error) {
+func (d deployer) Execute(ctx config.Context, env string, dryRun bool) (err error) {
 	signal := log.StartTrace("Execute")
 	defer log.StopTrace(signal, err)
 
@@ -78,7 +78,7 @@ func (d deployer) Execute(ctx config.Context, env string, dryrun bool) (err erro
 
 	// execute in kubectl
 	cmd := d.orchestratorCommand.Deploy
-	if dryrun {
+	if dryRun {
 		cmd = d.orchestratorCommand.Diff
 	}
 
@@ -88,7 +88,7 @@ func (d deployer) Execute(ctx config.Context, env string, dryrun bool) (err erro
 		return err
 	}
 
-	if !dryrun { // Delete the deploy.yaml
+	if !dryRun { // Delete the deploy.yaml
 		d.ioService.DeletePath(deployFullPath)
 	}
 
