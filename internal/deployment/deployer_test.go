@@ -113,6 +113,24 @@ func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToReadManifestF
 	assert.EqualError(suite.T(), err, expectedErr.Error())
 }
 
+func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToWriteDeployFile() {
+	expectedErr := errors.New("TestExecuteWriteDeploy")
+	td := &scaffolding.TemplateData{
+		Name:             "TestExecuteSuccess",
+		Manifests:        []string{suite.manifestFileName},
+		FilesLocation:    []io.FileLocation{},
+		Files:            []string{},
+		DefaultVariables: suite.variables,
+	}
+	suite.setupVariablesAndSecretsMocks(nil, nil)
+	suite.setupTemplateReader(td, nil)
+	suite.setupIOServiceReadFile(nil)
+	suite.setupTemplateParser(nil)
+	suite.setupIOServiceWrite(expectedErr)
+	err := suite.sut.Execute(suite.ctx, suite.env)
+	assert.EqualError(suite.T(), err, expectedErr.Error())
+}
+
 func TestDeployerTestSuite(t *testing.T) {
 	suite.Run(t, new(DeployerTestSuite))
 }
@@ -169,11 +187,11 @@ func (suite *DeployerTestSuite) setupOrchestrator(err error) {
 		Return(err)
 }
 
-func (suite *DeployerTestSuite) setupTemplateParser(result string, err error) {
+func (suite *DeployerTestSuite) setupTemplateParser(err error) {
 	suite.templateParser.
 		On("Parse", mock.Anything, suite.manifestFile).
 		Once().
-		Return(result, err)
+		Return(suite.manifestFile, err)
 }
 
 func (suite *DeployerTestSuite) setupHappyPath() {
@@ -188,6 +206,6 @@ func (suite *DeployerTestSuite) setupHappyPath() {
 	suite.setupTemplateReader(td, nil)
 	suite.setupIOServiceWrite(nil)
 	suite.setupIOServiceReadFile(nil)
-	suite.setupTemplateParser(suite.manifestFile, nil)
+	suite.setupTemplateParser(nil)
 	suite.setupOrchestrator(nil)
 }
