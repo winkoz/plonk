@@ -107,6 +107,7 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToLoadTheEnvir
 	suite.setupTemplateReader(nil, expectedErr)
 	err := suite.sut.Execute(suite.ctx, suite.env)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
+	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
 
 func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToReadManifestFile() {
@@ -123,6 +124,7 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToReadManifest
 	suite.setupIOServiceReadFile(expectedErr)
 	err := suite.sut.Execute(suite.ctx, suite.env)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
+	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
 
 func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToParseManifestFile() {
@@ -140,6 +142,7 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToParseManifes
 	suite.setupTemplateParser(expectedErr)
 	err := suite.sut.Execute(suite.ctx, suite.env)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
+	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
 
 func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToWriteDeployFile() {
@@ -159,6 +162,7 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToWriteDeployF
 	suite.setupIOServiceWrite(expectedErr)
 	err := suite.sut.Execute(suite.ctx, suite.env)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
+	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
 
 func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToExecuteTheDeployCommand() {
@@ -179,6 +183,7 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToExecuteTheDe
 	suite.setupOrchestrator(expectedErr)
 	err := suite.sut.Execute(suite.ctx, suite.env)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
+	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
 
 func (suite *DeployerTestSuite) TestExecute_ShouldCallOrchestratorDiff_WhenDryRunIsTrue() {
