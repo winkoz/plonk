@@ -1,6 +1,7 @@
 package deployment
 
 import (
+	"errors"
 	"path/filepath"
 	"testing"
 
@@ -86,6 +87,14 @@ variables:
 func (suite *DeployerTestSuite) TestExecuteSuccessfullyCallsDeployOnTheOrchestratorWithGeneratedDeployFile() {
 	suite.setupHappyPath()
 	assert.Nil(suite.T(), suite.sut.Execute(suite.ctx, suite.env))
+}
+
+func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToLoadTheEnvironmentTemplates() {
+	expectedErr := errors.New("TestExecuteReadEnvTemplate")
+	suite.setupVariablesAndSecretsMocks(nil, nil)
+	suite.setupTemplateReader(nil, expectedErr)
+	err := suite.sut.Execute(suite.ctx, suite.env)
+	assert.EqualError(suite.T(), err, expectedErr.Error())
 }
 
 func TestDeployerTestSuite(t *testing.T) {
