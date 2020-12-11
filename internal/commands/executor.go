@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"bytes"
 	"os/exec"
 
 	"github.com/winkoz/plonk/internal/io/log"
@@ -22,13 +21,11 @@ type executor struct {
 
 func (e executor) Run(command string, args ...string) error {
 	cmd := exec.Command(command, args...)
-	cmdOutput := &bytes.Buffer{}
-	cmd.Stdout = cmdOutput
-	err := cmd.Run()
+	cmdOutput, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Debugf("[Internal Error] Command could not be executed successfully. %s, error = %v.", string(cmdOutput.Bytes()), err)
+		log.Errorf("[Internal Error] Command could not be executed successfully. %s, error = %v.", string(cmdOutput), err)
 		return err
 	}
-	log.Debugf("[INFO] Executed command: %s", string(cmdOutput.Bytes()))
+	log.Debugf("[INFO] Executed command: %s", string(cmdOutput))
 	return nil
 }
