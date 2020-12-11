@@ -94,12 +94,12 @@ variables:
 // Tests
 //-------------------------------------------------
 
-func (suite *DeployerTestSuite) TestExecuteSuccessfullyCallsDeployOnTheOrchestratorWithGeneratedDeployFile() {
+func (suite *DeployerTestSuite) TestExecute_ShouldCallOrchestratorDeploy() {
 	suite.setupHappyPath()
 	assert.Nil(suite.T(), suite.sut.Execute(suite.ctx, suite.env))
 }
 
-func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToLoadTheEnvironmentTemplates() {
+func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToLoadTheEnvironmentTemplates() {
 	expectedErr := errors.New("TestExecuteReadEnvTemplate")
 	suite.setupVariablesAndSecretsMocks(nil, nil)
 	suite.setupTemplateReader(nil, expectedErr)
@@ -107,7 +107,7 @@ func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToLoadTheEnviro
 	assert.EqualError(suite.T(), err, expectedErr.Error())
 }
 
-func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToReadManifestFile() {
+func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToReadManifestFile() {
 	expectedErr := errors.New("TestExecuteMergeManifest")
 	td := &scaffolding.TemplateData{
 		Name:             "TestExecuteSuccess",
@@ -123,7 +123,7 @@ func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToReadManifestF
 	assert.EqualError(suite.T(), err, expectedErr.Error())
 }
 
-func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToParseManifestFile() {
+func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToParseManifestFile() {
 	expectedErr := errors.New("TestExecuteParseManifest")
 	td := &scaffolding.TemplateData{
 		Name:             "TestExecuteSuccess",
@@ -140,7 +140,7 @@ func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToParseManifest
 	assert.EqualError(suite.T(), err, expectedErr.Error())
 }
 
-func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToWriteDeployFile() {
+func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToWriteDeployFile() {
 	expectedErr := errors.New("TestExecuteWriteDeploy")
 	td := &scaffolding.TemplateData{
 		Name:             "TestExecuteSuccess",
@@ -159,7 +159,7 @@ func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToWriteDeployFi
 	assert.EqualError(suite.T(), err, expectedErr.Error())
 }
 
-func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToExecuteTheDeployCommand() {
+func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToExecuteTheDeployCommand() {
 	expectedErr := errors.New("TestExecuteOrchestratorDeploy")
 	td := &scaffolding.TemplateData{
 		Name:             "TestExecuteSuccess",
