@@ -16,7 +16,7 @@ import (
 
 type DeployerTestSuite struct {
 	suite.Suite
-	manifestFileName      string
+	manifestFilesName     []string
 	manifestFile          string
 	env                   string
 	variables             io.DeployVariables
@@ -36,7 +36,7 @@ type DeployerTestSuite struct {
 func (suite *DeployerTestSuite) SetupTest() {
 	suite.ioService = new(sharedtesting.IOServiceMock)
 	suite.env = "test"
-	suite.manifestFileName = "template-manifest.yaml"
+	suite.manifestFilesName = []string{"template-manifest.yaml", "template-manifest2.yaml"}
 	suite.defaultBuildVariables = map[string]string{
 		"var2": "value2",
 		"var1": "changed",
@@ -111,7 +111,7 @@ func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToReadManifestF
 	expectedErr := errors.New("TestExecuteMergeManifest")
 	td := &scaffolding.TemplateData{
 		Name:             "TestExecuteSuccess",
-		Manifests:        []string{suite.manifestFileName},
+		Manifests:        suite.manifestFilesName,
 		FilesLocation:    []io.FileLocation{},
 		Files:            []string{},
 		DefaultVariables: suite.variables,
@@ -127,7 +127,7 @@ func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToParseManifest
 	expectedErr := errors.New("TestExecuteParseManifest")
 	td := &scaffolding.TemplateData{
 		Name:             "TestExecuteSuccess",
-		Manifests:        []string{suite.manifestFileName},
+		Manifests:        suite.manifestFilesName,
 		FilesLocation:    []io.FileLocation{},
 		Files:            []string{},
 		DefaultVariables: suite.variables,
@@ -144,7 +144,7 @@ func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToWriteDeployFi
 	expectedErr := errors.New("TestExecuteWriteDeploy")
 	td := &scaffolding.TemplateData{
 		Name:             "TestExecuteSuccess",
-		Manifests:        []string{suite.manifestFileName},
+		Manifests:        suite.manifestFilesName,
 		FilesLocation:    []io.FileLocation{},
 		Files:            []string{},
 		DefaultVariables: suite.variables,
@@ -152,6 +152,7 @@ func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToWriteDeployFi
 	suite.setupVariablesAndSecretsMocks(nil, nil)
 	suite.setupTemplateReader(td, nil)
 	suite.setupIOServiceReadFile(nil)
+	suite.setupTemplateParser(nil)
 	suite.setupTemplateParser(nil)
 	suite.setupIOServiceWrite(expectedErr)
 	err := suite.sut.Execute(suite.ctx, suite.env)
@@ -162,7 +163,7 @@ func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToExecuteTheDep
 	expectedErr := errors.New("TestExecuteOrchestratorDeploy")
 	td := &scaffolding.TemplateData{
 		Name:             "TestExecuteSuccess",
-		Manifests:        []string{suite.manifestFileName},
+		Manifests:        suite.manifestFilesName,
 		FilesLocation:    []io.FileLocation{},
 		Files:            []string{},
 		DefaultVariables: suite.variables,
@@ -170,6 +171,7 @@ func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToExecuteTheDep
 	suite.setupVariablesAndSecretsMocks(nil, nil)
 	suite.setupTemplateReader(td, nil)
 	suite.setupIOServiceReadFile(nil)
+	suite.setupTemplateParser(nil)
 	suite.setupTemplateParser(nil)
 	suite.setupIOServiceWrite(nil)
 	suite.setupOrchestrator(expectedErr)
@@ -212,17 +214,20 @@ func (suite *DeployerTestSuite) setupTemplateReader(templateData *scaffolding.Te
 
 func (suite *DeployerTestSuite) setupIOServiceWrite(err error) {
 	deployFullPath := filepath.Join(suite.ctx.TargetPath, suite.ctx.DeployFolderName, "deploy.yaml")
+	mergedFile := suite.manifestFile + "\n---\n" + suite.manifestFile + "\n---\n"
 	suite.ioService.
-		On("Write", deployFullPath, suite.manifestFile+"\n---\n").
+		On("Write", deployFullPath, mergedFile).
 		Once().
 		Return(err)
 }
 
 func (suite *DeployerTestSuite) setupIOServiceReadFile(err error) {
-	suite.ioService.
-		On("ReadFile", suite.manifestFileName).
-		Once().
-		Return([]byte(suite.manifestFile), err)
+	for _, manifestFileName := range suite.manifestFilesName {
+		suite.ioService.
+			On("ReadFile", manifestFileName).
+			Once().
+			Return([]byte(suite.manifestFile), err)
+	}
 }
 
 func (suite *DeployerTestSuite) setupOrchestrator(err error) {
@@ -244,7 +249,7 @@ func (suite *DeployerTestSuite) setupHappyPath() {
 	suite.setupVariablesAndSecretsMocks(nil, nil)
 	td := &scaffolding.TemplateData{
 		Name:          "TestExecuteSuccess",
-		Manifests:     []string{suite.manifestFileName},
+		Manifests:     suite.manifestFilesName,
 		FilesLocation: []io.FileLocation{},
 		Files:         []string{},
 		DefaultVariables: struct {
@@ -258,6 +263,7 @@ func (suite *DeployerTestSuite) setupHappyPath() {
 	suite.setupTemplateReader(td, nil)
 	suite.setupIOServiceWrite(nil)
 	suite.setupIOServiceReadFile(nil)
+	suite.setupTemplateParser(nil)
 	suite.setupTemplateParser(nil)
 	suite.setupOrchestrator(nil)
 }
