@@ -158,6 +158,25 @@ func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToWriteDeployFi
 	assert.EqualError(suite.T(), err, expectedErr.Error())
 }
 
+func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToExecuteTheDeployCommand() {
+	expectedErr := errors.New("TestExecuteOrchestratorDeploy")
+	td := &scaffolding.TemplateData{
+		Name:             "TestExecuteSuccess",
+		Manifests:        []string{suite.manifestFileName},
+		FilesLocation:    []io.FileLocation{},
+		Files:            []string{},
+		DefaultVariables: suite.variables,
+	}
+	suite.setupVariablesAndSecretsMocks(nil, nil)
+	suite.setupTemplateReader(td, nil)
+	suite.setupIOServiceReadFile(nil)
+	suite.setupTemplateParser(nil)
+	suite.setupIOServiceWrite(nil)
+	suite.setupOrchestrator(expectedErr)
+	err := suite.sut.Execute(suite.ctx, suite.env)
+	assert.EqualError(suite.T(), err, expectedErr.Error())
+}
+
 func TestDeployerTestSuite(t *testing.T) {
 	suite.Run(t, new(DeployerTestSuite))
 }
