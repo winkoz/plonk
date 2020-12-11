@@ -47,22 +47,32 @@ func Test_templateReader_Read(t *testing.T) {
 				Name: "default",
 				FilesLocation: []io.FileLocation{
 					{
-						ResolvedFilePath: defaultTemplatePath + "/default/plonk.yaml",
 						OriginalFilePath: "plonk.yaml",
+						ResolvedFilePath: defaultTemplatePath + "/default/plonk.yaml",
 					},
 					{
-						ResolvedFilePath: defaultTemplatePath + "/default/deploy/variables/production.yaml",
 						OriginalFilePath: "deploy/variables/production.yaml",
+						ResolvedFilePath: defaultTemplatePath + "/default/deploy/variables/production.yaml",
 					},
 					{
-						ResolvedFilePath: defaultTemplatePath + "/default/deploy/variables/base.yaml",
 						OriginalFilePath: "deploy/variables/base.yaml",
+						ResolvedFilePath: defaultTemplatePath + "/default/deploy/variables/base.yaml",
+					},
+					{
+						OriginalFilePath: "deploy/secrets/production.yaml",
+						ResolvedFilePath: defaultTemplatePath + "/default/deploy/secrets/production.yaml",
+					},
+					{
+						OriginalFilePath: "deploy/secrets/base.yaml",
+						ResolvedFilePath: defaultTemplatePath + "/default/deploy/secrets/base.yaml",
 					},
 				},
 				Files: []string{
 					"plonk.yaml",
 					"deploy/variables/production.yaml",
 					"deploy/variables/base.yaml",
+					"deploy/secrets/production.yaml",
+					"deploy/secrets/base.yaml",
 				},
 				Manifests: []string{},
 			},
