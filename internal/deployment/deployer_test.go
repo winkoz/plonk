@@ -96,7 +96,9 @@ variables:
 
 func (suite *DeployerTestSuite) TestExecute_ShouldCallOrchestratorDeploy() {
 	suite.setupHappyPath()
+	suite.setupIOServiceDelete()
 	assert.Nil(suite.T(), suite.sut.Execute(suite.ctx, suite.env))
+	suite.ioService.AssertNumberOfCalls(suite.T(), "DeletePath", 1)
 }
 
 func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToLoadTheEnvironmentTemplates() {
@@ -189,6 +191,7 @@ func (suite *DeployerTestSuite) TestExecute_ShouldCallOrchestratorDiff_WhenDryRu
 		Once().
 		Return(nil)
 	assert.Nil(suite.T(), suite.sut.Execute(suite.ctx, suite.env, true))
+	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
 
 func TestDeployerTestSuite(t *testing.T) {
@@ -239,7 +242,14 @@ func (suite *DeployerTestSuite) setupIOServiceReadFile(err error) {
 			On("ReadFile", manifestFileName).
 			Once().
 			Return([]byte(suite.manifestFile), err)
+}
 	}
+
+func (suite *DeployerTestSuite) setupIOServiceDelete() {
+	deployFullPath := filepath.Join(suite.ctx.TargetPath, suite.ctx.DeployFolderName, "deploy.yaml")
+	suite.ioService.
+		On("DeletePath", deployFullPath).
+		Once()
 }
 
 func (suite *DeployerTestSuite) setupOrchestrator(err error) {
@@ -275,6 +285,7 @@ func (suite *DeployerTestSuite) setupHappyPath() {
 	suite.setupTemplateReader(td, nil)
 	suite.setupIOServiceWrite(nil)
 	suite.setupIOServiceReadFile(nil)
+	suite.setupIOServiceDelete()
 	suite.setupTemplateParser(nil)
 	suite.setupTemplateParser(nil)
 	suite.setupOrchestrator(nil)

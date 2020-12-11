@@ -88,7 +88,9 @@ func (d deployer) Execute(ctx config.Context, env string, dryrun bool) (err erro
 		return err
 	}
 
-	// TODO: Cleanup deploy file after success
+	if !dryrun { // Delete the deploy.yaml
+		d.ioService.DeletePath(deployFullPath)
+	}
 
 	return nil
 }
