@@ -113,6 +113,23 @@ func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToReadManifestF
 	assert.EqualError(suite.T(), err, expectedErr.Error())
 }
 
+func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToParseManifestFile() {
+	expectedErr := errors.New("TestExecuteParseManifest")
+	td := &scaffolding.TemplateData{
+		Name:             "TestExecuteSuccess",
+		Manifests:        []string{suite.manifestFileName},
+		FilesLocation:    []io.FileLocation{},
+		Files:            []string{},
+		DefaultVariables: suite.variables,
+	}
+	suite.setupVariablesAndSecretsMocks(nil, nil)
+	suite.setupTemplateReader(td, nil)
+	suite.setupIOServiceReadFile(nil)
+	suite.setupTemplateParser(expectedErr)
+	err := suite.sut.Execute(suite.ctx, suite.env)
+	assert.EqualError(suite.T(), err, expectedErr.Error())
+}
+
 func (suite *DeployerTestSuite) TestExecuteReturnsErrorWhenUnableToWriteDeployFile() {
 	expectedErr := errors.New("TestExecuteWriteDeploy")
 	td := &scaffolding.TemplateData{
