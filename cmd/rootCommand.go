@@ -27,6 +27,7 @@ func Execute() {
 	// Commands
 	addInitCommand(rootCmd)
 	addDeployCommand(rootCmd)
+	addDiffCommand(rootCmd)
 
 	// Execute
 	if err := rootCmd.Execute(); err != nil {

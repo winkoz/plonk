@@ -179,6 +179,18 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToExecuteTheDe
 	assert.EqualError(suite.T(), err, expectedErr.Error())
 }
 
+func (suite *DeployerTestSuite) TestExecute_ShouldCallOrchestratorDiff_WhenDryRunIsTrue() {
+	suite.setupHappyPath()                                   // Set happy path as it is the same as Deploy
+	suite.orchestratorCommand.ExpectedCalls = []*mock.Call{} // Reset the Deploy mocked call so we can configure Diff only
+
+	deployFullPath := filepath.Join(suite.ctx.DeployFolderName, "deploy.yaml")
+	suite.orchestratorCommand.
+		On("Diff", suite.env, deployFullPath).
+		Once().
+		Return(nil)
+	assert.Nil(suite.T(), suite.sut.Execute(suite.ctx, suite.env, true))
+}
+
 func TestDeployerTestSuite(t *testing.T) {
 	suite.Run(t, new(DeployerTestSuite))
 }
