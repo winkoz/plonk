@@ -13,7 +13,7 @@ func Test_scaffolder_Install(t *testing.T) {
 	type fields struct {
 		targetPath               string
 		customTemplatePath       string
-		templateReader           *templateReaderMock
+		templateReader           *TemplateReaderMock
 		duplicator               *io.DuplicatorMock
 		templatePaths            []string
 		destinationDeployDirName string
@@ -61,7 +61,7 @@ func Test_scaffolder_Install(t *testing.T) {
 			fields: fields{
 				targetPath:               "/tmp/plonk/tests/scripts",
 				customTemplatePath:       "../fixtures/scripts",
-				templateReader:           new(templateReaderMock),
+				templateReader:           new(TemplateReaderMock),
 				duplicator:               new(io.DuplicatorMock),
 				destinationDeployDirName: "deploy",
 				destinationVariablesPath: "deploy/variables",
@@ -107,7 +107,7 @@ func Test_scaffolder_Install(t *testing.T) {
 			fields: fields{
 				targetPath:               "/tmp/plonk/tests/scripts",
 				customTemplatePath:       "../fixtures/scripts",
-				templateReader:           new(templateReaderMock),
+				templateReader:           new(TemplateReaderMock),
 				duplicator:               new(io.DuplicatorMock),
 				destinationDeployDirName: "deploy",
 				destinationVariablesPath: "deploy/variables",
@@ -151,7 +151,7 @@ func Test_scaffolder_Install(t *testing.T) {
 			fields: fields{
 				targetPath:               "/tmp/plonk/tests/scripts",
 				customTemplatePath:       "../fixtures/scripts",
-				templateReader:           new(templateReaderMock),
+				templateReader:           new(TemplateReaderMock),
 				duplicator:               new(io.DuplicatorMock),
 				destinationDeployDirName: "deploy",
 				destinationVariablesPath: "deploy/variables",
@@ -190,7 +190,7 @@ func Test_scaffolder_Install(t *testing.T) {
 			fields: fields{
 				targetPath:               "/tmp/plonk/tests/scripts",
 				customTemplatePath:       "../fixtures/scripts",
-				templateReader:           new(templateReaderMock),
+				templateReader:           new(TemplateReaderMock),
 				duplicator:               new(io.DuplicatorMock),
 				destinationDeployDirName: "deploy",
 				destinationVariablesPath: "deploy/variables",
