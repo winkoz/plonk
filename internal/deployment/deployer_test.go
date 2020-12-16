@@ -96,15 +96,18 @@ variables:
 
 func (suite *DeployerTestSuite) TestExecute_ShouldCallOrchestratorDeploy() {
 	suite.setupHappyPath()
-	assert.Nil(suite.T(), suite.sut.Execute(suite.ctx, suite.env))
+	suite.setupIOServiceDelete()
+	assert.Nil(suite.T(), suite.sut.Execute(suite.ctx, suite.env, false))
+	suite.ioService.AssertNumberOfCalls(suite.T(), "DeletePath", 1)
 }
 
 func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToLoadTheEnvironmentTemplates() {
 	expectedErr := errors.New("TestExecuteReadEnvTemplate")
 	suite.setupVariablesAndSecretsMocks(nil, nil)
 	suite.setupTemplateReader(nil, expectedErr)
-	err := suite.sut.Execute(suite.ctx, suite.env)
+	err := suite.sut.Execute(suite.ctx, suite.env, false)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
+	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
 
 func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToReadManifestFile() {
@@ -119,8 +122,9 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToReadManifest
 	suite.setupVariablesAndSecretsMocks(nil, nil)
 	suite.setupTemplateReader(td, nil)
 	suite.setupIOServiceReadFile(expectedErr)
-	err := suite.sut.Execute(suite.ctx, suite.env)
+	err := suite.sut.Execute(suite.ctx, suite.env, false)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
+	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
 
 func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToParseManifestFile() {
@@ -136,8 +140,9 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToParseManifes
 	suite.setupTemplateReader(td, nil)
 	suite.setupIOServiceReadFile(nil)
 	suite.setupTemplateParser(expectedErr)
-	err := suite.sut.Execute(suite.ctx, suite.env)
+	err := suite.sut.Execute(suite.ctx, suite.env, false)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
+	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
 
 func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToWriteDeployFile() {
@@ -155,8 +160,9 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToWriteDeployF
 	suite.setupTemplateParser(nil)
 	suite.setupTemplateParser(nil)
 	suite.setupIOServiceWrite(expectedErr)
-	err := suite.sut.Execute(suite.ctx, suite.env)
+	err := suite.sut.Execute(suite.ctx, suite.env, false)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
+	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
 
 func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToExecuteTheDeployCommand() {
@@ -175,8 +181,22 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToExecuteTheDe
 	suite.setupTemplateParser(nil)
 	suite.setupIOServiceWrite(nil)
 	suite.setupOrchestrator(expectedErr)
-	err := suite.sut.Execute(suite.ctx, suite.env)
+	err := suite.sut.Execute(suite.ctx, suite.env, false)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
+	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
+}
+
+func (suite *DeployerTestSuite) TestExecute_ShouldCallOrchestratorDiff_WhenDryRunIsTrue() {
+	suite.setupHappyPath()                                   // Set happy path as it is the same as Deploy
+	suite.orchestratorCommand.ExpectedCalls = []*mock.Call{} // Reset the Deploy mocked call so we can configure Diff only
+
+	deployFullPath := filepath.Join(suite.ctx.DeployFolderName, "deploy.yaml")
+	suite.orchestratorCommand.
+		On("Diff", suite.env, deployFullPath).
+		Once().
+		Return(nil)
+	assert.Nil(suite.T(), suite.sut.Execute(suite.ctx, suite.env, true))
+	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
 
 func TestDeployerTestSuite(t *testing.T) {
@@ -230,6 +250,13 @@ func (suite *DeployerTestSuite) setupIOServiceReadFile(err error) {
 	}
 }
 
+func (suite *DeployerTestSuite) setupIOServiceDelete() {
+	deployFullPath := filepath.Join(suite.ctx.TargetPath, suite.ctx.DeployFolderName, "deploy.yaml")
+	suite.ioService.
+		On("DeletePath", deployFullPath).
+		Once()
+}
+
 func (suite *DeployerTestSuite) setupOrchestrator(err error) {
 	deployFullPath := filepath.Join(suite.ctx.DeployFolderName, "deploy.yaml")
 	suite.orchestratorCommand.
@@ -263,6 +290,7 @@ func (suite *DeployerTestSuite) setupHappyPath() {
 	suite.setupTemplateReader(td, nil)
 	suite.setupIOServiceWrite(nil)
 	suite.setupIOServiceReadFile(nil)
+	suite.setupIOServiceDelete()
 	suite.setupTemplateParser(nil)
 	suite.setupTemplateParser(nil)
 	suite.setupOrchestrator(nil)
