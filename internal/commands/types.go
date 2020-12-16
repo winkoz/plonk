@@ -5,4 +5,5 @@ type OrchestratorCommand interface {
 	Deploy(env string, manifestPath string) error
 	Diff(env string, manifestPath string) error
 	Show(env string) error
+	GetPods(env string) ([]byte, error)
 }

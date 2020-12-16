@@ -26,6 +26,10 @@ func (k kubectlCommand) Show(env string) error {
 	return nil
 }
 
+func (k kubectlCommand) GetPods(env string) ([]byte, error) {
+	return nil, nil
+}
+
 func (k kubectlCommand) executeCommand(logName string, args ...string) (err error) {
 	signal := log.StartTrace(logName)
 	defer log.StopTrace(signal, err)
