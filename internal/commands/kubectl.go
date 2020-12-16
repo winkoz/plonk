@@ -29,7 +29,7 @@ func (k kubectlCommand) Show(env string) error {
 }
 
 func (k kubectlCommand) GetPods(namespace string) ([]byte, error) {
-	return nil, nil
+	return k.executeCommand("GetPods", "get", "pods")
 }
 
 func (k kubectlCommand) executeCommand(logName string, args ...string) (output []byte, err error) {
