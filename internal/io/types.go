@@ -39,6 +39,11 @@ type FileLocation struct {
 	ResolvedFilePath string
 }
 
+// OutputRenderer knows how to render byte buffers into human readable CLI outputs
+type OutputRenderer interface {
+	RenderComponents([]byte)
+}
+
 // Error prints out the formatted error message.
 func (e *Error) Error() string {
 	return e.msg
