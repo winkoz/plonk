@@ -28,7 +28,7 @@ func (oc *OrchestratorCommandMock) Show(env string) error {
 }
 
 // GetPods …
-func (oc *OrchestratorCommandMock) GetPods(env string) ([]byte, error) {
-	args := oc.Called(env)
+func (oc *OrchestratorCommandMock) GetPods(namespace string) ([]byte, error) {
+	args := oc.Called(namespace)
 	return args.Get(0).([]byte), args.Error(1)
 }

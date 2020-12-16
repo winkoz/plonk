@@ -28,7 +28,7 @@ func (k kubectlCommand) Show(env string) error {
 	return nil
 }
 
-func (k kubectlCommand) GetPods(env string) ([]byte, error) {
+func (k kubectlCommand) GetPods(namespace string) ([]byte, error) {
 	return nil, nil
 }
 

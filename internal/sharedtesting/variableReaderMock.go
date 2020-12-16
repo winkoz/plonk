@@ -5,7 +5,7 @@ import (
 	"github.com/winkoz/plonk/internal/io"
 )
 
-// VarReaderMock …
+// VariableReaderMock …
 type VariableReaderMock struct {
 	mock.Mock
 }
