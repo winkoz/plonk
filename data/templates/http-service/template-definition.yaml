@@ -9,6 +9,7 @@ variables:
   environment:
     PORT: 8090
 manifests:
+  - ../default/namespace.yaml
   - service.yaml
   - deployment.yaml
   - ingress.yaml

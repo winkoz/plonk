@@ -22,6 +22,7 @@ variables:
   secret:
     REGISTRY_SECRET: NOT_DEFINED
 manifests:
+  - ../default/namespace.yaml
   - secret.yaml
   - secret-imgpull.yaml
   - pvc.yaml
