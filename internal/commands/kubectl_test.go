@@ -87,3 +87,82 @@ func Test_kubecltCommand_Deploy(t *testing.T) {
 		})
 	}
 }
+
+func Test_kubecltCommand_Diff(t *testing.T) {
+	executorMock := new(sharedtesting.ExecutorMock)
+	ctx := config.Context{
+		DeployCommand: "notKubeCtl",
+		TargetPath:    "",
+	}
+	type fields struct {
+		executor *sharedtesting.ExecutorMock
+	}
+	type args struct {
+		env          string
+		manifestPath string
+		ctx          config.Context
+	}
+	tests := []struct {
+		name        string
+		fields      fields
+		args        args
+		wantCommand string
+		wantArgs    []string
+		wantErr     bool
+	}{
+		{
+			name: "Successfully calls Diff with the passed in command",
+			fields: fields{
+				executor: executorMock,
+			},
+			args: args{
+				env:          "production",
+				manifestPath: "this/is/not/a/real/path",
+				ctx:          ctx,
+			},
+			wantCommand: "notKubeCtl",
+			wantArgs:    []string{"diff", "-f", "this/is/not/a/real/path"},
+			wantErr:     false,
+		},
+		{
+			name: "Successfully interpolates the path into the command",
+			fields: fields{
+				executor: executorMock,
+			},
+			args: args{
+				env:          "production",
+				manifestPath: "this/is/not/a/real/path",
+				ctx: config.Context{
+					DeployCommand: "notKubeCtl -p $PWD",
+					TargetPath:    "/this/is/some/path",
+				},
+			},
+			wantCommand: "notKubeCtl",
+			wantArgs:    []string{"-p", "/this/is/some/path", "diff", "-f", "this/is/not/a/real/path"},
+			wantErr:     false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			k := kubectlCommand{
+				executor:     tt.fields.executor,
+				interpolator: io.NewInterpolator(),
+				ctx:          tt.args.ctx,
+			}
+
+			tt.fields.executor.On(
+				"Run",
+				tt.wantCommand,
+				tt.wantArgs,
+			).Return(
+				nil,
+			)
+
+			err := k.Diff(tt.args.env, tt.args.manifestPath)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+			}
+		})
+	}
+}
