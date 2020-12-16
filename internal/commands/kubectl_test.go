@@ -34,6 +34,7 @@ func (suite *KubectlTestSuite) SetupTest() {
 	suite.ctx = config.Context{
 		DeployCommand: suite.deployCommand,
 		TargetPath:    suite.targetPath,
+		ProjectName:   "Plonk-KubeCtl-Test",
 	}
 	suite.namespace = fmt.Sprintf("%s-%s", suite.ctx.ProjectName, suite.env)
 	suite.sat = kubectlCommand{
@@ -102,7 +103,7 @@ func (suite *KubectlTestSuite) TestDiff_ShouldReturnAnError_WhenExecutorFails() 
 //----- GetPods Tests
 
 func (suite *KubectlTestSuite) TestGetPods_ShouldCallExecutorWithGetCommand() {
-	args := []string{"get", "pods"}
+	args := []string{"get", "pods", "--namespace", suite.namespace, "-o", "json"}
 	suite.setupExecutor(args, nil, nil)
 	_, err := suite.sat.GetPods(suite.namespace)
 	suite.verifyExecutor(args)
@@ -110,7 +111,7 @@ func (suite *KubectlTestSuite) TestGetPods_ShouldCallExecutorWithGetCommand() {
 	}
 
 func (suite *KubectlTestSuite) TestGetPods_ShouldForwardOutputFromExecutor_WhenExecutorSucceeds() {
-	args := []string{"get", "pods"}
+	args := []string{"get", "pods", "--namespace", suite.namespace, "-o", "json"}
 	expectedOutput := []byte(suite.T().Name())
 	suite.setupExecutor(args, expectedOutput, nil)
 	gotOutput, err := suite.sat.GetPods(suite.namespace)
@@ -120,7 +121,7 @@ func (suite *KubectlTestSuite) TestGetPods_ShouldForwardOutputFromExecutor_WhenE
 
 func (suite *KubectlTestSuite) TestGetPods_ShouldReturnAnError_WhenExecutorFails() {
 	expectedErr := errors.New(suite.T().Name())
-	suite.setupExecutor([]string{"get", "pods"}, nil, expectedErr)
+	suite.setupExecutor([]string{"get", "pods", "--namespace", suite.namespace, "-o", "json"}, nil, expectedErr)
 	_, gotErr := suite.sat.GetPods(suite.namespace)
 	assert.EqualError(suite.T(), gotErr, expectedErr.Error())
 	}
