@@ -9,7 +9,7 @@ import (
 	"github.com/winkoz/plonk/internal/sharedtesting"
 )
 
-func Test_kubecltCommand_Deploy(t *testing.T) {
+func Test_kubectlCommand_Deploy(t *testing.T) {
 	executorMock := new(sharedtesting.ExecutorMock)
 	ctx := config.Context{
 		DeployCommand: "notKubeCtl",
@@ -88,7 +88,7 @@ func Test_kubecltCommand_Deploy(t *testing.T) {
 	}
 }
 
-func Test_kubecltCommand_Diff(t *testing.T) {
+func Test_kubectlCommand_Diff(t *testing.T) {
 	executorMock := new(sharedtesting.ExecutorMock)
 	ctx := config.Context{
 		DeployCommand: "notKubeCtl",
