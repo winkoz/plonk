@@ -14,12 +14,14 @@ type kubectlCommand struct {
 	ctx          config.Context
 }
 
-func (k kubectlCommand) Deploy(env string, manifestPath string) (err error) {
-	return k.executeCommand("Deploy", "apply", "-f", manifestPath)
+func (k kubectlCommand) Deploy(env string, manifestPath string) error {
+	_, err := k.executeCommand("Deploy", "apply", "-f", manifestPath)
+	return err
 }
 
-func (k kubectlCommand) Diff(env string, manifestPath string) (err error) {
-	return k.executeCommand("Diff", "diff", "-f", manifestPath)
+func (k kubectlCommand) Diff(env string, manifestPath string) error {
+	_, err := k.executeCommand("Diff", "diff", "-f", manifestPath)
+	return err
 }
 
 func (k kubectlCommand) Show(env string) error {
@@ -30,7 +32,7 @@ func (k kubectlCommand) GetPods(env string) ([]byte, error) {
 	return nil, nil
 }
 
-func (k kubectlCommand) executeCommand(logName string, args ...string) (err error) {
+func (k kubectlCommand) executeCommand(logName string, args ...string) (output []byte, err error) {
 	signal := log.StartTrace(logName)
 	defer log.StopTrace(signal, err)
 
@@ -47,6 +49,6 @@ func (k kubectlCommand) executeCommand(logName string, args ...string) (err erro
 	}
 
 	log.Debugf("Executing: %s %v", command, args)
-	err = k.executor.Run(command, args...)
-	return err
+	output, err = k.executor.Run(command, args...)
+	return
 }

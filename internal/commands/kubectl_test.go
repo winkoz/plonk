@@ -76,7 +76,7 @@ func Test_kubecltCommand_Deploy(t *testing.T) {
 				tt.wantCommand,
 				tt.wantArgs,
 			).Return(
-				nil,
+				make([]byte, 0), nil,
 			)
 
 			err := k.Deploy(tt.args.env, tt.args.manifestPath)

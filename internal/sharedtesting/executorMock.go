@@ -10,7 +10,7 @@ type ExecutorMock struct {
 }
 
 // Run …
-func (e *ExecutorMock) Run(command string, arg ...string) error {
+func (e *ExecutorMock) Run(command string, arg ...string) ([]byte, error) {
 	args := e.Called(command, arg)
-	return args.Error(0)
+	return args.Get(0).([]byte), args.Error(1)
 }
