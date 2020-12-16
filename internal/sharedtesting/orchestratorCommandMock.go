@@ -10,14 +10,14 @@ type OrchestratorCommandMock struct {
 }
 
 // Deploy …
-func (oc *OrchestratorCommandMock) Deploy(env string, manifestPath string) error {
-	args := oc.Called(env, manifestPath)
+func (oc *OrchestratorCommandMock) Deploy(manifestPath string) error {
+	args := oc.Called(manifestPath)
 	return args.Error(0)
 }
 
 // Diff …
-func (oc *OrchestratorCommandMock) Diff(env string, manifestPath string) error {
-	args := oc.Called(env, manifestPath)
+func (oc *OrchestratorCommandMock) Diff(manifestPath string) error {
+	args := oc.Called(manifestPath)
 	return args.Error(0)
 }
 

@@ -79,7 +79,7 @@ func Test_kubecltCommand_Deploy(t *testing.T) {
 				make([]byte, 0), nil,
 			)
 
-			err := k.Deploy(tt.args.env, tt.args.manifestPath)
+			err := k.Deploy(tt.args.manifestPath)
 
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -158,7 +158,7 @@ func Test_kubecltCommand_Diff(t *testing.T) {
 				nil,
 			)
 
-			err := k.Diff(tt.args.env, tt.args.manifestPath)
+			err := k.Diff(tt.args.manifestPath)
 
 			if tt.wantErr {
 				assert.Error(t, err)

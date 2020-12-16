@@ -82,7 +82,7 @@ func (d deployer) Execute(ctx config.Context, env string, dryRun bool) (err erro
 		cmd = d.orchestratorCommand.Diff
 	}
 
-	err = cmd(env, deployFilePath)
+	err = cmd(deployFilePath)
 	if err != nil {
 		log.Errorf("Cannot execute deploy command %s. error = %+v", d.ctx.DeployCommand, err)
 		return err

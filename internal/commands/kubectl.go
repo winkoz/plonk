@@ -14,12 +14,12 @@ type kubectlCommand struct {
 	ctx          config.Context
 }
 
-func (k kubectlCommand) Deploy(env string, manifestPath string) error {
+func (k kubectlCommand) Deploy(manifestPath string) error {
 	_, err := k.executeCommand("Deploy", "apply", "-f", manifestPath)
 	return err
 }
 
-func (k kubectlCommand) Diff(env string, manifestPath string) error {
+func (k kubectlCommand) Diff(manifestPath string) error {
 	_, err := k.executeCommand("Diff", "diff", "-f", manifestPath)
 	return err
 }
