@@ -16,12 +16,12 @@ func TestPlainRenderer_RenderComponents(t *testing.T) {
 	}
 	tests := []struct {
 		name string
-		pr   PlainRenderer
+		pr   PlainOutputRenderer
 		args args
 	}{
 		{
 			name: "RenderComponents passes the `output` to log as stdin",
-			pr: PlainRenderer{
+			pr: PlainOutputRenderer{
 				log: log.New(&stdout, "", 0),
 			},
 			args: args{
