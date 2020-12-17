@@ -87,7 +87,7 @@ func (suite *ManagerTestSuite) TestGetLogs_ShouldCallOrchestratorGetLogs() {
 		Once().
 		Return(make([]byte, 0), nil)
 	suite.renderer.
-		On("RenderComponents", mock.Anything).
+		On("RenderLogs", mock.Anything).
 		Once()
 	_, _ = suite.sut.GetLogs(suite.env)
 	assert.True(suite.T(), suite.orchestratorCommand.AssertCalled(suite.T(), "GetLogs", suite.namespace))
@@ -101,10 +101,10 @@ func (suite *ManagerTestSuite) TestGetLogs_ShouldPassTheOrchestratorOutputToTheR
 		Once().
 		Return(output, nil)
 	suite.renderer.
-		On("RenderComponents", mock.Anything).
+		On("RenderLogs", mock.Anything).
 		Once()
 	_, _ = suite.sut.GetLogs(suite.env)
-	suite.renderer.AssertCalled(suite.T(), "RenderComponents", output)
+	suite.renderer.AssertCalled(suite.T(), "RenderLogs", output)
 }
 
 func (suite *ManagerTestSuite) TestGetLogs_ShouldError_WhenOrchestratorFailsToExecuteCommand() {

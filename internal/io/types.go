@@ -42,6 +42,7 @@ type FileLocation struct {
 // OutputRenderer knows how to render byte buffers into human readable CLI outputs
 type OutputRenderer interface {
 	RenderComponents([]byte)
+	RenderLogs([]byte)
 }
 
 // Error prints out the formatted error message.

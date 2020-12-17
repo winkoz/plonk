@@ -33,12 +33,18 @@ type manager struct {
 // GetPods returns all the pods for the namespace under project-name and environment
 func (m manager) GetPods(env string) (output []byte, err error) {
 	output, err = m.executeCommand("GetPods", m.orchestratorCommand.GetPods, env)
+	if err == nil {
+		m.renderer.RenderComponents(output)
+	}
 
 	return
 }
 
 func (m manager) GetLogs(env string) (output []byte, err error) {
 	output, err = m.executeCommand("GetLogs", m.orchestratorCommand.GetLogs, env)
+	if err == nil {
+		m.renderer.RenderLogs(output)
+	}
 
 	return
 }
@@ -60,10 +66,7 @@ func (m manager) executeCommand(logName string, command func(string) ([]byte, er
 
 	if err != nil {
 		log.Errorf("Unable to execute command %s in orchestrator. err = %v", logName, err)
-		return
 	}
-
-	m.renderer.RenderComponents(output)
 
 	return
 }

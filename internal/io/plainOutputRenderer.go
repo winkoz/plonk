@@ -21,3 +21,8 @@ func NewPlainOutputRenderer() PlainOutputRenderer {
 func (pr PlainOutputRenderer) RenderComponents(output []byte) {
 	pr.log.Print(string(output))
 }
+
+// RenderLogs renders the passed in output to the console via simple stdout call
+func (pr PlainOutputRenderer) RenderLogs(output []byte) {
+	pr.log.Print(string(output))
+}

@@ -11,3 +11,8 @@ type RendererMock struct {
 func (r *RendererMock) RenderComponents(output []byte) {
 	r.Called(output)
 }
+
+// RenderLogs …
+func (r *RendererMock) RenderLogs(output []byte) {
+	r.Called(output)
+}
