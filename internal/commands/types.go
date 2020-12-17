@@ -6,5 +6,5 @@ type OrchestratorCommand interface {
 	Diff(manifestPath string) error
 	Show(env string) error
 	GetPods(namespace string) ([]byte, error)
-	GetLogs(namespace string) ([]byte, error)
+	GetLogs(namespace string, component *string) ([]byte, error)
 }

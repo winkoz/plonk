@@ -33,7 +33,7 @@ func (k kubectlCommand) GetPods(namespace string) ([]byte, error) {
 	return k.executeCommand("GetPods", "get", "pods", "--namespace", namespace, "-o", "json")
 }
 
-func (k kubectlCommand) GetLogs(namespace string) ([]byte, error) {
+func (k kubectlCommand) GetLogs(namespace string, component *string) ([]byte, error) {
 	labels := fmt.Sprintf("app=%s", namespace)
 	return k.executeCommand("GetLogs", "logs", "--namespace", namespace, "-l", labels)
 }

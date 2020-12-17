@@ -34,7 +34,7 @@ func (oc *OrchestratorCommandMock) GetPods(namespace string) ([]byte, error) {
 }
 
 // GetLogs …
-func (oc *OrchestratorCommandMock) GetLogs(namespace string) ([]byte, error) {
-	args := oc.Called(namespace)
+func (oc *OrchestratorCommandMock) GetLogs(namespace string, component *string) ([]byte, error) {
+	args := oc.Called(namespace, component)
 	return args.Get(0).([]byte), args.Error(1)
 }

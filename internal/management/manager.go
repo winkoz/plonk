@@ -12,7 +12,7 @@ import (
 // Manager allows interaction with orchestrators environments
 type Manager interface {
 	GetPods(env string) ([]byte, error)
-	GetLogs(env string) ([]byte, error)
+	GetLogs(env string, component *string) ([]byte, error)
 }
 
 // NewManager creates a manager object
@@ -32,41 +32,35 @@ type manager struct {
 
 // GetPods returns all the pods for the namespace under project-name and environment
 func (m manager) GetPods(env string) (output []byte, err error) {
-	output, err = m.executeCommand("GetPods", m.orchestratorCommand.GetPods, env)
-	if err == nil {
-		m.renderer.RenderComponents(output)
-	}
-
-	return
-}
-
-func (m manager) GetLogs(env string) (output []byte, err error) {
-	output, err = m.executeCommand("GetLogs", m.orchestratorCommand.GetLogs, env)
-	if err == nil {
-		m.renderer.RenderLogs(output)
-	}
-
-	return
-}
-
-//-----------------------------
-// Private Methods
-//-----------------------------
-
-func (m manager) buildNamespace(env string) string {
-	return fmt.Sprintf("%s-%s", m.ctx.ProjectName, env)
-}
-
-func (m manager) executeCommand(logName string, command func(string) ([]byte, error), env string) (output []byte, err error) {
-	signal := log.StartTrace(logName)
+	signal := log.StartTrace("GetPods")
 	defer log.StopTrace(signal, err)
 
 	namespace := m.buildNamespace(env)
-	output, err = command(namespace)
-
+	output, err = m.orchestratorCommand.GetPods(namespace)
 	if err != nil {
-		log.Errorf("Unable to execute command %s in orchestrator. err = %v", logName, err)
+		log.Errorf("Unable to get the pods from the orchestrator. err = %v", err)
+		return
 	}
 
+	m.renderer.RenderComponents(output)
 	return
+}
+
+func (m manager) GetLogs(env string, component *string) (output []byte, err error) {
+	signal := log.StartTrace("GetLogs")
+	defer log.StopTrace(signal, err)
+
+	namespace := m.buildNamespace(env)
+	output, err = m.orchestratorCommand.GetLogs(namespace, component)
+
+	if err != nil {
+		log.Errorf("Unable to get the logs from the orchestrator. err = %v", err)
+	}
+	m.renderer.RenderLogs(output)
+
+	return
+}
+
+func (m manager) buildNamespace(env string) string {
+	return fmt.Sprintf("%s-%s", m.ctx.ProjectName, env)
 }

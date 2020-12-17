@@ -20,6 +20,7 @@ type KubectlTestSuite struct {
 	deployCommand string
 	env           string
 	namespace     string
+	component     *string
 	manifestPath  string
 	targetPath    string
 	sat           kubectlCommand
@@ -37,6 +38,7 @@ func (suite *KubectlTestSuite) SetupTest() {
 		ProjectName:   "Plonk-KubeCtl-Test",
 	}
 	suite.namespace = fmt.Sprintf("%s-%s", suite.ctx.ProjectName, suite.env)
+	suite.component = nil
 	suite.sat = kubectlCommand{
 		executor:     suite.executor,
 		interpolator: io.NewInterpolator(),
@@ -131,7 +133,7 @@ func (suite *KubectlTestSuite) TestGetPods_ShouldReturnAnError_WhenExecutorFails
 func (suite *KubectlTestSuite) TestGetLogs_ShouldCallExecutorWithGetCommand() {
 	args := []string{"logs", "--namespace", suite.namespace, "-l", "app=" + suite.namespace}
 	suite.setupExecutor(args, nil, nil)
-	_, err := suite.sat.GetLogs(suite.namespace)
+	_, err := suite.sat.GetLogs(suite.namespace, suite.component)
 	suite.verifyExecutor(args)
 	assert.Nil(suite.T(), err)
 }
@@ -140,7 +142,7 @@ func (suite *KubectlTestSuite) TestGetLogs_ShouldForwardOutputFromExecutor_WhenE
 	args := []string{"logs", "--namespace", suite.namespace, "-l", "app=" + suite.namespace}
 	expectedOutput := []byte(suite.T().Name())
 	suite.setupExecutor(args, expectedOutput, nil)
-	gotOutput, err := suite.sat.GetLogs(suite.namespace)
+	gotOutput, err := suite.sat.GetLogs(suite.namespace, suite.component)
 	assert.Nil(suite.T(), err)
 	assert.Equal(suite.T(), string(expectedOutput), string(gotOutput))
 }
@@ -148,7 +150,7 @@ func (suite *KubectlTestSuite) TestGetLogs_ShouldForwardOutputFromExecutor_WhenE
 func (suite *KubectlTestSuite) TestGetLogs_ShouldReturnAnError_WhenExecutorFails() {
 	expectedErr := errors.New(suite.T().Name())
 	suite.setupExecutor([]string{"logs", "--namespace", suite.namespace, "-l", "app=" + suite.namespace}, nil, expectedErr)
-	_, gotErr := suite.sat.GetLogs(suite.namespace)
+	_, gotErr := suite.sat.GetLogs(suite.namespace, suite.component)
 	assert.EqualError(suite.T(), gotErr, expectedErr.Error())
 }
 
