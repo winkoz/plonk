@@ -41,8 +41,8 @@ func (m manager) GetPods(env string) (output []byte, err error) {
 		log.Errorf("Unable to get the pods from the orchestrator. err = %v", err)
 		return
 	}
-
 	m.renderer.RenderComponents(output)
+
 	return
 }
 
@@ -52,9 +52,9 @@ func (m manager) GetLogs(env string, component *string) (output []byte, err erro
 
 	namespace := m.buildNamespace(env)
 	output, err = m.orchestratorCommand.GetLogs(namespace, component)
-
 	if err != nil {
 		log.Errorf("Unable to get the logs from the orchestrator. err = %v", err)
+		return
 	}
 	m.renderer.RenderLogs(output)
 

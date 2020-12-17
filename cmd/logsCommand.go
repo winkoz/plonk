@@ -48,6 +48,6 @@ func newLogsCommandHandler() CobraHandler {
 		}
 
 		m := management.NewManager(ctx)
-		m.GetLogs(env)
+		m.GetLogs(env, nil)
 	}
 }
