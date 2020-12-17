@@ -12,6 +12,7 @@ import (
 // Manager allows interaction with orchestrators environments
 type Manager interface {
 	GetPods(env string) ([]byte, error)
+	GetLogs(env string) ([]byte, error)
 }
 
 // NewManager creates a manager object
@@ -45,6 +46,10 @@ func (m manager) GetPods(env string) (output []byte, err error) {
 	m.renderer.RenderComponents(output)
 
 	return
+}
+
+func (m manager) GetLogs(env string) (output []byte, err error) {
+	return nil, nil
 }
 
 func (m manager) buildNamespace(env string) string {
