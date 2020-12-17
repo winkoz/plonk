@@ -5,6 +5,7 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
+    component: docker-registry
 spec:
   replicas: {{.REPLICAS}}
   selector:
