@@ -41,6 +41,8 @@ func (suite *ManagerTestSuite) SetupTest() {
 // Tests
 //-------------------------------------------------
 
+//----- GetPods Tests
+
 func (suite *ManagerTestSuite) TestGetPods_ShouldCallOrchestratorGetPods() {
 	suite.orchestratorCommand.
 		On("GetPods", mock.AnythingOfType("string")).
@@ -74,6 +76,44 @@ func (suite *ManagerTestSuite) TestGetPods_ShouldError_WhenOrchestratorFailsToEx
 		Once().
 		Return(make([]byte, 0), expectedErr)
 	_, gotErr := suite.sut.GetPods(suite.env)
+	assert.EqualError(suite.T(), gotErr, expectedErr.Error())
+}
+
+//----- GetLogs Tests
+
+func (suite *ManagerTestSuite) TestGetLogs_ShouldCallOrchestratorGetLogs() {
+	suite.orchestratorCommand.
+		On("GetLogs", mock.AnythingOfType("string")).
+		Once().
+		Return(make([]byte, 0), nil)
+	suite.renderer.
+		On("RenderComponents", mock.Anything).
+		Once()
+	_, _ = suite.sut.GetLogs(suite.env)
+	assert.True(suite.T(), suite.orchestratorCommand.AssertCalled(suite.T(), "GetLogs", suite.namespace))
+}
+
+func (suite *ManagerTestSuite) TestGetLogs_ShouldPassTheOrchestratorOutputToTheRenderer_WhenOrchestratorGetLogsSucceeds() {
+	outputStr := suite.T().Name()
+	output := []byte(outputStr)
+	suite.orchestratorCommand.
+		On("GetLogs", mock.AnythingOfType("string")).
+		Once().
+		Return(output, nil)
+	suite.renderer.
+		On("RenderComponents", mock.Anything).
+		Once()
+	_, _ = suite.sut.GetLogs(suite.env)
+	suite.renderer.AssertCalled(suite.T(), "RenderComponents", output)
+}
+
+func (suite *ManagerTestSuite) TestGetLogs_ShouldError_WhenOrchestratorFailsToExecuteCommand() {
+	expectedErr := errors.New("kubectl error getting logs")
+	suite.orchestratorCommand.
+		On("GetLogs", suite.namespace).
+		Once().
+		Return(make([]byte, 0), expectedErr)
+	_, gotErr := suite.sut.GetLogs(suite.env)
 	assert.EqualError(suite.T(), gotErr, expectedErr.Error())
 }
 
