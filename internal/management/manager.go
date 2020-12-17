@@ -32,39 +32,38 @@ type manager struct {
 
 // GetPods returns all the pods for the namespace under project-name and environment
 func (m manager) GetPods(env string) (output []byte, err error) {
-	signal := log.StartTrace("GetPods")
-	defer log.StopTrace(signal, err)
-
-	namespace := m.buildNamespace(env)
-	output, err = m.orchestratorCommand.GetPods(namespace)
-
-	if err != nil {
-		log.Errorf("Unable to get the pods from the orchestrator. err = %v", err)
-		return
-	}
-
-	m.renderer.RenderComponents(output)
+	output, err = m.executeCommand("GetPods", m.orchestratorCommand.GetPods, env)
 
 	return
 }
 
 func (m manager) GetLogs(env string) (output []byte, err error) {
-	signal := log.StartTrace("GetLogs")
+	output, err = m.executeCommand("GetLogs", m.orchestratorCommand.GetLogs, env)
+
+	return
+}
+
+//-----------------------------
+// Private Methods
+//-----------------------------
+
+func (m manager) buildNamespace(env string) string {
+	return fmt.Sprintf("%s-%s", m.ctx.ProjectName, env)
+}
+
+func (m manager) executeCommand(logName string, command func(string) ([]byte, error), env string) (output []byte, err error) {
+	signal := log.StartTrace(logName)
 	defer log.StopTrace(signal, err)
 
 	namespace := m.buildNamespace(env)
-	output, err = m.orchestratorCommand.GetLogs(namespace)
+	output, err = command(namespace)
 
 	if err != nil {
-		log.Errorf("Unable to get the logs from the orchestrator. err = %v", err)
+		log.Errorf("Unable to execute command %s in orchestrator. err = %v", logName, err)
 		return
 	}
 
 	m.renderer.RenderComponents(output)
 
 	return
-}
-
-func (m manager) buildNamespace(env string) string {
-	return fmt.Sprintf("%s-%s", m.ctx.ProjectName, env)
 }
