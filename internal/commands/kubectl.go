@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/winkoz/plonk/internal/config"
@@ -33,7 +34,8 @@ func (k kubectlCommand) GetPods(namespace string) ([]byte, error) {
 }
 
 func (k kubectlCommand) GetLogs(namespace string) ([]byte, error) {
-	return nil, nil
+	labels := fmt.Sprintf("app=%s", namespace)
+	return k.executeCommand("GetLogs", "logs", "--namespace", namespace, "-l", labels)
 }
 
 func (k kubectlCommand) executeCommand(logName string, args ...string) (output []byte, err error) {
