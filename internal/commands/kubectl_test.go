@@ -126,6 +126,32 @@ func (suite *KubectlTestSuite) TestGetPods_ShouldReturnAnError_WhenExecutorFails
 	assert.EqualError(suite.T(), gotErr, expectedErr.Error())
 }
 
+//----- GetLogs Tests
+
+func (suite *KubectlTestSuite) TestGetLogs_ShouldCallExecutorWithGetCommand() {
+	args := []string{"logs", "--namespace", suite.namespace, "-l", "app=" + suite.namespace}
+	suite.setupExecutor(args, nil, nil)
+	_, err := suite.sat.GetLogs(suite.namespace)
+	suite.verifyExecutor(args)
+	assert.Nil(suite.T(), err)
+}
+
+func (suite *KubectlTestSuite) TestGetLogs_ShouldForwardOutputFromExecutor_WhenExecutorSucceeds() {
+	args := []string{"logs", "--namespace", suite.namespace, "-l", "app=" + suite.namespace}
+	expectedOutput := []byte(suite.T().Name())
+	suite.setupExecutor(args, expectedOutput, nil)
+	gotOutput, err := suite.sat.GetLogs(suite.namespace)
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), string(expectedOutput), string(gotOutput))
+}
+
+func (suite *KubectlTestSuite) TestGetLogs_ShouldReturnAnError_WhenExecutorFails() {
+	expectedErr := errors.New(suite.T().Name())
+	suite.setupExecutor([]string{"logs", "--namespace", suite.namespace, "-l", "app=" + suite.namespace}, nil, expectedErr)
+	_, gotErr := suite.sat.GetLogs(suite.namespace)
+	assert.EqualError(suite.T(), gotErr, expectedErr.Error())
+}
+
 func TestKubectlTestSuite(t *testing.T) {
 	suite.Run(t, new(KubectlTestSuite))
 }
