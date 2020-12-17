@@ -32,6 +32,10 @@ func (k kubectlCommand) GetPods(namespace string) ([]byte, error) {
 	return k.executeCommand("GetPods", "get", "pods", "--namespace", namespace, "-o", "json")
 }
 
+func (k kubectlCommand) GetLogs(namespace string) ([]byte, error) {
+	return nil, nil
+}
+
 func (k kubectlCommand) executeCommand(logName string, args ...string) (output []byte, err error) {
 	signal := log.StartTrace(logName)
 	defer log.StopTrace(signal, err)
