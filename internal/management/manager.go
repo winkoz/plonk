@@ -49,7 +49,20 @@ func (m manager) GetPods(env string) (output []byte, err error) {
 }
 
 func (m manager) GetLogs(env string) (output []byte, err error) {
-	return nil, nil
+	signal := log.StartTrace("GetLogs")
+	defer log.StopTrace(signal, err)
+
+	namespace := m.buildNamespace(env)
+	output, err = m.orchestratorCommand.GetLogs(namespace)
+
+	if err != nil {
+		log.Errorf("Unable to get the logs from the orchestrator. err = %v", err)
+		return
+	}
+
+	m.renderer.RenderComponents(output)
+
+	return
 }
 
 func (m manager) buildNamespace(env string) string {
