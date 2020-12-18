@@ -18,3 +18,9 @@ jobs:
 
     - name: Run tests
       run: make test INTERACTIVE=""
+
+    - name: JUnit Report
+      uses: mikepenz/action-junit-report@v1.1.1
+      with:
+        github_token: ${{ secrets.TOKEN }}
+        report_paths: unit-tests.xml
