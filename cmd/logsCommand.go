@@ -17,6 +17,8 @@ limitations under the License.
 */
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io/log"
@@ -47,7 +49,39 @@ func newLogsCommandHandler() CobraHandler {
 			env = args[0]
 		}
 
+		desiredComponent := retrieveComponent(ctx, env)
+
 		m := management.NewManager(ctx)
-		m.GetLogs(env, nil)
+		m.GetLogs(env, desiredComponent)
 	}
+}
+
+func retrieveComponent(ctx config.Context, env string) (desiredComponent *string) {
+	// Extract components for desired env
+	components := ctx.Components(env)
+	componentsCount := len(components)
+
+	// Only ask if there is more than 1 component
+	if componentsCount > 1 {
+		option := -1
+		// Keep asking until we receive a valid option
+		for repeat := true; repeat; {
+			fmt.Println("Choose which component to retrieve the logs from:")
+			for idx, component := range components {
+				fmt.Printf("\t%d. %s\n", idx, component)
+			}
+			// Inject the «All» option
+			fmt.Printf("\t%d. All\n", componentsCount)
+
+			_, err := fmt.Scanf("%d", &option) // Read the selection from the user
+			// Validate if the option is a number and is within the range of available components
+			if repeat = (err != nil || option > componentsCount); !repeat {
+				if option < componentsCount { // If option is within the list of components read it
+					desiredComponent = &(components[option])
+				}
+			}
+		}
+	}
+
+	return
 }
