@@ -19,7 +19,7 @@ go-build: clean go-build-assets
 	@echo "Plonk built successfully!"
 
 go-test: go-build-assets
-	GO111MODULE=on gotestsum --junitfile unit-tests.xml
+	GO111MODULE=on gotestsum --junitfile unit-tests.xml --format pkgname-and-test-fails -- -cover ./...
 	@echo "Plonk finished testing!"
 
 build: clean docker-build
