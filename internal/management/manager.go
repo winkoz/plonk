@@ -7,6 +7,7 @@ import (
 	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
+	"github.com/winkoz/plonk/internal/io/render"
 )
 
 // Manager allows interaction with orchestrators environments
@@ -20,7 +21,7 @@ func NewManager(ctx config.Context) Manager {
 	return manager{
 		ctx:                 ctx,
 		orchestratorCommand: commands.NewOrchestrator(ctx, "kubectl"),
-		renderer:            io.NewPlainOutputRenderer(),
+		renderer:            render.NewPlainOutputRenderer(),
 	}
 }
 
