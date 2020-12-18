@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/winkoz/plonk/internal"
 	"github.com/winkoz/plonk/internal/commands"
 	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
@@ -100,7 +101,7 @@ func (d deployer) environmentTemplates(env string) ([]scaffolding.TemplateData, 
 	if desiredEnv := d.ctx.Environments[env]; desiredEnv != nil {
 		templateNames = desiredEnv
 	} else {
-		templateNames = d.ctx.Environments[baseEnvironmentKey]
+		templateNames = d.ctx.Environments[internal.BaseEnvironmentKey]
 	}
 	log.Debugf("Loaded templates for '%s': %v", env, templateNames)
 
