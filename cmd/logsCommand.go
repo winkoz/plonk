@@ -18,6 +18,7 @@ limitations under the License.
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/winkoz/plonk/internal/config"
@@ -63,7 +64,7 @@ func retrieveComponent(ctx config.Context, env string) (desiredComponent *string
 
 	// Only ask if there is more than 1 component
 	if componentsCount > 1 {
-		option := -1
+		input := ""
 		// Keep asking until we receive a valid option
 		for repeat := true; repeat; {
 			fmt.Println("Choose which component to retrieve the logs from:")
@@ -73,12 +74,20 @@ func retrieveComponent(ctx config.Context, env string) (desiredComponent *string
 			// Inject the «All» option
 			fmt.Printf("\t%d. All\n", componentsCount)
 
-			_, err := fmt.Scanf("%d", &option) // Read the selection from the user
+			// Read the selection from the user
+			_, _ = fmt.Scan(&input)
+			option, err := strconv.Atoi(input)
+
 			// Validate if the option is a number and is within the range of available components
 			if repeat = (err != nil || option > componentsCount); !repeat {
+				component := "All"
 				if option < componentsCount { // If option is within the list of components read it
 					desiredComponent = &(components[option])
+					component = *desiredComponent
 				}
+				log.Infof("Selected logs for %s component(s).", component)
+			} else {
+				fmt.Println("Invalid option provided")
 			}
 		}
 	}
