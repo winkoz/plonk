@@ -138,6 +138,16 @@ func (suite *KubectlTestSuite) TestGetLogs_ShouldCallExecutorWithGetCommand() {
 	assert.Nil(suite.T(), err)
 }
 
+func (suite *KubectlTestSuite) TestGetLogs_ShouldCallExecutorWithGetCommandAndComponentLabel_WhenComponentIsNotNil() {
+	component := suite.T().Name()
+	suite.component = &component
+	args := []string{"logs", "--namespace", suite.namespace, "-l", "app=" + suite.namespace, "-l", "component=" + component}
+	suite.setupExecutor(args, nil, nil)
+	_, err := suite.sat.GetLogs(suite.namespace, suite.component)
+	suite.verifyExecutor(args)
+	assert.Nil(suite.T(), err)
+}
+
 func (suite *KubectlTestSuite) TestGetLogs_ShouldForwardOutputFromExecutor_WhenExecutorSucceeds() {
 	args := []string{"logs", "--namespace", suite.namespace, "-l", "app=" + suite.namespace}
 	expectedOutput := []byte(suite.T().Name())
