@@ -19,8 +19,9 @@ jobs:
     - name: Run tests
       run: make test INTERACTIVE=""
 
-    - name: JUnit Report
-      uses: mikepenz/action-junit-report@v1.1.1
+    - name: Publish Unit Test Results
+      uses: docker://ghcr.io/enricomi/publish-unit-test-result-action:v1.6
+      if: always()
       with:
-        github_token: ${{ secrets.TOKEN }}
-        report_paths: unit-tests.xml
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        files: '**/unit-tests.xml'

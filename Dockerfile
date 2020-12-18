@@ -3,7 +3,7 @@ FROM golang:1.14
 ENV GOPATH "/tmp/go"
 RUN mkdir -p $GOPATH
 
-RUN go get github.com/kyoh86/richgo
+RUN go get -u gotest.tools/gotestsum
 RUN go get -u github.com/go-bindata/go-bindata/...
 
 ENV PATH="${PATH}:${GOPATH}/bin"
