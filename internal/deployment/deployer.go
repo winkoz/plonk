@@ -104,6 +104,9 @@ func (d deployer) environmentTemplates(env string) ([]scaffolding.TemplateData, 
 	}
 	log.Debugf("Loaded templates for '%s': %v", env, templateNames)
 
+	//inject namespace template
+	templateNames = append([]string{"namespace"}, templateNames...)
+
 	result := make([]scaffolding.TemplateData, len(templateNames))
 	for _, templateName := range templateNames {
 		log.Debugf("Loading template: %s", templateName)
