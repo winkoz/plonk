@@ -83,7 +83,7 @@ func NewContextFromFile() (Context, error) {
 	}, nil
 }
 
-// Components returns a list of components found in the pssed in environment.
+// Components returns a list of components found in the passed in environment.
 // If none found it returns the components found in `base`
 func (c Context) Components(environment string) []string {
 	envComponents, exist := c.Environments[environment]
