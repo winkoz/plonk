@@ -2,6 +2,7 @@ package log
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -49,12 +50,12 @@ func (s *SeverityLevel) Set(value string) error {
 
 // String implements pflag.Value
 func (s SeverityLevel) String() string {
-	return string(s)
+	return fmt.Sprintf("%d", s)
 }
 
 // Type implements pflag.Value
 func (s SeverityLevel) Type() string {
-	return string(s)
+	return fmt.Sprintf("%d", s)
 }
 
 // parseLevel parses level string.

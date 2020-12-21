@@ -10,7 +10,7 @@ import (
 
 // Executor command line executioner
 type Executor interface {
-	Run(command string, args ...string) error
+	Run(command string, args ...string) ([]byte, error)
 }
 
 // NewExecutor factory for command line executors
@@ -21,16 +21,17 @@ func NewExecutor() Executor {
 type executor struct {
 }
 
-func (e executor) Run(command string, args ...string) error {
+func (e executor) Run(command string, args ...string) ([]byte, error) {
 	cmd := exec.Command(command, args...)
 	cmdOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
 	err := cmd.Run()
+	outputBytes := cmdOutput.Bytes()
 	if err != nil {
-		runErr := fmt.Errorf("[Internal Error] Command could not be executed successfully. %s.\n\terror = %v.", string(cmdOutput.Bytes()), err)
+		runErr := fmt.Errorf("[Internal Error] Command could not be executed successfully. %s.\n\terror = %v", string(outputBytes), err)
 		log.Errorf(runErr.Error())
-		return runErr
+		return nil, runErr
 	}
-	log.Infof("[INFO] Executed command:\n\t%s", string(cmdOutput.Bytes()))
-	return nil
+	log.Infof("[INFO] Executed command:\n\t%s", string(outputBytes))
+	return outputBytes, nil
 }

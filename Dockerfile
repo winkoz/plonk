@@ -1,4 +1,4 @@
-FROM golang:1.14
+FROM golang:1.15.6
 
 ENV GOPATH "/tmp/go"
 RUN mkdir -p $GOPATH

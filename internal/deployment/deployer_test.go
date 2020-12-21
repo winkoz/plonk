@@ -200,7 +200,7 @@ func (suite *DeployerTestSuite) TestExecute_ShouldCallOrchestratorDiff_WhenDryRu
 
 	deployFullPath := filepath.Join(suite.ctx.DeployFolderName, "deploy.yaml")
 	suite.orchestratorCommand.
-		On("Diff", suite.env, deployFullPath).
+		On("Diff", deployFullPath).
 		Once().
 		Return(nil)
 	assert.Nil(suite.T(), suite.sut.Execute(suite.ctx, suite.env, true))
@@ -276,7 +276,7 @@ func (suite *DeployerTestSuite) setupIOServiceDelete() {
 func (suite *DeployerTestSuite) setupOrchestrator(err error) {
 	deployFullPath := filepath.Join(suite.ctx.DeployFolderName, "deploy.yaml")
 	suite.orchestratorCommand.
-		On("Deploy", suite.env, deployFullPath).
+		On("Deploy", deployFullPath).
 		Once().
 		Return(err)
 }
