@@ -24,14 +24,18 @@ type executor struct {
 func (e executor) Run(command string, args ...string) ([]byte, error) {
 	cmd := exec.Command(command, args...)
 	cmdOutput := &bytes.Buffer{}
+	errOutput := &bytes.Buffer{}
 	cmd.Stdout = cmdOutput
+	cmd.Stderr = errOutput
+
 	err := cmd.Run()
-	outputBytes := cmdOutput.Bytes()
 	if err != nil {
-		runErr := fmt.Errorf("[Internal Error] Command could not be executed successfully. %s.\n\terror = %v", string(outputBytes), err)
+		errBytes := errOutput.Bytes()
+		runErr := fmt.Errorf("Command could not be executed successfully. error = %v\n\t%s", err, string(errBytes))
 		log.Errorf(runErr.Error())
 		return nil, runErr
 	}
+	outputBytes := cmdOutput.Bytes()
 	log.Infof("[INFO] Executed command:\n\t%s", string(outputBytes))
 	return outputBytes, nil
 }

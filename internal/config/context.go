@@ -3,6 +3,7 @@ package config
 import (
 	"path/filepath"
 
+	"github.com/winkoz/plonk/internal"
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
 )
@@ -80,4 +81,15 @@ func NewContextFromFile() (Context, error) {
 		// Services
 		IOService: ioService,
 	}, nil
+}
+
+// Components returns a list of components found in the passed in environment.
+// If none found it returns the components found in `base`
+func (c Context) Components(environment string) []string {
+	envComponents, exist := c.Environments[environment]
+	if !exist {
+		envComponents = c.Environments[internal.BaseEnvironmentKey]
+	}
+
+	return envComponents
 }

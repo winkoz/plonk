@@ -5,15 +5,18 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
+    component: http-service
 spec:
   replicas: {{.REPLICAS}}
   selector:
     matchLabels:
       app: {{.NAME}}-{{.ENV}}
+      component: http-service
   template:
     metadata:
       labels:
         app: {{.NAME}}-{{.ENV}}
+        component: http-service
     spec:
       containers:
       - name: {{.NAME}}
