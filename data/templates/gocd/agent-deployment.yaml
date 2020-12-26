@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.NAME}}-{{.ENV}}-agent
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: gocd
+    type: agent
+spec:
+  replicas: {{.AGENT_REPLICAS}}
+  selector:
+    matchLabels:
+      app: {{.NAME}}-{{.ENV}}
+      component: gocd
+      type: agent
+  template:
+    metadata:
+      namespace: {{.NAME}}-{{.ENV}}
+      labels:
+        app: {{.NAME}}-{{.ENV}}
+        component: gocd
+        type: agent
+    spec:
+      serviceAccountName: {{.NAME}}-{{.ENV}}-agent-service-account
+      securityContext:
+        runAsUser: {{ .RUN_AS_USER }}
+        runAsGroup: {{ .RUN_AS_GROUP }}
+        fsGroup: {{ .FSGROUP }}
+        fsGroupChangePolicy: "OnRootMismatch"
+      imagePullSecrets:
+        - name: {{.DOCKER_IMAGE_PULL_SECRET}}
+      volumes:
+        - name: ssh-secrets
+          secret:
+            secretName: {{.NAME}}-{{.ENV}}-ssh-secret
+            defaultMode: {{.SSH_FILES_PERMISSION}}
+        - name: bin
+          hostPath:
+            path: /usr/bin
+      containers:
+        - name: {{.NAME}}-{{.ENV}}-agent
+          image: "{{.AGENT_DOCKER_IMAGE}}"
+          imagePullPolicy: {{.IMAGE_PULLPOLICY}}
+          env: 
+          - name: GO_SERVER_URL 
+            value: "https://{{.HOSTNAME}}/go"
+          {{range $k, $v := .ENVIRONMENT_VARIABLES}}
+          - name: {{$k}} 
+            value: "{{$v}}"
+        {{end}}
+          ports:
+          - containerPort: {{.AGENT_HEALTH_PORT}}
+          livenessProbe:
+            httpGet:
+              path: /health/v1/isConnectedToServer
+              port: {{.AGENT_HEALTH_PORT}}
+            initialDelaySeconds: {{.INITIAL_DELAY_SECONDS}}
+            failureThreshold: {{.FAILURE_THRESHOLD}}
+            periodSeconds: {{.HEALTHCHECK_INTERVAL_SECONDS}}
+          readinessProbe:
+            httpGet:
+              path: /health/v1/isConnectedToServer
+              port: {{.AGENT_HEALTH_PORT}}
+            initialDelaySeconds: {{.INITIAL_DELAY_SECONDS}}
+          securityContext:
+            privileged: {{.AGENT_RUN_PRIVILEGED}}
+          volumeMounts:
+          - name: ssh-secrets
+            readOnly: false
+            mountPath: /home/go/.ssh
+      restartPolicy: {{.RESTART_POLICY}}

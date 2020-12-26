@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.NAME}}-{{.ENV}}-server
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: gocd
+    type: server
+spec:
+  replicas: {{.REPLICAS}}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{.NAME}}-{{.ENV}}
+      component: gocd
+      type: server
+  template:
+    metadata:
+      namespace: {{.NAME}}-{{.ENV}}
+      labels:
+        app: {{.NAME}}-{{.ENV}}
+        component: gocd
+        type: server
+    spec:
+      securityContext:
+        runAsUser: {{ .RUN_AS_USER }}
+        runAsGroup: {{ .RUN_AS_GROUP }}
+        fsGroup: {{ .FSGROUP }}
+      serviceAccountName: {{.NAME}}-{{.ENV}}-service-account
+      volumes:
+        - name: {{.NAME}}-{{.ENV}}-config-vol
+          configMap:
+            name: {{.NAME}}-{{.ENV}}
+        - name: goserver-vol
+          persistentVolumeClaim:
+            claimName: {{.NAME}}-{{.ENV}}-pvc
+        - name: ssh-secrets
+          secret:
+            secretName: {{.NAME}}-{{.ENV}}-ssh-secret
+            defaultMode: {{.SSH_FILES_PERMISSION}}
+      imagePullSecrets:
+        - name: {{.DOCKER_IMAGE_PULL_SECRET}}
+      containers:
+        - name: {{.NAME}}-{{.ENV}}-server
+          image: "{{.DOCKER_IMAGE}}"
+          imagePullPolicy: {{.IMAGE_PULLPOLICY}}
+          env: {{range $k, $v := .ENVIRONMENT_VARIABLES}}
+          - name: {{$k}} 
+            value: "{{$v}}"
+          {{end}}ports:
+            - containerPort: {{.CONTAINER_PORT}}
+          livenessProbe:
+            httpGet:
+              path: /go/api/v1/health
+              port: {{.CONTAINER_PORT}}
+            initialDelaySeconds: {{.INITIAL_DELAY_SECONDS}}
+            failureThreshold: {{.FAILURE_THRESHOLD}}
+            periodSeconds: {{.HEALTHCHECK_INTERVAL_SECONDS}}
+          readinessProbe:
+            httpGet:
+              path: /go/api/v1/health
+              port: {{.CONTAINER_PORT}}
+            initialDelaySeconds: {{.INITIAL_DELAY_SECONDS}}
+            failureThreshold: {{.FAILURE_THRESHOLD}}
+            periodSeconds: {{.HEALTHCHECK_INTERVAL_SECONDS}}
+          volumeMounts:
+          - name: {{.NAME}}-{{.ENV}}-config-vol
+            mountPath: /preconfigure_server.sh
+            subPath: preconfigure_server.sh
+          - name: goserver-vol
+            mountPath: /godata
+            subPath: {{.GODATA_SUBPATH}}
+          - name: goserver-vol
+            mountPath: /home/go
+            subPath: {{.GODATA_SUBPATH}}
+          - name: goserver-vol
+            mountPath: /docker-entrypoint.d
+            subPath: {{.DOCKER_ENTRY_POINT_SUBPATH}}
+          - name: ssh-secrets
+            readOnly: false
+            mountPath: /home/go/.ssh
+      restartPolicy: {{.RESTART_POLICY}}
