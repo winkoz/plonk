@@ -25,8 +25,8 @@ variables:
     SSH_PRIVATE_KEY_PATH: ""
     SSH_PUBLIC_KEY_PATH: ""
     SSH_KNOW_HOSTS_PATH: ""
-    CPU_LIMIT_MIN: "200m"
-    CPU_LIMIT_MAX: "100m"
+    CPU_LIMIT_MIN: "100m"
+    CPU_LIMIT_MAX: "200m"
     MEMORY_LIMIT_MAX: 400Mi
     MEMORY_LIMIT_MIN: 200Mi
     ### Agent specific configuration
