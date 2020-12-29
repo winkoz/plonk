@@ -13,4 +13,6 @@ spec:
       memory: {{.MEMORY_LIMIT_MAX}}
     min:
       memory: {{.MEMORY_LIMIT_MIN}}
+    defaultRequest:
+      memory: {{.MEMORY_LIMIT_DEFAULT}}
     type: Container

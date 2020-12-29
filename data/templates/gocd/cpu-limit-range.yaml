@@ -13,4 +13,6 @@ spec:
       cpu: {{.CPU_LIMIT_MAX}}
     min:
       cpu: {{.CPU_LIMIT_MIN}}
+    defaultRequest:
+      cpu: {{.CPU_LIMIT_DEFAULT}}
     type: Container
