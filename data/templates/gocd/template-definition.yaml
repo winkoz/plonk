@@ -25,6 +25,10 @@ variables:
     SSH_PRIVATE_KEY_PATH: ""
     SSH_PUBLIC_KEY_PATH: ""
     SSH_KNOW_HOSTS_PATH: ""
+    CPU_LIMIT_MIN: "200m"
+    CPU_LIMIT_MAX: "100m"
+    MEMORY_LIMIT_MAX: 400Mi
+    MEMORY_LIMIT_MIN: 200Mi
     ### Agent specific configuration
     AGENT_REPLICAS: 1
     AGENT_DOCKER_IMAGE: "registry.winkoz.com/gocd-agent-dind-18.04:v20.10.0"
@@ -35,6 +39,8 @@ variables:
     GOCD_PLUGIN_INSTALL_github_oauth: https://github.com/gocd-contrib/github-oauth-authorization-plugin/releases/download/v3.0.2-57/github-oauth-authorization-plugin-3.0.2-57.jar
 manifests:
   - ssh-secret.yaml
+  - memory-limit-range.yaml
+  - cpu-limit-range.yaml
   - pvc.yaml
   - agent-service-account.yaml
   - service-account.yaml

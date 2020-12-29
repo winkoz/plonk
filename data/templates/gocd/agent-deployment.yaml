@@ -35,6 +35,12 @@ spec:
           secret:
             secretName: {{.NAME}}-{{.ENV}}-ssh-secret
             defaultMode: {{.SSH_FILES_PERMISSION}}
+        - name: docker-config
+          secret:
+            secretName: {{.DOCKER_IMAGE_PULL_SECRET}}
+            items:
+              - key: .dockerconfigjson
+                path: config.json
         - name: bin
           hostPath:
             path: /usr/bin
@@ -69,4 +75,7 @@ spec:
           - name: ssh-secrets
             readOnly: false
             mountPath: /home/go/.ssh
+          - name: docker-config
+            readOnly: true
+            mountPath: /home/go/.docker/
       restartPolicy: {{.RESTART_POLICY}}
