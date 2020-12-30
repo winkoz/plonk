@@ -28,19 +28,23 @@ spec:
         runAsGroup: {{ .RUN_AS_GROUP }}
         fsGroup: {{ .FSGROUP }}
         fsGroupChangePolicy: "OnRootMismatch"
+      {{ if .DOCKER_IMAGE_PULL_SECRET}}
       imagePullSecrets:
         - name: {{.DOCKER_IMAGE_PULL_SECRET}}
+      {{ end }}
       volumes:
         - name: ssh-secrets
           secret:
             secretName: {{.NAME}}-{{.ENV}}-ssh-secret
             defaultMode: {{.SSH_FILES_PERMISSION}}
+        {{ if .DOCKER_IMAGE_PULL_SECRET}}
         - name: docker-config
           secret:
             secretName: {{.DOCKER_IMAGE_PULL_SECRET}}
             items:
               - key: .dockerconfigjson
                 path: config.json
+        {{ end }}
         - name: bin
           hostPath:
             path: /usr/bin

@@ -40,8 +40,10 @@ spec:
           secret:
             secretName: {{.NAME}}-{{.ENV}}-ssh-secret
             defaultMode: {{.SSH_FILES_PERMISSION}}
+      {{ if .DOCKER_IMAGE_PULL_SECRET}}
       imagePullSecrets:
         - name: {{.DOCKER_IMAGE_PULL_SECRET}}
+      {{ end }}
       containers:
         - name: {{.NAME}}-{{.ENV}}-server
           image: "{{.DOCKER_IMAGE}}"
