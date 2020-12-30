@@ -49,11 +49,11 @@ spec:
           image: "{{.AGENT_DOCKER_IMAGE}}"
           resources:
             limits:
-              cpu: {{.CPU_LIMIT_MAX}}
-              memory: {{.MEMORY_LIMIT_MAX}}
+              cpu: {{.AGENT_CPU_LIMIT_MAX}}
+              memory: {{.AGENT_MEMORY_LIMIT_MAX}}
             requests:
-              cpu: {{.CPU_LIMIT_DEFAULT}}
-              memory: {{.MEMORY_LIMIT_DEFAULT}}
+              cpu: {{.AGENT_CPU_LIMIT_DEFAULT}}
+              memory: {{.AGENT_MEMORY_LIMIT_DEFAULT}}
           imagePullPolicy: {{.IMAGE_PULLPOLICY}}
           env: 
           - name: GO_SERVER_URL 
@@ -62,8 +62,13 @@ spec:
           - name: {{$k}} 
             value: "{{$v}}"
         {{end}}
+        {{ if (eq .AGENT_AUTOREGISTER "true") }}
+          - name: AGENT_AUTO_REGISTER_KEY
+            value: {{.AGENT_AUTO_REGISTER_KEY}}
+        {{ end }}
           ports:
           - containerPort: {{.AGENT_HEALTH_PORT}}
+          {{ if (eq .AGENT_HEALTH_CHECK_ENABLED "true")}}
           livenessProbe:
             httpGet:
               path: /health/v1/isConnectedToServer
@@ -76,6 +81,7 @@ spec:
               path: /health/v1/isConnectedToServer
               port: {{.AGENT_HEALTH_PORT}}
             initialDelaySeconds: {{.INITIAL_DELAY_SECONDS}}
+          {{ end }}
           securityContext:
             privileged: {{.AGENT_RUN_PRIVILEGED}}
           volumeMounts:

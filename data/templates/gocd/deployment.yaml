@@ -46,6 +46,13 @@ spec:
         - name: {{.NAME}}-{{.ENV}}-server
           image: "{{.DOCKER_IMAGE}}"
           imagePullPolicy: {{.IMAGE_PULLPOLICY}}
+          resources:
+            limits:
+              cpu: {{.CPU_LIMIT_MAX}}
+              memory: {{.MEMORY_LIMIT_MAX}}
+            requests:
+              cpu: {{.CPU_LIMIT_DEFAULT}}
+              memory: {{.MEMORY_LIMIT_DEFAULT}}
           env: {{range $k, $v := .ENVIRONMENT_VARIABLES}}
           - name: {{$k}} 
             value: "{{$v}}"

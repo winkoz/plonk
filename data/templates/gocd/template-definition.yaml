@@ -25,17 +25,23 @@ variables:
     SSH_PRIVATE_KEY_PATH: ""
     SSH_PUBLIC_KEY_PATH: ""
     SSH_KNOW_HOSTS_PATH: ""
-    CPU_LIMIT_DEFAULT: "150m"
-    CPU_LIMIT_MIN: "100m"
-    CPU_LIMIT_MAX: "200m"
+    CPU_LIMIT_DEFAULT: "50m"
+    CPU_LIMIT_MAX: "560m"
     MEMORY_LIMIT_DEFAULT: 300Mi
-    MEMORY_LIMIT_MAX: 400Mi
-    MEMORY_LIMIT_MIN: 200Mi
+    MEMORY_LIMIT_MAX: 1000Mi
     ### Agent specific configuration
     AGENT_REPLICAS: 1
     AGENT_DOCKER_IMAGE: "registry.winkoz.com/gocd-agent-dind-18.04:v20.10.0"
     AGENT_HEALTH_PORT: 8152
     AGENT_RUN_PRIVILEGED: true
+    AGENT_CPU_LIMIT_DEFAULT: "150m"
+    AGENT_CPU_LIMIT_MAX: "200m"
+    AGENT_MEMORY_LIMIT_DEFAULT: 300Mi
+    AGENT_MEMORY_LIMIT_MAX: 400Mi
+    AGENT_HEALTH_CHECK_ENABLED: false
+    AGENT_AUTOREGISTER: false
+    AGENT_AUTO_REGISTER_RESOURCES: "*"
+    AGENT_AUTO_REGISTER_ENVIRONMENTS: "*"
   environment:
     PORT: 8153
     GOCD_PLUGIN_INSTALL_github_oauth: https://github.com/gocd-contrib/github-oauth-authorization-plugin/releases/download/v3.0.2-57/github-oauth-authorization-plugin-3.0.2-57.jar
@@ -45,7 +51,6 @@ manifests:
   - agent-service-account.yaml
   - service-account.yaml
   - service.yaml
-  - config-map.yaml
   - deployment.yaml
   - agent-deployment.yaml
   - ingress.yaml
