@@ -47,6 +47,13 @@ spec:
       containers:
         - name: {{.NAME}}-{{.ENV}}-agent
           image: "{{.AGENT_DOCKER_IMAGE}}"
+          resources:
+            limits:
+              cpu: {{.CPU_LIMIT_MAX}}
+              memory: {{.MEMORY_LIMIT_MAX}}
+            requests:
+              cpu: {{.CPU_LIMIT_DEFAULT}}
+              memory: {{.MEMORY_LIMIT_DEFAULT}}
           imagePullPolicy: {{.IMAGE_PULLPOLICY}}
           env: 
           - name: GO_SERVER_URL 

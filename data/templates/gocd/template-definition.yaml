@@ -41,8 +41,6 @@ variables:
     GOCD_PLUGIN_INSTALL_github_oauth: https://github.com/gocd-contrib/github-oauth-authorization-plugin/releases/download/v3.0.2-57/github-oauth-authorization-plugin-3.0.2-57.jar
 manifests:
   - ssh-secret.yaml
-  - memory-limit-range.yaml
-  - cpu-limit-range.yaml
   - pvc.yaml
   - agent-service-account.yaml
   - service-account.yaml
