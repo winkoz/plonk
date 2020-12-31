@@ -2,6 +2,8 @@ name: gocd
 variables: 
   build:
     USE_WILDCARD_TLS_CERTIFICATE: false
+    WILDCARD_TLS_SECRET: ""
+    WILDCARD_HOST: ""
     DOCKER_IMAGE: "gocd/gocd-server:v20.10.0"
     IMAGE_PULLPOLICY: IfNotPresent
     SERVICE_PORT: 80

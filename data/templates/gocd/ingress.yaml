@@ -17,7 +17,7 @@ spec:
   tls:
   - hosts: 
     - {{.HOSTNAME}}
-    secretName: cert-winkoz-wildcard
+    secretName: {{.WILDCARD_TLS_SECRET}}
   rules:
   - host: {{.HOSTNAME}}
     http:
@@ -25,7 +25,7 @@ spec:
       - backend:
           serviceName: {{.NAME}}-{{.ENV}}-service
           servicePort: {{.SERVICE_PORT}}
-  - host: "*.winkoz.com"
+  - host: {{.WILDCARD_HOST}}
     http:
       paths:
       - backend:
