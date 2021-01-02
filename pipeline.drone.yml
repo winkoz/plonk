@@ -9,10 +9,10 @@ steps:
   commands:
   - go get -u gotest.tools/gotestsum
   - go get -u github.com/go-bindata/go-bindata/...
-  - make build
-  - make test
+  - make go-build
+  - make go-test
 ---
 kind: signature
-hmac: 745ead3e922e0a65cbba53f4a8dbe6db358bbbec0531e8e734a1816536d48c97
+hmac: f5e9900ad26adc5485dc322d08bd29ff617b6ca71ae7d5ff1aca833ee130fb7d
 
 ...
