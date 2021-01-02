@@ -23,6 +23,7 @@ variables:
     MEMORY_LIMIT_MAX: 1000Mi
     SERVER_MOUNT_PATH: "/data"
     SERVER_MOUNT_SUBPATH: ""
+    DRONE_RPC_HOST: ""
     ### Runner specific configuration
     RUNNER_REPLICAS: 1
     RUNNER_DOCKER_IMAGE: "drone/drone-runner-kube:1.0.0-beta.6"
