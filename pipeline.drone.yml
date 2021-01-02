@@ -11,3 +11,8 @@ steps:
   - go get -u github.com/go-bindata/go-bindata/...
   - make build
   - make test
+---
+kind: signature
+hmac: a2723a6edf983fe5beab48628cc6bc55656b8bfee2a22393cf577d4f6b11246c
+
+...
