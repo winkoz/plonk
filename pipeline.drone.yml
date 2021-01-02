@@ -1,0 +1,13 @@
+---
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: setup_tools
+  image: golang:1.15.6
+  commands:
+  - go get -u gotest.tools/gotestsum
+  - go get -u github.com/go-bindata/go-bindata/...
+  - make build
+  - make test
