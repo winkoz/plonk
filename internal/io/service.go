@@ -28,6 +28,7 @@ type Service interface {
 	Write(targetFilePath string, content string) error
 	IsValidPath(path string) error
 	Base64Encode(v []byte) (string, error)
+	StringToBytes(s string) ([]byte, error)
 }
 
 type service struct{}
@@ -149,6 +150,9 @@ func (s service) IsValidPath(path string) error {
 	return err
 }
 
+func (s service) StringToBytes(str string) ([]byte, error) {
+	return []byte(str), nil
+}
 func (s service) Base64Encode(v []byte) (string, error) {
 	return base64.StdEncoding.EncodeToString(v), nil
 }

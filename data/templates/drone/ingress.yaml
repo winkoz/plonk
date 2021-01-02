@@ -9,7 +9,8 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: gocd
+    component: drone
+    type: server
   annotations:
     ingress.kubernetes.io/force-ssl-redirect: "false"
     kubernetes.io/ingress.class: nginx
@@ -17,7 +18,7 @@ spec:
   tls:
   - hosts: 
     - {{.HOSTNAME}}
-    secretName: cert-winkoz-wildcard
+    secretName: {{.WILDCARD_TLS_SECRET}}
   rules:
   - host: {{.HOSTNAME}}
     http:
@@ -25,7 +26,7 @@ spec:
       - backend:
           serviceName: {{.NAME}}-{{.ENV}}-service
           servicePort: {{.SERVICE_PORT}}
-  - host: "*.winkoz.com"
+  - host: {{.WILDCARD_HOST}}
     http:
       paths:
       - backend:
@@ -42,7 +43,8 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: gocd
+    component: drone
+    type: server
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -59,4 +61,4 @@ spec:
       - backend:
           serviceName: {{.NAME}}-{{.ENV}}-service
           servicePort: {{.SERVICE_PORT}}
-{{ end }} 
+{{ end }}

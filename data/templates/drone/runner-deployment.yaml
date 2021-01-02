@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.NAME}}-{{.ENV}}-runner
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: drone
+    type: runner
+spec:
+  replicas: {{.RUNNER_REPLICAS}}
+  selector:
+    matchLabels:
+      app: {{.NAME}}-{{.ENV}}
+      component: drone
+      type: runner
+  template:
+    metadata:
+      namespace: {{.NAME}}-{{.ENV}}
+      labels:
+        app: {{.NAME}}-{{.ENV}}
+        component: drone
+        type: runner
+    spec:
+      {{ if .DOCKER_IMAGE_PULL_SECRET}}
+      imagePullSecrets:
+        - name: {{.DOCKER_IMAGE_PULL_SECRET}}
+      {{ end }}
+      serviceAccountName: {{.NAME}}-{{.ENV}}-runner
+      terminationGracePeriodSeconds: {{.RUNNER_TERMINATION_GRACE_PERIOD_SECONDS}}
+      volumes:
+      containers:
+        - name: {{.NAME}}-{{.ENV}}-runner
+          image: "{{.RUNNER_DOCKER_IMAGE}}"
+          resources:
+            limits:
+              cpu: {{.RUNNER_CPU_LIMIT_MAX}}
+              memory: {{.RUNNER_MEMORY_LIMIT_MAX}}
+            requests:
+              cpu: {{.RUNNER_CPU_LIMIT_DEFAULT}}
+              memory: {{.RUNNER_MEMORY_LIMIT_DEFAULT}}
+          imagePullPolicy: {{.IMAGE_PULLPOLICY}}
+          env: 
+          - name: DRONE_SERVER_HOST
+            value : {{.HOSTNAME}}
+          - name: SECRET_ENVIRONMENT_VARIABLES
+            value: {{.NAME}}-{{.ENV}}-env-secret
+          - name: DRONE_RPC_HOST
+            value: {{.DRONE_RPC_HOST}}
+          {{range $k, $v := .ENVIRONMENT_VARIABLES}}
+          - name: {{$k}} 
+            value: "{{$v}}"
+          {{end}}
+          {{if .SECRET_ENVIRONMENT_VARIABLES}}
+          envFrom:
+            - secretRef:
+                name: {{.SECRET_ENVIRONMENT_VARIABLES}}
+          {{end}}
+          ports:
+          - containerPort: {{.RUNNER_PORT}}
+          securityContext:
+            privileged: {{.RUNNER_RUN_PRIVILEGED}}
+      restartPolicy: {{.RESTART_POLICY}}

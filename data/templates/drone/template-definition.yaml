@@ -1,0 +1,48 @@
+name: drone
+variables: 
+  build:
+    USE_WILDCARD_TLS_CERTIFICATE: false
+    WILDCARD_TLS_SECRET: ""
+    WILDCARD_HOST: ""
+    DOCKER_IMAGE: "drone/drone:1.10.1"
+    IMAGE_PULLPOLICY: IfNotPresent
+    SERVICE_PORT: 80
+    CONTAINER_PORT: 80
+    REPLICAS: 1
+    PVC_ACCESS_MODE: ReadWriteOnce
+    PVC_STORAGE_SIZE: 3Gi
+    PVC_STORAGE_CLASS_NAME: do-block-storage
+    DOCKER_IMAGE_PULL_SECRET: docker-registry-production-imgpull-secret
+    RESTART_POLICY: Always
+    GITHUB_CLIENT_SECRET: ""
+    GITHUB_CLIENT_ID: ""
+    DRONE_RPC_SECRET: ""
+    CPU_LIMIT_DEFAULT: "50m"
+    CPU_LIMIT_MAX: "560m"
+    MEMORY_LIMIT_DEFAULT: 300Mi
+    MEMORY_LIMIT_MAX: 1000Mi
+    SERVER_MOUNT_PATH: "/data"
+    SERVER_MOUNT_SUBPATH: ""
+    ### Runner specific configuration
+    RUNNER_REPLICAS: 1
+    RUNNER_DOCKER_IMAGE: "drone/drone-runner-kube:1.0.0-beta.6"
+    RUNNER_PORT: 3000
+    RUNNER_RUN_PRIVILEGED: true
+    RUNNER_CPU_LIMIT_DEFAULT: "150m"
+    RUNNER_CPU_LIMIT_MAX: "200m"
+    RUNNER_MEMORY_LIMIT_DEFAULT: 300Mi
+    RUNNER_MEMORY_LIMIT_MAX: 400Mi
+    RUNNER_HEALTH_CHECK_ENABLED: false
+    RUNNER_TERMINATION_GRACE_PERIOD_SECONDS: 3600
+    DRONE_SERVER_PROTO: https
+  environment:
+    PORT: 80
+manifests:
+  - env-secret.yaml
+  - pvc.yaml
+  - runner-rbac.yaml
+  - service.yaml
+  - runner-service.yaml
+  - deployment.yaml
+  - runner-deployment.yaml
+  - ingress.yaml
