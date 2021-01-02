@@ -46,7 +46,7 @@ spec:
           - name: SECRET_ENVIRONMENT_VARIABLES
             value: {{.NAME}}-{{.ENV}}-env-secret
           - name: DRONE_RPC_HOST
-            value: {{.DRONE_RPC_HOST}}
+            value: {{.NAME}}-{{.ENV}}-service
           {{range $k, $v := .ENVIRONMENT_VARIABLES}}
           - name: {{$k}} 
             value: "{{$v}}"
