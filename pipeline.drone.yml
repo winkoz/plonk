@@ -5,48 +5,47 @@ name: default
 
 steps:
   - name: restore-cache-with-filesystem
-    image: meltwater/drone-cache:dev
-    pull: true
+    image: drillster/drone-volume-cache
     settings:
-      backend: "filesystem"
       restore: true
-      cache_key: "volume"
-      archive_format: "gzip"
-      # filesystem_cache_root: "/tmp/cache"
       mount:
-        - 'vendor'
+        - ./go-bin
     volumes:
     - name: cache
-      path: /tmp/cache
-
+      path: /cache
+  
   - name: build_and_test
     image: golang:1.15.6
     commands:
-    - go get -u gotest.tools/gotestsum
-    - go get -u github.com/go-bindata/go-bindata/...
-    - make go-build
-    - make go-test
+    # If no cache found with the tools, download them
+    - "[ ! -f go-bin/go-bindata ] && go get -u gotest.tools/gotestsum"
+    - "[ ! -f go-bin/gotestsum ] && go get -u github.com/go-bindata/go-bindata/..."
+    # Make a go-bin directory if none exists
+    - mkdir -p go-bin
+    # Copy tools binaries into the local bin path
+    - "[ ! -f go-bin/go-bindata ] && cp $GOPATH/bin/go-bindata go-bin/."
+    - "[ ! -f go-bin/gotestsum ] && cp $GOPATH/bin/gotestsum go-bin/."
+    # Builds & Tests the code
+    - make go-build GO-BIN-FOLDER=go-bin/
+    - make go-test GO-BIN-FOLDER=go-bin/
 
   - name: rebuild-cache-with-filesystem
-    image: meltwater/drone-cache:dev
-    pull: true
+    image: drillster/drone-volume-cache
     settings:
-      backend: "filesystem"
       rebuild: true
-      cache_key: "volume"
-      archive_format: "gzip"
-      # filesystem_cache_root: "/tmp/cache"
       mount:
-        - 'vendor'
+        - ./go-bin
     volumes:
     - name: cache
-      path: /tmp/cache
+      path: /cache
 
 volumes:
-  - name: cache
-    temp: {}
+- name: cache
+  host:
+    path: /tmp/drone/cache
+
 ---
 kind: signature
-hmac: 505a571c6ba738387cf7d7c981d01b5991d9e51998f40e8105b0ead2bb633344
+hmac: 881baaf63487014e761f50a3b3cc480babe4e8c2b78756d3e75eda34b729c24d
 
 ...
