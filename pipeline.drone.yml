@@ -4,15 +4,49 @@ type: kubernetes
 name: default
 
 steps:
-- name: setup_tools
-  image: golang:1.15.6
-  commands:
-  - go get -u gotest.tools/gotestsum
-  - go get -u github.com/go-bindata/go-bindata/...
-  - make go-build
-  - make go-test
+  - name: restore-cache-with-filesystem
+    image: meltwater/drone-cache:dev
+    pull: true
+    settings:
+      backend: "filesystem"
+      restore: true
+      cache_key: "volume"
+      archive_format: "gzip"
+      # filesystem_cache_root: "/tmp/cache"
+      mount:
+        - 'vendor'
+    volumes:
+    - name: cache
+      path: /tmp/cache
+
+  - name: build_and_test
+    image: golang:1.15.6
+    commands:
+    - go get -u gotest.tools/gotestsum
+    - go get -u github.com/go-bindata/go-bindata/...
+    - make go-build
+    - make go-test
+
+  - name: rebuild-cache-with-filesystem
+    image: meltwater/drone-cache:dev
+    pull: true
+    settings:
+      backend: "filesystem"
+      rebuild: true
+      cache_key: "volume"
+      archive_format: "gzip"
+      # filesystem_cache_root: "/tmp/cache"
+      mount:
+        - 'vendor'
+    volumes:
+    - name: cache
+      path: /tmp/cache
+
+volumes:
+  - name: cache
+    temp: {}
 ---
 kind: signature
-hmac: f5e9900ad26adc5485dc322d08bd29ff617b6ca71ae7d5ff1aca833ee130fb7d
+hmac: 505a571c6ba738387cf7d7c981d01b5991d9e51998f40e8105b0ead2bb633344
 
 ...
