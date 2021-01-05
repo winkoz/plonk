@@ -17,7 +17,7 @@ spec:
   tls:
   - hosts: 
     - {{.HOSTNAME}}
-    secretName: cert-winkoz-wildcard
+    secretName: {{.WILDCARD_TLS_SECRET}}
   rules:
   - host: {{.HOSTNAME}}
     http:
@@ -31,12 +31,6 @@ spec:
       - backend:
           serviceName: {{.NAME}}-{{.ENV}}-service
           servicePort: {{.SERVICE_PORT}}
-  - host: "*.winkoz.com"
-    http:
-      paths:
-      - backend:
-          serviceName: gocd-production-service
-          servicePort: http
 {{ else }}
 #######################################################
 ## Let's Encrypt issued TLS

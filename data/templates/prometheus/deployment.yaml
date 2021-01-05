@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.NAME}}-{{.ENV}}-deployment
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: {{.NAME}}-{{.ENV}}
+      component: prometheus
+  replicas: {{.REPLICAS}}
+  template:
+    metadata:
+      namespace: {{.NAME}}-{{.ENV}}
+      labels:
+        app: {{.NAME}}-{{.ENV}}
+        component: prometheus
+    spec:
+      serviceAccountName: {{.NAME}}-{{.ENV}}-service-account
+      containers:
+        - name: {{.NAME}}-{{.ENV}}-configmap-reload
+          image: "{{.CONFIGMAP_RELOAD_IMAGE}}"
+          imagePullPolicy: "{{.IMAGE_PULLPOLICY}}"
+          args:
+            - --volume-dir=/etc/config
+            - --webhook-url=http://127.0.0.1:{{.CONTAINER_PORT}}/-/reload
+          resources: {}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+
+        - name: {{.NAME}}-{{.ENV}}
+          image: "{{.DOCKER_IMAGE}}"
+          imagePullPolicy: "{{.IMAGE_PULLPOLICY}}"
+          env: {{range $k, $v := .ENVIRONMENT_VARIABLES}} 
+          - name: {{$k}} 
+            value: "{{$v}}"{{end}}
+          args:
+            - --storage.tsdb.retention.time={{.STORAGE_RETENTION_TIME}}
+            - --config.file={{.SERVER_CONFIG_PATH}}
+            - --storage.tsdb.path={{.MOUNT_PATH}}
+            - --web.console.libraries=/etc/prometheus/console_libraries
+            - --web.console.templates=/etc/prometheus/consoles
+            - --web.enable-lifecycle
+            - --web.external-url=https://{{.HOSTNAME}}
+          ports:
+            - containerPort: {{.CONTAINER_PORT}}
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: {{.CONTAINER_PORT}}
+            initialDelaySeconds: {{.READINESS_PROBE_INITIAL_DELAY}}
+            periodSeconds: {{.READINESS_PROBE_PERIOD_SECONDS}}
+            timeoutSeconds: {{.READINESS_PROBE_TIMEOUT}}
+            failureThreshold: {{.READINESS_PROBE_FAILURE_THRESHOLD}}
+            successThreshold: {{.READINESS_PROBE_SUCCESS_THRESHOLD}}
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: {{.CONTAINER_PORT}}
+            initialDelaySeconds: {{.LIVENESS_PROBE_INITIAL_DELAY}}
+            periodSeconds: {{.LIVENESS_PROBE_PERIOD_SECONDS}}
+            timeoutSeconds: {{.LIVENESS_PROBE_TIMEOUT}}
+            failureThreshold: {{.LIVENESS_PROBE_FAILURE_THRESHOLD}}
+            successThreshold: {{.LIVENESS_PROBE_SUCCESS_THRESHOLD}}
+          resources: {}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+            - name: storage-volume
+              mountPath: {{.MOUNT_PATH}}
+              subPath: ""
+      {{ if .DOCKER_IMAGE_PULL_SECRET}}
+      imagePullSecrets:
+        - name: {{.DOCKER_IMAGE_PULL_SECRET}}
+      {{ end }}
+      securityContext:
+        runAsUser: {{.RUN_AS_USER}}
+        runAsNonRoot: {{.RUN_AS_NON_ROOT}}
+        runAsGroup: {{.RUN_AS_GROUP}}
+        fsGroup: {{.FS_GROUP}}
+      terminationGracePeriodSeconds: {{.TERMINATION_GRACE_PERIOD_SECONDS}}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{.NAME}}-{{.ENV}}-config-map
+        - name: storage-volume
+          persistentVolumeClaim:
+            claimName: {{.NAME}}-{{.ENV}}-pvc

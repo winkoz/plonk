@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{.NAME}}-{{.ENV}}
+  name: {{.NAME}}-{{.ENV}}-config-map
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: prometheus
+data:
+  "prometheus.yml": |
+    global:
+      scrape_interval: {{.SCRAPE_INTERVAL}}
+      scrape_timeout: {{.SCRAPE_TIMEOUT}}
+      evaluation_interval: {{.EVALUATION_INTERVAL}}
+    alerting:
+      alertmanagers:
+      - kubernetes_sd_configs:
+          - role: pod
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_namespace]
+          regex: {{.NAME}}-{{.ENV}}
+          action: keep
+        - source_labels: [__meta_kubernetes_pod_label_app]
+          regex: {{.NAME}}-{{.ENV}}
+          action: keep
+        - source_labels: [__meta_kubernetes_pod_label_component]
+          regex: alertmanager
+          action: keep
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_probe]
+          regex: ".*"
+          action: keep
+        - source_labels: [__meta_kubernetes_pod_container_port_number]
+          regex: "9093"
+          action: keep
+  {{if .ALERTS_FILE_PATH}}
+  alerts:
+    {{.ALERTS_FILE_PATH | readFile}}
+  {{end}}
