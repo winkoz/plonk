@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{.NAME}}-{{.ENV}}-pvc
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: prometheus
+spec:
+  accessModes:
+    - {{.PVC_ACCESS_MODE}}
+  resources:
+    requests:
+      storage: {{.PVC_STORAGE_SIZE}}
+  storageClassName: {{.PVC_STORAGE_CLASS_NAME}}
