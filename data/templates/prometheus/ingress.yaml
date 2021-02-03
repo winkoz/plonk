@@ -2,7 +2,7 @@
 #######################################################
 ## Wildcard TLS Cert
 #######################################################
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{.NAME}}-{{.ENV}}-ingress
@@ -30,20 +30,28 @@ spec:
   - host: {{.HOSTNAME}}
     http:
       paths:
-      - backend:
-          serviceName: {{.NAME}}-{{.ENV}}-service
-          servicePort: {{.SERVICE_PORT}}
+      - path: / 
+        pathType: Prefix
+        backend:
+          service:
+            name: {{.NAME}}-{{.ENV}}-service
+            port: 
+              number: {{.SERVICE_PORT}}
   - host: "*.winkoz.com"
     http:
       paths:
-      - backend:
-          serviceName: {{.NAME}}-{{.ENV}}-service
-          servicePort: {{.SERVICE_PORT}}
+      - path: / 
+        pathType: Prefix
+        backend:
+          service:
+            name: {{.NAME}}-{{.ENV}}-service
+            port: 
+              number: {{.SERVICE_PORT}}
 {{ else }}
 #######################################################
 ## Let's Encrypt issued TLS
 #######################################################
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{.NAME}}-{{.ENV}}-ingress
@@ -72,7 +80,10 @@ spec:
   - host: {{.HOSTNAME}}
     http:
       paths:
-      - backend:
-          serviceName: {{.NAME}}-{{.ENV}}-service
-          servicePort: {{.SERVICE_PORT}}
+      - pathType: Prefix
+        backend:
+            service:
+              name: {{.NAME}}-{{.ENV}}-service
+              port: 
+                number: {{.SERVICE_PORT}}
 {{ end }} 
