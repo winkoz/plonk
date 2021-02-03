@@ -45,6 +45,12 @@ func (i *IOServiceMock) ReadFile(path string) ([]byte, error) {
 	return args.Get(0).([]byte), args.Error(1)
 }
 
+// ReadFileToString mocks ReadFileToString
+func (i *IOServiceMock) ReadFileToString(path string) (string, error) {
+	args := i.Called(path)
+	return args.String(0), args.Error(1)
+}
+
 // Walk mocks Walk
 func (i *IOServiceMock) Walk(root string, walkFn io.WalkFunc) error {
 	args := i.Called(root)

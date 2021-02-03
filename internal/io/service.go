@@ -23,6 +23,7 @@ type Service interface {
 	CreatePath(path string) error
 	DeletePath(path string)
 	ReadFile(path string) ([]byte, error)
+	ReadFileToString(path string) (string, error)
 	Walk(root string, walkFn WalkFunc) error
 	Append(targetFilePath string, content string) error
 	Write(targetFilePath string, content string) error
@@ -105,6 +106,16 @@ func (s service) ReadFile(path string) ([]byte, error) {
 	}
 
 	return resData, nil
+}
+
+// ReadFileToString reads the contents of a file and spits them out as a string
+func (s service) ReadFileToString(path string) (string, error) {
+	bytes, err := s.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+
+	return string(bytes), nil
 }
 
 // Walk walks the entire file structure for `root` and calls `walkFn` for each item it finds
