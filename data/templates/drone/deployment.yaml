@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.NAME}}-{{.ENV}}-server
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: drone
+    type: server
+spec:
+  replicas: {{.REPLICAS}}
+  selector:
+    matchLabels:
+      app: {{.NAME}}-{{.ENV}}
+      component: drone
+      type: server
+  template:
+    metadata:
+      namespace: {{.NAME}}-{{.ENV}}
+      labels:
+        app: {{.NAME}}-{{.ENV}}
+        component: drone
+        type: server
+    spec:
+      volumes:
+        - name: droneserver-vol
+          persistentVolumeClaim:
+            claimName: {{.NAME}}-{{.ENV}}-pvc
+      {{ if .DOCKER_IMAGE_PULL_SECRET}}
+      imagePullSecrets:
+        - name: {{.DOCKER_IMAGE_PULL_SECRET}}
+      {{ end }}
+      containers:
+        - name: {{.NAME}}-{{.ENV}}-server
+          image: "{{.DOCKER_IMAGE}}"
+          imagePullPolicy: {{.IMAGE_PULLPOLICY}}
+          resources:
+            limits:
+              cpu: {{.CPU_LIMIT_MAX}}
+              memory: {{.MEMORY_LIMIT_MAX}}
+            requests:
+              cpu: {{.CPU_LIMIT_DEFAULT}}
+              memory: {{.MEMORY_LIMIT_DEFAULT}}
+          {{if .SECRET_ENVIRONMENT_VARIABLES}}
+          envFrom:
+            - secretRef:
+                name: {{.SECRET_ENVIRONMENT_VARIABLES}}
+          {{end}}
+          env: 
+          - name: DRONE_SERVER_HOST
+            value : {{.HOSTNAME}}
+          - name: SECRET_ENVIRONMENT_VARIABLES
+            value: {{.NAME}}-{{.ENV}}-env-secret
+          - name: DRONE_SERVER_PROTO
+            value: {{.DRONE_SERVER_PROTO}}
+          {{range $k, $v := .ENVIRONMENT_VARIABLES}}
+          - name: {{$k}} 
+            value: "{{$v}}"
+          {{end}}ports:
+            - containerPort: {{.CONTAINER_PORT}}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{.CONTAINER_PORT}}
+          volumeMounts:
+          - name: droneserver-vol
+            mountPath: {{.SERVER_MOUNT_PATH}}
+            subPath: {{.SERVER_MOUNT_SUBPATH}}
+      restartPolicy: {{.RESTART_POLICY}}

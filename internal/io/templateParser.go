@@ -32,6 +32,7 @@ func (t templateParser) Parse(variables map[string]interface{}, templateContent 
 		// The name "title" is what the function will be called in the template text.
 		"title":        strings.Title,
 		"readFile":     t.service.ReadFile,
+		"strToBytes":   t.service.StringToBytes,
 		"base64Encode": t.service.Base64Encode,
 	}
 
