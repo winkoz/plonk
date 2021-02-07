@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.NAME}}-{{.ENV}}-agent
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: gocd
+    type: agent
+spec:
+  replicas: {{.AGENT_REPLICAS}}
+  selector:
+    matchLabels:
+      app: {{.NAME}}-{{.ENV}}
+      component: gocd
+      type: agent
+  template:
+    metadata:
+      namespace: {{.NAME}}-{{.ENV}}
+      labels:
+        app: {{.NAME}}-{{.ENV}}
+        component: gocd
+        type: agent
+    spec:
+      serviceAccountName: {{.NAME}}-{{.ENV}}-agent-service-account
+      securityContext:
+        runAsUser: {{ .RUN_AS_USER }}
+        runAsGroup: {{ .RUN_AS_GROUP }}
+        fsGroup: {{ .FSGROUP }}
+        fsGroupChangePolicy: "OnRootMismatch"
+      {{ if .DOCKER_IMAGE_PULL_SECRET}}
+      imagePullSecrets:
+        - name: {{.DOCKER_IMAGE_PULL_SECRET}}
+      {{ end }}
+      volumes:
+        - name: ssh-secrets
+          secret:
+            secretName: {{.NAME}}-{{.ENV}}-ssh-secret
+            defaultMode: {{.SSH_FILES_PERMISSION}}
+        {{ if .DOCKER_IMAGE_PULL_SECRET}}
+        - name: docker-config
+          secret:
+            secretName: {{.DOCKER_IMAGE_PULL_SECRET}}
+            items:
+              - key: .dockerconfigjson
+                path: config.json
+        {{ end }}
+        - name: bin
+          hostPath:
+            path: /usr/bin
+      containers:
+        - name: {{.NAME}}-{{.ENV}}-agent
+          image: "{{.AGENT_DOCKER_IMAGE}}"
+          resources:
+            limits:
+              cpu: {{.AGENT_CPU_LIMIT_MAX}}
+              memory: {{.AGENT_MEMORY_LIMIT_MAX}}
+            requests:
+              cpu: {{.AGENT_CPU_LIMIT_DEFAULT}}
+              memory: {{.AGENT_MEMORY_LIMIT_DEFAULT}}
+          imagePullPolicy: {{.IMAGE_PULLPOLICY}}
+          env: 
+          - name: GO_SERVER_URL 
+            value: "https://{{.HOSTNAME}}/go"
+          {{range $k, $v := .ENVIRONMENT_VARIABLES}}
+          - name: {{$k}} 
+            value: "{{$v}}"
+        {{end}}
+        {{ if (eq .AGENT_AUTOREGISTER "true") }}
+          - name: AGENT_AUTO_REGISTER_KEY
+            value: {{.AGENT_AUTO_REGISTER_KEY}}
+        {{ end }}
+          ports:
+          - containerPort: {{.AGENT_HEALTH_PORT}}
+          {{ if (eq .AGENT_HEALTH_CHECK_ENABLED "true")}}
+          livenessProbe:
+            httpGet:
+              path: /health/v1/isConnectedToServer
+              port: {{.AGENT_HEALTH_PORT}}
+            initialDelaySeconds: {{.INITIAL_DELAY_SECONDS}}
+            failureThreshold: {{.FAILURE_THRESHOLD}}
+            periodSeconds: {{.HEALTHCHECK_INTERVAL_SECONDS}}
+          readinessProbe:
+            httpGet:
+              path: /health/v1/isConnectedToServer
+              port: {{.AGENT_HEALTH_PORT}}
+            initialDelaySeconds: {{.INITIAL_DELAY_SECONDS}}
+          {{ end }}
+          securityContext:
+            privileged: {{.AGENT_RUN_PRIVILEGED}}
+          volumeMounts:
+          - name: ssh-secrets
+            readOnly: false
+            mountPath: /home/go/.ssh
+          - name: docker-config
+            readOnly: true
+            mountPath: /home/go/.docker/
+      restartPolicy: {{.RESTART_POLICY}}
