@@ -13,10 +13,11 @@ data:
       scrape_timeout: {{.SCRAPE_TIMEOUT}}
       evaluation_interval: {{.EVALUATION_INTERVAL}}
 
-    rule_files:
-      {{if .RULE_FILES_FILEPATH}}
-      {{.RULE_FILES_FILEPATH | readFileToStr}}
+    {{if .RULE_FILES_DIRECTORYPATH}}
+    rule_files: 
+      {{range $k, $v := walkDirectory .RULE_FILES_DIRECTORYPATH}}- {{$.SERVER_RULES_DIRECTORYPATH }}/{{$v | baseFilename}}
       {{end}}
+    {{end}}
 
     scrape_configs:  
       - job_name: prometheus
@@ -366,39 +367,13 @@ data:
           - source_labels: [__meta_kubernetes_pod_phase]
             regex: Pending|Succeeded|Failed
             action: drop
-
+            
 {{if .CUSTOM_JOB_CONFIG_PATH}}
 {{.CUSTOM_JOB_CONFIG_PATH | readFileToStr}}
 {{end}}
 
     alerting:
       alertmanagers:
-      - kubernetes_sd_configs:
-          - role: pod
-        tls_config:
-          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-        relabel_configs:
-        - source_labels: [__meta_kubernetes_namespace]
-          regex: {{.NAME}}-{{.ENV}}
-          action: keep
-        - source_labels: [__meta_kubernetes_pod_label_app]
-          regex: {{.NAME}}-{{.ENV}}
-          action: keep
-        - source_labels: [__meta_kubernetes_pod_label_component]
-          regex: alertmanager
-          action: keep
-        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_probe]
-          regex: ".*"
-          action: keep
-        - source_labels: [__meta_kubernetes_pod_container_port_number]
-          regex: "9093"
-          action: keep
       {{if .ALERT_MANAGERS_FILE_PATH}}
       {{.ALERT_MANAGERS_FILE_PATH | readFileToStr}}
       {{end}}
-    
-  {{if .ALERTS_FILE_PATH}}
-  alerts:
-    {{.ALERTS_FILE_PATH | readFileToStr}}
-  {{end}}

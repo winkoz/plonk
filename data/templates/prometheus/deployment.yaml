@@ -32,6 +32,10 @@ spec:
             - name: config-volume
               mountPath: /etc/config
               readOnly: true
+            {{if .RULE_FILES_DIRECTORYPATH}}- name: rules-volume
+              mountPath: {{.SERVER_RULES_DIRECTORYPATH}}
+              readOnly: true
+            {{end}}
 
         - name: {{.NAME}}-{{.ENV}}
           image: "{{.DOCKER_IMAGE}}"
@@ -74,6 +78,9 @@ spec:
             - name: storage-volume
               mountPath: {{.MOUNT_PATH}}
               subPath: ""
+            {{if .RULE_FILES_DIRECTORYPATH}}- name: rules-volume
+              mountPath: {{.SERVER_RULES_DIRECTORYPATH}}
+            {{end}}
       {{ if .DOCKER_IMAGE_PULL_SECRET}}
       imagePullSecrets:
         - name: {{.DOCKER_IMAGE_PULL_SECRET}}
@@ -91,3 +98,7 @@ spec:
         - name: storage-volume
           persistentVolumeClaim:
             claimName: {{.NAME}}-{{.ENV}}-pvc
+        {{if .RULE_FILES_DIRECTORYPATH}}- name: rules-volume
+          configMap:
+            name: {{.NAME}}-{{.ENV}}-rules-config-map
+        {{end}}

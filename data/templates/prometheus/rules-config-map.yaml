@@ -1,0 +1,14 @@
+{{if .RULE_FILES_DIRECTORYPATH}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{.NAME}}-{{.ENV}}
+  name: {{.NAME}}-{{.ENV}}-rules-config-map
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: prometheus
+data:
+  {{range $k, $v := walkDirectory .RULE_FILES_DIRECTORYPATH}}{{$v | baseFilename}}: |
+    {{$v | readFileToStr}}
+  {{end}}
+{{end}}

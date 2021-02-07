@@ -42,12 +42,14 @@ variables:
     ALERT_MANAGERS_FILE_PATH: ""
     ALERTS_FILE_PATH: ""
     RULE_FILES_FILEPATH: ""
+    SERVER_RULES_DIRECTORYPATH: /etc/rules
   environment:
     PORT: 9100
 manifests:
   - cluster-role.yaml
   - auth-secret.yaml
   - clusterrole-binding.yaml
+  - rules-config-map.yaml
   - config-map.yaml
   - pvc.yaml
   - service.yaml
