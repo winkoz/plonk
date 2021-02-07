@@ -34,7 +34,7 @@ func (t templateParser) Parse(variables map[string]interface{}, templateContent 
 		"title":         strings.Title,
 		"readFile":      t.service.ReadFile,
 		"readFileToStr": t.service.ReadFileToString,
-		"strToBytes":   t.service.StringToBytes,
+		"strToBytes":    t.service.StringToBytes,
 		"base64Encode":  t.service.Base64Encode,
 		"walkDirectory": t.service.WalkDirectory,
 		"baseFilename":  filepath.Base,
