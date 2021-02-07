@@ -8,7 +8,7 @@ metadata:
     component: grafana
 data:
   {{if .GRAFANA_PLUGINS}}plugins: {{.GRAFANA_PLUGINS}}{{end}}
-  grafana.ini: |
+  grafana.ini: |+
     {{.GRAFANA_INI_FILEPATH | readFileToStr}}
 
   {{if .DATASOURCES_DIRECTORYPATH}}{{range $k, $v := walkDirectory .RULE_FILES_DIRECTORYPATH}}{{$v | baseFilename}}: |
