@@ -40,6 +40,8 @@ variables:
     AUTH_HTPASSWD_PATH: ""
     CUSTOM_JOB_CONFIG_PATH: ""
     ALERT_MANAGERS_FILE_PATH: ""
+    ALERTS_FILE_PATH: ""
+    RULE_FILES_FILEPATH: ""
   environment:
     PORT: 9100
 manifests:

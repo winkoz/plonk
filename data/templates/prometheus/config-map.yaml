@@ -14,8 +14,9 @@ data:
       evaluation_interval: {{.EVALUATION_INTERVAL}}
 
     rule_files:
-      - /etc/config/recording_rules.yml
-      - /etc/config/alerting_rules.yml
+      {{if .RULE_FILES_FILEPATH}}
+      {{.RULE_FILES_FILEPATH | readFileToStr}}
+      {{end}}
 
     scrape_configs:  
       - job_name: prometheus
@@ -399,5 +400,5 @@ data:
     
   {{if .ALERTS_FILE_PATH}}
   alerts:
-    {{.ALERTS_FILE_PATH | readFile}}
+    {{.ALERTS_FILE_PATH | readFileToStr}}
   {{end}}
