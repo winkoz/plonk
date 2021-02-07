@@ -24,6 +24,10 @@ variables:
     #################################################
     READINESS_PROBE_INITIAL_DELAY: 30
     READINESS_PROBE_TIMEOUT: 30
+    IMAGE_PULLPOLICY: IfNotPresent
+    AUTH_TYPE: basic
+    AUTH_MESSAGE: "Authentication required - Grafana"
+    AUTH_HTPASSWD_PATH: ""
     GRAFANA_PLUGINS: ""
     GRAFANA_INI_FILEPATH: ""
     DATASOURCES_DIRECTORYPATH: ""
