@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.NAME}}-{{.ENV}}-deployment
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: alertmanager
+spec:
+  selector:
+    matchLabels:
+      app: {{.NAME}}-{{.ENV}}
+      component: alertmanager
+  replicas: {{.REPLICAS}}
+  template:
+    metadata:
+      namespace: {{.NAME}}-{{.ENV}}
+      labels:
+        app: {{.NAME}}-{{.ENV}}
+        component: alertmanager
+    spec:
+      serviceAccountName: {{.NAME}}-{{.ENV}}-service-account
+      containers:
+        - name: {{.NAME}}-{{.ENV}}
+          image: "{{.DOCKER_IMAGE}}"
+          imagePullPolicy: "{{.IMAGE_PULLPOLICY}}"
+          env: {{range $k, $v := .ENVIRONMENT_VARIABLES}} 
+          - name: {{$k}} 
+            value: "{{$v}}"{{end}}
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.podIP
+          args:
+            - --config.file=/etc/config/{{.CONFIG_FILE_NAME}}
+            - --storage.path={{.MOUNT_PATH}}
+            - --cluster.advertise-address=[$(POD_IP)]:6783
+            - --web.external-url=https://{{.HOSTNAME}}
+          ports:
+            - containerPort: {{.CONTAINER_PORT}}
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: {{.CONTAINER_PORT}}
+            initialDelaySeconds: {{.READINESS_PROBE_INITIAL_DELAY}}
+            timeoutSeconds: {{.READINESS_PROBE_TIMEOUT}}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+            - name: storage-volume
+              mountPath: "{{.MOUNT_PATH}}"
+              subPath: ""
+
+        - name: {{.NAME}}-{{.ENV}}-configmap-reload
+          image: "{{.CONFIGMAP_RELOAD_IMAGE}}"
+          imagePullPolicy: "{{.IMAGE_PULLPOLICY}}"
+          args:
+            - --volume-dir=/etc/config
+            - --webhook-url=http://127.0.0.1:{{.CONTAINER_PORT}}/-/reload
+          resources: {}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+
+      {{ if .DOCKER_IMAGE_PULL_SECRET}}
+      imagePullSecrets:
+        - name: {{.DOCKER_IMAGE_PULL_SECRET}}
+      {{ end }}
+      securityContext:
+        runAsUser: {{.RUN_AS_USER}}
+        runAsNonRoot: {{.RUN_AS_NON_ROOT}}
+        runAsGroup: {{.RUN_AS_GROUP}}
+        fsGroup: {{.FS_GROUP}}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{.NAME}}-{{.ENV}}-config-map
+        - name: storage-volume
+          persistentVolumeClaim:
+            claimName: {{.NAME}}-{{.ENV}}-pvc
