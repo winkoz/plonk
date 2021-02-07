@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.NAME}}-{{.ENV}}-deployment
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: grafana
+spec:
+  replicas: {{.REPLICAS}}
+  revisionHistoryLimit: {{.REVISION_HISTORY_LIMIT}}
+  strategy:
+    type: {{.STRATEGY_TYPE}}
+  selector:
+    matchLabels:
+      app: {{.NAME}}-{{.ENV}}
+      component: grafana
+  template:
+    metadata:
+      namespace: {{.NAME}}-{{.ENV}}
+      labels:
+        app: {{.NAME}}-{{.ENV}}
+        component: grafana
+    spec:
+      serviceAccountName: {{.NAME}}-{{.ENV}}-service-account
+      securityContext:
+        runAsUser: {{.RUN_AS_USER}}
+        runAsNonRoot: {{.RUN_AS_NON_ROOT}}
+        runAsGroup: {{.RUN_AS_GROUP}}
+        fsGroup: {{.FS_GROUP}}
+      initContainers:
+        - name: init-chown-data
+          image: "{{.CHOWNDATA_DOCKER_IMAGE}}"
+          imagePullPolicy: {{.IMAGE_PULLPOLICY}}
+          securityContext:
+            runAsNonRoot: {{.RUN_AS_NON_ROOT}}
+            runAsUser: 0
+          command: ["chown", "-R", "{{.RUN_AS_USER}}:{{.RUN_AS_GROUP}}", "/var/lib/grafana"]
+          resources: {}
+          volumeMounts:
+            - name: storage
+              mountPath: "/var/lib/grafana"
+      containers:
+        - name: {{.NAME}}-{{.ENV}}
+          image: "{{.DOCKER_IMAGE}}"
+          imagePullPolicy: "{{.IMAGE_PULLPOLICY}}"
+          env: {{range $k, $v := .ENVIRONMENT_VARIABLES}} 
+          - name: {{$k}} 
+            value: "{{$v}}"{{end}}
+          - name: GF_SECURITY_ADMIN_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{.NAME}}-{{.ENV}}-secret
+                key: "admin-user"
+          - name: GF_SECURITY_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{.NAME}}-{{.ENV}}-secret
+                key: "admin-password"
+          {{if .GRAFANA_PLUGINS}}- name: GF_INSTALL_PLUGINS
+            valueFrom:
+              configMapKeyRef:
+                name: {{.NAME}}-{{.ENV}}-config-map
+                key: plugins
+          {{end}}
+          ports:
+            - name: service
+              containerPort: {{.SERVICE_PORT}}
+              protocol: TCP
+            - name: grafana
+              containerPort: {{.CONTAINER_PORT}}
+              protocol: TCP
+          livenessProbe:
+            httpGet: 
+              path: "/api/health"
+              port: {{.CONTAINER_PORT}}
+            initialDelaySeconds: {{.READINESS_PROBE_INITIAL_DELAY}}
+            timeoutSeconds: {{.READINESS_PROBE_TIMEOUT}}
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: {{.CONTAINER_PORT}}
+            initialDelaySeconds: {{.READINESS_PROBE_INITIAL_DELAY}}
+            timeoutSeconds: {{.READINESS_PROBE_TIMEOUT}}
+          volumeMounts:
+            - name: config-volume
+              mountPath: "/etc/grafana/grafana.ini"
+              subPath: grafana.ini
+            - name: storage
+              mountPath: "/var/lib/grafana"
+
+      {{ if .DOCKER_IMAGE_PULL_SECRET}}
+      imagePullSecrets:
+        - name: {{.DOCKER_IMAGE_PULL_SECRET}}
+      {{ end }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{.NAME}}-{{.ENV}}-config-map
+        - name: storage
+          persistentVolumeClaim:
+            claimName: {{.NAME}}-{{.ENV}}-pvc
+            

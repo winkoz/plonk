@@ -1,0 +1,43 @@
+name: grafana
+variables: 
+  build:
+    USE_WILDCARD_TLS_CERTIFICATE: true
+    REQUIRES_AUTH: true
+    DOCKER_IMAGE: "grafana/grafana:7.0.3"
+    CHOWNDATA_DOCKER_IMAGE: "busybox:1.31.1"
+    SERVICE_PORT: 80
+    CONTAINER_PORT: 3000
+    REPLICAS: 1
+    REVISION_HISTORY_LIMIT: 10
+    DOCKER_IMAGE_PULL_SECRET: docker-registry-production-imgpull-secret
+    PVC_STORAGE_SIZE: 4Gi
+    PVC_ACCESS_MODE: ReadWriteOnce
+    PVC_STORAGE_CLASS_NAME: do-block-storage
+    READINESS_PROBE_INITIAL_DELAY: 60
+    READINESS_PROBE_TIMEOUT: 30
+    IMAGE_PULLPOLICY: IfNotPresent
+    AUTH_TYPE: basic
+    AUTH_MESSAGE: "Authentication required - Grafana"
+    AUTH_HTPASSWD_PATH: ""
+    GRAFANA_PLUGINS: ""
+    GRAFANA_INI_FILEPATH: ""
+    DATASOURCES_DIRECTORYPATH: ""
+    STRATEGY_TYPE: RollingUpdate
+    RUN_AS_USER: 472
+    RUN_AS_GROUP: 472
+    FS_GROUP: 472
+    RUN_AS_NON_ROOT: false
+    ADMIN_USER: winkoz-admin
+    ADMIN_PASSWORD: ""
+  environment:
+    PORT: 3000
+manifests:
+  - cluster-role.yaml
+  - clusterrole-binding.yaml
+  - secret.yaml
+  - pvc.yaml
+  - config-map.yaml
+  - service.yaml
+  - service-account.yaml
+  - ingress.yaml
+  - deployment.yaml

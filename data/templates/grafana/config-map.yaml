@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{.NAME}}-{{.ENV}}
+  name: {{.NAME}}-{{.ENV}}-config-map
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: grafana
+data:
+  {{if .GRAFANA_PLUGINS}}plugins: {{.GRAFANA_PLUGINS}}{{end}}
+  grafana.ini: |
+    {{.GRAFANA_INI_FILEPATH | readFileToStr}}
+
+  {{if .DATASOURCES_DIRECTORYPATH}}{{range $k, $v := walkDirectory .RULE_FILES_DIRECTORYPATH}}{{$v | baseFilename}}: |
+    {{$v | readFileToStr}}
+  {{end}}
+  {{end}}
