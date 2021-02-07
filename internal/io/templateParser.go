@@ -2,6 +2,7 @@ package io
 
 import (
 	"bytes"
+	"path/filepath"
 	"strings"
 	"text/template"
 
@@ -35,6 +36,8 @@ func (t templateParser) Parse(variables map[string]interface{}, templateContent 
 		"readFileToStr": t.service.ReadFileToString,
 		"strToBytes":   t.service.StringToBytes,
 		"base64Encode":  t.service.Base64Encode,
+		"walkDirectory": t.service.WalkDirectory,
+		"baseFilename":  filepath.Base,
 	}
 
 	template, err := template.

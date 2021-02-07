@@ -64,6 +64,12 @@ func (i *IOServiceMock) Walk(root string, walkFn io.WalkFunc) error {
 	return args.Error(0)
 }
 
+// WalkDirectory …
+func (i *IOServiceMock) WalkDirectory(root string) ([]interface{}, error) {
+	args := i.Called(root)
+	return args.Get(0).([]interface{}), args.Error(1)
+}
+
 // Append mocks Append
 func (i *IOServiceMock) Append(targetFilePath string, content string) error {
 	args := i.Called(targetFilePath, content)

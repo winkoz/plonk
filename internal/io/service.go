@@ -25,6 +25,7 @@ type Service interface {
 	ReadFile(path string) ([]byte, error)
 	ReadFileToString(path string) (string, error)
 	Walk(root string, walkFn WalkFunc) error
+	WalkDirectory(root string) ([]interface{}, error)
 	Append(targetFilePath string, content string) error
 	Write(targetFilePath string, content string) error
 	IsValidPath(path string) error
@@ -130,6 +131,19 @@ func (s service) Walk(root string, walkFn WalkFunc) error {
 	}
 
 	return nil
+}
+
+// WalkDirectory walks the entire file structure of `root` and returns an array containing the files inside the directory.
+func (s service) WalkDirectory(root string) ([]interface{}, error) {
+	files := []interface{}{}
+	_ = s.Walk(root, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			files = append(files, path)
+		}
+		return nil
+	})
+
+	return files, nil
 }
 
 // Append opens or creates file at `targetFilePath` and appends the `content` to it
