@@ -1,0 +1,58 @@
+name: prometheus
+variables: 
+  build:
+    DOCKER_IMAGE: "quay.io/prometheus/prometheus:v2.22.1"
+    SERVICE_PORT: 80
+    CONTAINER_PORT: 9100
+    REPLICAS: 1
+    DOCKER_IMAGE_PULL_SECRET: docker-registry-production-imgpull-secret
+    PVC_STORAGE_SIZE: 4Gi
+    PVC_ACCESS_MODE: ReadWriteOnce
+    PVC_STORAGE_CLASS_NAME: do-block-storage
+    CONFIGMAP_RELOAD_IMAGE: jimmidyson/configmap-reload:v0.4.0
+    IMAGE_PULLPOLICY: IfNotPresent
+    STORAGE_RETENTION_TIME: 15d
+    SERVER_CONFIG_PATH: /etc/config/prometheus.yml
+    MOUNT_PATH: /data
+    READINESS_PROBE_INITIAL_DELAY: 30
+    READINESS_PROBE_PERIOD_SECONDS: 5
+    READINESS_PROBE_TIMEOUT: 4
+    READINESS_PROBE_FAILURE_THRESHOLD: 3
+    READINESS_PROBE_SUCCESS_THRESHOLD: 1
+    LIVENESS_PROBE_INITIAL_DELAY: 30
+    LIVENESS_PROBE_PERIOD_SECONDS: 15
+    LIVENESS_PROBE_TIMEOUT: 10
+    LIVENESS_PROBE_FAILURE_THRESHOLD: 3
+    LIVENESS_PROBE_SUCCESS_THRESHOLD: 1
+    RUN_AS_USER: 65534
+    RUN_AS_NON_ROOT: true
+    RUN_AS_GROUP: 65534
+    FS_GROUP: 65534
+    TERMINATION_GRACE_PERIOD_SECONDS: 300
+    SCRAPE_INTERVAL: 1m
+    SCRAPE_TIMEOUT: 10s
+    EVALUATION_INTERVAL: 1m
+    USE_WILDCARD_TLS_CERTIFICATE: false
+    WILDCARD_TLS_SECRET: ""
+    REQUIRES_AUTH: true
+    AUTH_TYPE: basic
+    AUTH_MESSAGE: "Authentication required - prometheus"
+    AUTH_HTPASSWD_PATH: ""
+    CUSTOM_JOB_CONFIG_PATH: ""
+    ALERT_MANAGERS_FILE_PATH: ""
+    ALERTS_FILE_PATH: ""
+    RULE_FILES_FILEPATH: ""
+    SERVER_RULES_DIRECTORYPATH: /etc/rules
+  environment:
+    PORT: 9100
+manifests:
+  - cluster-role.yaml
+  - auth-secret.yaml
+  - clusterrole-binding.yaml
+  - rules-config-map.yaml
+  - config-map.yaml
+  - pvc.yaml
+  - service.yaml
+  - service-account.yaml
+  - deployment.yaml
+  - ingress.yaml
