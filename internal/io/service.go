@@ -27,7 +27,7 @@ type Service interface {
 	ReadFileToString(path string) (string, error)
 	Walk(root string, walkFn WalkFunc) error
 	WalkDirectory(root string) ([]interface{}, error)
-	YamlToArray(maybeYaml string) ([]interface{}, error)
+	YamlToMapArray(maybeYaml string) ([]map[string]string, error)
 	Append(targetFilePath string, content string) error
 	Write(targetFilePath string, content string) error
 	IsValidPath(path string) error
@@ -149,11 +149,11 @@ func (s service) WalkDirectory(root string) ([]interface{}, error) {
 	return files, nil
 }
 
-// YamlToArray attempts to parse `maybeYaml` into an array of objects and will return it as a struct array.
-func (s service) YamlToArray(maybeYaml string) ([]interface{}, error) {
-	output := []interface{}{}
+// YamlToMapArray attempts to parse `maybeYaml` into an array of objects and will return it as a map from string to string array.
+func (s service) YamlToMapArray(maybeYaml string) ([]map[string]string, error) {
+	output := []map[string]string{}
 	yamlReader := NewYamlReader(s)
-	err := yamlReader.Parse([]byte(maybeYaml), output)
+	err := yamlReader.Parse([]byte(maybeYaml), &output)
 	return output, err
 }
 
