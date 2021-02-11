@@ -38,6 +38,7 @@ func (t templateParser) Parse(variables map[string]interface{}, templateContent 
 		"base64Encode":  t.service.Base64Encode,
 		"walkDirectory": t.service.WalkDirectory,
 		"baseFilename":  filepath.Base,
+		"indent":         t.service.Indent,
 	}
 
 	template, err := template.

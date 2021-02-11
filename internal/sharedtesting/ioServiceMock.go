@@ -99,3 +99,9 @@ func (i *IOServiceMock) Base64Encode(v []byte) (string, error) {
 	args := i.Called(v)
 	return args.String(0), args.Error(1)
 }
+
+// Indent …
+func (i *IOServiceMock) Indent(source string, numberOfSpaces int) (string, error) {
+	args := i.Called(source, numberOfSpaces)
+	return args.String(0), args.Error(1)
+}
