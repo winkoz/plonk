@@ -29,11 +29,13 @@ variables:
     RUN_AS_NON_ROOT: false
     ADMIN_USER: winkoz-admin
     ADMIN_PASSWORD: ""
+    DASHBOARDS: ""
   environment:
     PORT: 3000
 manifests:
   - cluster-role.yaml
   - clusterrole-binding.yaml
+  - dashboards-config-map.yaml
   - secret.yaml
   - pvc.yaml
   - config-map.yaml
