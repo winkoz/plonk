@@ -9,7 +9,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{.NAME}}-{{.ENV}}-service-account
-    namespace: {{.PROMETHEUS_NAMESPACE}}
+    namespace: {{.NAME}}-{{.ENV}}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

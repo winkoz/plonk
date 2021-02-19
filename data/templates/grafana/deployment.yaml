@@ -89,16 +89,50 @@ spec:
               subPath: grafana.ini
             - name: storage
               mountPath: "/var/lib/grafana"
+        {{if .DASHBOARDS}}
+            # - name: config-volume
+            #   mountPath: "/etc/grafana/provisioning/datasources/datasources.yaml"
+            #   subPath: datasources.yaml
+            {{range $idx, $dashboardMap := .DASHBOARDS | yamlArrayToObj}}- name: dashboards-{{$dashboardMap.provider}}
+              mountPath: "/var/lib/grafana/dashboards/{{$dashboardMap.provider}}/{{$dashboardMap.filename}}"
+              subPath: {{$dashboardMap.filename}}
+            {{end}}
+            - name: dashboards-volume
+              mountPath: {{.SIDECAR_DASHBOARDS_FOLDER}}
 
+        - name: {{.NAME}}-{{.ENV}}-dashboards
+          image: {{.SIDECAR_DOCKER_IMAGE}}
+          imagePullPolicy: {{.IMAGE_PULLPOLICY}}
+          env:
+            - name: METHOD
+              value: WATCH
+            - name: LABEL
+              value: {{.SIDECAR_WATCH_LABEL}}
+            - name: FOLDER
+              value: {{.SIDECAR_DASHBOARDS_FOLDER}}/{{.SIDECAR_PROVIDER_NAME}}
+            - name: RESOURCE
+              value: "both"
+          volumeMounts:
+            - name: dashboards-volume
+              mountPath: {{.SIDECAR_DASHBOARDS_FOLDER}}
+        {{end}}
       {{ if .DOCKER_IMAGE_PULL_SECRET}}
       imagePullSecrets:
         - name: {{.DOCKER_IMAGE_PULL_SECRET}}
       {{ end }}
       volumes:
+      {{if .DASHBOARDS}}
+        - name: dashboards-volume
+          emptyDir: {}
+      {{end}}
         - name: config-volume
           configMap:
             name: {{.NAME}}-{{.ENV}}-config-map
         - name: storage
           persistentVolumeClaim:
             claimName: {{.NAME}}-{{.ENV}}-pvc
+        {{if .DASHBOARDS}}- name: dashboards-{{.SIDECAR_PROVIDER_NAME}}
+          configMap:
+            name: {{$.NAME}}-{{$.ENV}}-dashboard-provider-config-map
+        {{end}}
             

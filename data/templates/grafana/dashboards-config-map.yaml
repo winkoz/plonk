@@ -4,11 +4,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: {{$.NAME}}-{{$.ENV}}
-  name: {{$.NAME}}-{{$.ENV}}-dashboards-config-map
+  name: {{$.NAME}}-{{$.ENV}}-dashboards-{{$dashboardMap.provider}}-config-map
   labels:
     app: {{$.NAME}}-{{$.ENV}}
     component: grafana
     dashboard-provider: {{$dashboardMap.provider}}
+    {{$.SIDECAR_WATCH_LABEL}}: {{$.SIDECAR_WATCH_LABEL}}
 data:
   {{$dashboardMap.filename}}:
     |-
