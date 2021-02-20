@@ -23,14 +23,18 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: {{.NAME}}-{{.ENV}}-service
-          servicePort: {{.SERVICE_PORT}}
+          service:
+            name: {{.NAME}}-{{.ENV}}-service
+            port: 
+              number: {{.SERVICE_PORT}}
   - host: {{.WILDCARD_HOST}}
     http:
       paths:
       - backend:
-          serviceName: {{.NAME}}-{{.ENV}}-service
-          servicePort: {{.SERVICE_PORT}}
+          service:
+            name: {{.NAME}}-{{.ENV}}-service
+            port: 
+              number: {{.SERVICE_PORT}}
 {{ else }}
 #######################################################
 ## Let's Encrypt issued TLS
@@ -57,6 +61,8 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: {{.NAME}}-{{.ENV}}-service
-          servicePort: {{.SERVICE_PORT}}
+          service:
+            name: {{.NAME}}-{{.ENV}}-service
+            port: 
+              number: {{.SERVICE_PORT}}
 {{ end }}

@@ -19,5 +19,7 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: {{.NAME}}-{{.ENV}}-service
-          servicePort: {{.SERVICE_PORT}}
+          service:
+            name: {{.NAME}}-{{.ENV}}-service
+            port:
+              number: {{.SERVICE_PORT}}
