@@ -9,3 +9,8 @@ type OrchestratorCommand interface {
 	GetLogs(namespace string, component *string) ([]byte, error)
 	Restart(namespace string, deploymentName string) ([]byte, error)
 }
+
+// BuilderCommand interface for executing commands against the builder cli tool
+type BuilderCommand interface {
+	Build(namespace string) error
+}

@@ -13,3 +13,12 @@ func NewOrchestrator(ctx config.Context, orchestratorType string) OrchestratorCo
 		ctx:          ctx,
 	}
 }
+
+// NewBuilder this will return a class to execute actions on the builder command line tool
+func NewBuilder(ctx config.Context, builderType string) BuilderCommand {
+	return dockerCommand{
+		executor:     NewExecutor(),
+		interpolator: io.NewInterpolator(),
+		ctx:          ctx,
+	}
+}

@@ -12,3 +12,5 @@ var deployVariablesPath = filepath.Join(deployFolderName, "variables")
 var deploySecretsPath = filepath.Join(deployFolderName, "secrets")
 
 const deployDeployCommand = "kubectl"
+
+const deployBuildCommand = "docker"

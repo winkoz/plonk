@@ -13,6 +13,7 @@ type Context struct {
 	// Project Config
 	ProjectName   string
 	DeployCommand string
+	BuildCommand  string
 	Environments  map[string][]string
 
 	// Templates Config
@@ -36,6 +37,7 @@ func NewContext(projectName string) (Context, error) {
 		// Project Config
 		ProjectName:   projectName,
 		DeployCommand: deployDeployCommand,
+		BuildCommand:  deployBuildCommand,
 
 		// Templates Config
 		CustomTemplatesPath: defaultCustomTemplatesPath,
@@ -67,6 +69,7 @@ func NewContextFromFile() (Context, error) {
 		// Project Config
 		ProjectName:   configFile.Name,
 		DeployCommand: configFile.Command,
+		BuildCommand:  deployBuildCommand,
 		Environments:  configFile.Environments,
 
 		// Templates Config

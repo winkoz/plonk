@@ -32,6 +32,7 @@ func Execute() {
 	addShowCommand(rootCmd)
 	addLogsCommand(rootCmd)
 	addRestartCommand(rootCmd)
+	addBuildCommand(rootCmd)
 
 	// Execute
 	if err := rootCmd.Execute(); err != nil {
