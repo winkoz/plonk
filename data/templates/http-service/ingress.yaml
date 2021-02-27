@@ -111,7 +111,9 @@ spec:
   tls:
     - hosts:
       - {{.HOSTNAME}}
-      secretName: {{.WILDCARD_TLS_SECRET}}
+      {{ if (eq .USE_WILDCARD_TLS_CERTIFICATE "true") }}secretName: {{.WILDCARD_TLS_SECRET}}
+      {{else}}secretName: {{.NAME}}-{{.ENV}}-tls
+      {{end}}
   rules:
   - host: {{.HOSTNAME}}
     http:
