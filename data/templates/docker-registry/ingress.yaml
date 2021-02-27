@@ -13,7 +13,7 @@ metadata:
   annotations:
     ingress.kubernetes.io/force-ssl-redirect: "false"
     kubernetes.io/ingress.class: nginx
-    {{if (eq .REQUIRES_AUTH "true")}}
+    {{if (eq .AUTH_TYPE "basic")}}
     # type of authentication
     nginx.ingress.kubernetes.io/auth-type: {{.AUTH_TYPE}}
     # name of the secret that contains the user/password definitions
@@ -63,7 +63,7 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    {{if (eq .REQUIRES_AUTH "true")}}
+    {{if (eq .AUTH_TYPE "basic")}}
     # type of authentication
     nginx.ingress.kubernetes.io/auth-type: {{.AUTH_TYPE}}
     # name of the secret that contains the user/password definitions

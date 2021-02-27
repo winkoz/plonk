@@ -35,7 +35,6 @@ variables:
     EVALUATION_INTERVAL: 1m
     USE_WILDCARD_TLS_CERTIFICATE: false
     WILDCARD_TLS_SECRET: ""
-    REQUIRES_AUTH: true
     AUTH_TYPE: basic
     AUTH_MESSAGE: "Authentication required - prometheus"
     AUTH_HTPASSWD_PATH: ""

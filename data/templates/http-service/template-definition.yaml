@@ -10,7 +10,6 @@ variables:
     USE_WILDCARD_TLS_CERTIFICATE: true
     WILDCARD_TLS_SECRET: 
     IMAGE_PULLPOLICY: IfNotPresent
-    REQUIRES_AUTH: false
     # OAuth configuration
     OAUTH_PROVIDER: github
     OAUTH_EMAIL_DOMAIN: "*"
