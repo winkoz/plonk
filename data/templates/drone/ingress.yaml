@@ -9,7 +9,7 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: drone
+    component: {{.COMPONENT}}
     type: server
   annotations:
     ingress.kubernetes.io/force-ssl-redirect: "false"
@@ -47,7 +47,7 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: drone
+    component: {{.COMPONENT}}
     type: server
   annotations:
     kubernetes.io/ingress.class: nginx

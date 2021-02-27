@@ -5,7 +5,7 @@ metadata:
   name: {{.NAME}}-{{.ENV}}-config-map
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: prometheus
+    component: {{.COMPONENT}}
 data:
   "prometheus.yml": |
     global:

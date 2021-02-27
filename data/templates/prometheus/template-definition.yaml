@@ -1,6 +1,7 @@
 name: prometheus
 variables: 
   build:
+    COMPONENT: prometheus
     DOCKER_IMAGE: "quay.io/prometheus/prometheus:v2.22.1"
     SERVICE_PORT: 80
     CONTAINER_PORT: 9100

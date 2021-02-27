@@ -5,19 +5,19 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: prometheus
+    component: {{.COMPONENT}}
 spec:
   selector:
     matchLabels:
       app: {{.NAME}}-{{.ENV}}
-      component: prometheus
+      component: {{.COMPONENT}}
   replicas: {{.REPLICAS}}
   template:
     metadata:
       namespace: {{.NAME}}-{{.ENV}}
       labels:
         app: {{.NAME}}-{{.ENV}}
-        component: prometheus
+        component: {{.COMPONENT}}
     spec:
       serviceAccountName: {{.NAME}}-{{.ENV}}-service-account
       containers:
