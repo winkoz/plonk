@@ -1,12 +1,16 @@
 include mk/docs.mk
-include mk/go.mk
 
+include mk/go.mk
+include smoke-test/smoke-tests.mk
+
+export LANG=en_US.UTF-8
 PROJECT_NAME=winkoz-plonk
-VERSION=$(shell git rev-parse --short HEAD)
-TAG=winkoz/plonk:$(VERSION)
+VERSION:=$(shell git rev-parse --short HEAD)
+TAG:=winkoz/plonk:$(VERSION)
 INTERACTIVE?=-it
 GO-BIN-FOLDER?=
-DOCKER=docker run $(INTERACTIVE) -v $(shell pwd):/go $(TAG)
+DOCKER:=docker run $(INTERACTIVE) -v $(shell pwd):/go $(TAG)
+GOOS=darwin
 
 .PHONY: clean build test ssh docker-build run
 # -----------------------------------------------
@@ -15,8 +19,19 @@ DOCKER=docker run $(INTERACTIVE) -v $(shell pwd):/go $(TAG)
 clean:
 	rm -rf ./bin
 
+go-build-assets:
+	GO111MODULE=on $(GO-BIN-FOLDER)go-bindata -prefix "data/" -pkg data -o data/data.go data/...
+
+go-build: clean go-build-assets
+	GO111MODULE=on GOOS=$(GOOS) GOARCH=amd64 go build -mod=mod -ldflags="-s -w" -o bin/plonk main.go
+	@echo "Plonk built successfully!"
+
+go-test: go-build-assets
+	GO111MODULE=on $(GO-BIN-FOLDER)gotestsum --junitfile unit-tests.xml --format pkgname-and-test-fails -- -mod=mod -cover ./...
+	@echo "Plonk finished testing!"
+
 build: clean docker-build
-	$(DOCKER) make go-build
+	$(DOCKER) make go-build -e GOOS=$(GOOS)
 	@echo "Applications built successfully!"
 
 test: docker-build

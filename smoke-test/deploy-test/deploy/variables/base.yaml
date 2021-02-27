@@ -1,0 +1,11 @@
+# base.yaml
+build:
+  NAME: "deploy-test"
+  NAMESPACE: "$ENV-deploy-test"
+  HOSTNAME: "deploy-test.example.com"
+  DOCKER_IMAGE: vanessa/cowsay
+  REQUIRES_AUTH: false
+  USE_WILDCARD_TLS_CERTIFICATE: true
+  WILDCARD_TLS_SECRET: super-tls-secret
+environment:
+  APP_ENV: "$ENV"
