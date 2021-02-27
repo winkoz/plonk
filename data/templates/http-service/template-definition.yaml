@@ -6,6 +6,8 @@ variables:
     CONTAINER_PORT: 8080
     REPLICAS: 1
     DOCKER_IMAGE_PULL_SECRET: docker-registry-production-imgpull-secret
+    USE_WILDCARD_TLS_CERTIFICATE: false
+    REQUIRES_AUTH: false
   environment:
     PORT: 8090
 manifests:

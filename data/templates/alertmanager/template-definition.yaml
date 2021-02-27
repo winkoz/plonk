@@ -25,6 +25,7 @@ variables:
     AUTH_TYPE: basic
     AUTH_MESSAGE: "Authentication required - alertmanager"
     AUTH_HTPASSWD_PATH: ""
+    USE_WILDCARD_TLS_CERTIFICATE: false
   environment:
     PORT: 9093
 manifests:

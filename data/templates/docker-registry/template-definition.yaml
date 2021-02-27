@@ -12,6 +12,8 @@ variables:
     PROBE_SCHEME: HTTP
     DOCKER_CONFIG_PATH: ~/.docker/config.json
     REGISTRY_HTPASSWD_PATH: ./auth
+    REQUIRES_AUTH: false
+    USE_WILDCARD_TLS_CERTIFICATE: false
   environment:
     PORT: 5000
     REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /var/lib/registry
