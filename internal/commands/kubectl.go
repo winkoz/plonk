@@ -20,6 +20,11 @@ func (k kubectlCommand) Deploy(manifestPath string) error {
 	return err
 }
 
+func (k kubectlCommand) Destroy(namespace string) error {
+	_, err := k.executeCommand("Destroy", "delete", "namespace", namespace)
+	return err
+}
+
 func (k kubectlCommand) Diff(manifestPath string) error {
 	_, err := k.executeCommand("Diff", "diff", "-f", manifestPath)
 	return err

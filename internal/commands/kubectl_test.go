@@ -76,6 +76,23 @@ func (suite *KubectlTestSuite) TestDeploy_ShouldReturnAnError_WhenExecutorFails(
 	assert.EqualError(suite.T(), gotErr, expectedErr.Error())
 }
 
+//----- Destroy Tests
+
+func (suite *KubectlTestSuite) TestDestroy_ShouldCallExecutorWithDestroy() {
+	args := []string{"delete", "namespace", suite.namespace}
+	suite.setupExecutor(args, nil, nil)
+	err := suite.sat.Destroy(suite.namespace)
+	suite.verifyExecutor(args)
+	assert.Nil(suite.T(), err)
+}
+
+func (suite *KubectlTestSuite) TestDestroy_ShouldReturnAnError_WhenExecutorFails() {
+	expectedErr := errors.New(suite.T().Name())
+	suite.setupExecutor([]string{"delete", "namespace", suite.namespace}, nil, expectedErr)
+	gotErr := suite.sat.Destroy(suite.namespace)
+	assert.EqualError(suite.T(), gotErr, expectedErr.Error())
+}
+
 //----- Diff Tests
 
 func (suite *KubectlTestSuite) TestDiff_ShouldCallExecutorWithDiffCommand() {
