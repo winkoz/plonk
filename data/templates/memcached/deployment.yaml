@@ -21,15 +21,14 @@ spec:
       containers:
       - name: {{.NAME}}
         image: {{.DOCKER_IMAGE}}
+        args:
+          - "-m {{.MB_MEMORY_STORAGE}}"
         ports:
-        - containerPort: {{.CONTAINER_PORT}}
+        - name: memcached
+          containerPort: {{.CONTAINER_PORT}}
         env: {{range $k, $v := .ENVIRONMENT_VARIABLES}} 
           - name: {{$k}} 
             value: "{{$v}}"
-        {{end}}
-        {{if .CONTAINER_ARGS}}
-        args: {{range $idx, $argsMap := .CONTAINER_ARGS | yamlArrayToObj}}
-          - {{$argsMap.arg}}{{end}}
         {{end}}
       imagePullSecrets:
         - name: {{.DOCKER_IMAGE_PULL_SECRET}}
