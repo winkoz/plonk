@@ -76,6 +76,12 @@ func (i *IOServiceMock) Append(targetFilePath string, content string) error {
 	return args.Error(0)
 }
 
+// YamlToMapArray …
+func (i *IOServiceMock) YamlToMapArray(maybeYaml string) ([]map[string]string, error) {
+	args := i.Called(maybeYaml)
+	return args.Get(0).([]map[string]string), args.Error(1)
+}
+
 // Write mocks Write
 func (i *IOServiceMock) Write(targetFilePath string, content string) error {
 	args := i.Called(targetFilePath, content)

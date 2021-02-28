@@ -2,6 +2,7 @@ package scaffolding
 
 import (
 	"fmt"
+	"io/ioutil"
 	"reflect"
 	"testing"
 
@@ -15,6 +16,8 @@ func Test_templateReader_Read(t *testing.T) {
 	ctx := config.Context{
 		CustomTemplatesPath: customTemplatePath,
 	}
+	invalidTemplateData, _ := ioutil.ReadFile(customTemplatePath + "/invalid/template-definition.yaml")
+	invalidTemplate := string(invalidTemplateData)
 	ioService := io.NewService()
 	yamlReader := io.NewYamlReader(ioService)
 	type fields struct {
@@ -142,7 +145,7 @@ func Test_templateReader_Read(t *testing.T) {
 				FilesLocation: []io.FileLocation{},
 				Files:         []string{},
 			},
-			wantErr: io.NewParseYamlError(fmt.Sprintf("Unable to parse %s", customTemplatePath+"/invalid/template-definition.yaml")),
+			wantErr: io.NewParseYamlError(fmt.Sprintf("Unable to parse %s", invalidTemplate)),
 		},
 		{
 			name: "returns an error when the configuration file points to a non-existent file within the default path",
