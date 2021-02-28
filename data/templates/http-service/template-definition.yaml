@@ -21,8 +21,8 @@ variables:
     OAUTH_DOCKER_IMAGE: quay.io/oauth2-proxy/oauth2-proxy:latest
     OAUTH_CONTAINER_PORT: 4180
     AUTH_TYPE: None
-  environment:
-    PORT: 8090
+  # environment:
+  #   PORT: $CONTAINER_PORT
 manifests:
   - service.yaml
   - deployment.yaml
