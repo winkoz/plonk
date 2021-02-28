@@ -5,7 +5,7 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: prometheus
+    component: {{.COMPONENT}}
 subjects:
   - kind: ServiceAccount
     name: {{.NAME}}-{{.ENV}}-service-account

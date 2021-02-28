@@ -9,11 +9,11 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: docker-registry
+    component: {{.COMPONENT}}
   annotations:
     ingress.kubernetes.io/force-ssl-redirect: "false"
     kubernetes.io/ingress.class: nginx
-    {{if (eq .REQUIRES_AUTH "true")}}
+    {{if (eq .AUTH_TYPE "basic")}}
     # type of authentication
     nginx.ingress.kubernetes.io/auth-type: {{.AUTH_TYPE}}
     # name of the secret that contains the user/password definitions
@@ -37,7 +37,7 @@ spec:
             name: {{.NAME}}-{{.ENV}}-service
             port: 
               number: {{.SERVICE_PORT}}
-  - host: "*.winkoz.com"
+  - host: {{.WILDCARD_HOST}}
     http:
       paths:
       - path: "/"
@@ -58,12 +58,12 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: docker-registry
+    component: {{.COMPONENT}}
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    {{if (eq .REQUIRES_AUTH "true")}}
+    {{if (eq .AUTH_TYPE "basic")}}
     # type of authentication
     nginx.ingress.kubernetes.io/auth-type: {{.AUTH_TYPE}}
     # name of the secret that contains the user/password definitions
@@ -75,16 +75,32 @@ spec:
   tls:
     - hosts:
       - {{.HOSTNAME}}
+      {{ if (eq .USE_WILDCARD_TLS_CERTIFICATE "true") }}
+      secretName: {{.WILDCARD_TLS_SECRET}}
+      {{else}}
       secretName: {{.NAME}}-{{.ENV}}-tls
+      {{end}}
   rules:
   - host: {{.HOSTNAME}}
     http:
       paths:
-      - path: "/"
+      - path: /oauth2
         pathType: Prefix
         backend:
           service:
-            name: {{.NAME}}-{{.ENV}}-service
+            name: {{.NAME}}-{{.ENV}}-oauth2-proxy
             port: 
-              number: {{.SERVICE_PORT}}
-{{ end }} 
+              number: {{.OAUTH_CONTAINER_PORT}}
+  {{ if (eq .USE_WILDCARD_TLS_CERTIFICATE "true") }}
+  - host: {{.WILDCARD_HOST}}
+    http:
+      paths:
+      - path: /oauth2
+        pathType: Prefix
+        backend:
+          service:
+            name: {{.NAME}}-{{.ENV}}-oauth2-proxy
+            port: 
+              number: {{.OAUTH_CONTAINER_PORT}}
+  {{end}}
+{{end}}

@@ -5,7 +5,7 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: prometheus
+    component: {{.COMPONENT}}
 spec:
   type: ClusterIP
   ports:
@@ -13,4 +13,4 @@ spec:
     targetPort: {{.CONTAINER_PORT}}
   selector:
     app: {{.NAME}}-{{.ENV}}
-    component: prometheus
+    component: {{.COMPONENT}}

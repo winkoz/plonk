@@ -1,6 +1,7 @@
 name: drone
 variables: 
   build:
+    COMPONENT: drone
     USE_WILDCARD_TLS_CERTIFICATE: false
     WILDCARD_TLS_SECRET: ""
     WILDCARD_HOST: ""
