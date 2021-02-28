@@ -14,3 +14,8 @@ type OrchestratorCommand interface {
 type BuilderCommand interface {
 	Build(namespace string) error
 }
+
+// VersionControllerCommand interface for executing commands against the version control used (right now it's only git)
+type VersionControllerCommand interface {
+	Head() (string, error)
+}

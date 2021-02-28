@@ -22,3 +22,10 @@ func NewBuilder(ctx config.Context, builderType string) BuilderCommand {
 		ctx:          ctx,
 	}
 }
+
+// NewVersionController this will return a class to execute actions on the version controller command line tool
+func NewVersionController(ctx config.Context) VersionControllerCommand {
+	return gitVersionControllerCommand{
+		ctx: ctx,
+	}
+}
