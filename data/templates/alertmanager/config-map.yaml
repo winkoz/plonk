@@ -5,6 +5,6 @@ metadata:
   name: {{.NAME}}-{{.ENV}}-config-map
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: alertmanager
+    component: {{.COMPONENT}}
 data:
   {{.ALERT_MANAGER_FILES_FILE_PATH | readFileToStr}}

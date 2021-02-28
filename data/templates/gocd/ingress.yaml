@@ -9,7 +9,7 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: gocd
+    component: {{.COMPONENT}}
   annotations:
     ingress.kubernetes.io/force-ssl-redirect: "false"
     kubernetes.io/ingress.class: nginx
@@ -23,14 +23,18 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: {{.NAME}}-{{.ENV}}-service
-          servicePort: {{.SERVICE_PORT}}
+          service:
+            name: {{.NAME}}-{{.ENV}}-service
+            port: 
+              number: {{.SERVICE_PORT}}
   - host: {{.WILDCARD_HOST}}
     http:
       paths:
       - backend:
-          serviceName: {{.NAME}}-{{.ENV}}-service
-          servicePort: {{.SERVICE_PORT}}
+          service:
+            name: {{.NAME}}-{{.ENV}}-service
+            port: 
+              number: {{.SERVICE_PORT}}
 {{ else }}
 #######################################################
 ## Let's Encrypt issued TLS
@@ -42,7 +46,7 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: gocd
+    component: {{.COMPONENT}}
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -57,6 +61,8 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: {{.NAME}}-{{.ENV}}-service
-          servicePort: {{.SERVICE_PORT}}
+          service:
+            name: {{.NAME}}-{{.ENV}}-service
+            port: 
+              number: {{.SERVICE_PORT}}
 {{ end }}

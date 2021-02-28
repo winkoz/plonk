@@ -1,6 +1,7 @@
 name: prometheus
 variables: 
   build:
+    COMPONENT: prometheus
     DOCKER_IMAGE: "quay.io/prometheus/prometheus:v2.22.1"
     SERVICE_PORT: 80
     CONTAINER_PORT: 9100
@@ -34,7 +35,6 @@ variables:
     EVALUATION_INTERVAL: 1m
     USE_WILDCARD_TLS_CERTIFICATE: false
     WILDCARD_TLS_SECRET: ""
-    REQUIRES_AUTH: true
     AUTH_TYPE: basic
     AUTH_MESSAGE: "Authentication required - prometheus"
     AUTH_HTPASSWD_PATH: ""
@@ -56,3 +56,4 @@ manifests:
   - service-account.yaml
   - deployment.yaml
   - ingress.yaml
+  - oauth.yaml

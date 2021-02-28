@@ -5,7 +5,7 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: docker-registry
+    component: {{.COMPONENT}}
 spec:
   accessModes:
     - {{.PVC_ACCESS_MODE}}

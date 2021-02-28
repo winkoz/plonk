@@ -15,5 +15,7 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: $NAME
-          servicePort: $SERVICE_PORT
+          service:
+            name: $NAME
+            port:
+              number: $SERVICE_PORT

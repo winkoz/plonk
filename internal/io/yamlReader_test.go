@@ -21,7 +21,7 @@ func Test_yamlReader_Parse(t *testing.T) {
 		fields  fields
 		args    args
 		want    []map[string]string
-		wantErr bool
+    wantErr bool
 	}{
 		{
 			name: "parses array of maps",
