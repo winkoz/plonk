@@ -17,6 +17,11 @@ limitations under the License.
 */
 
 import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+
 	"github.com/spf13/cobra"
 	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/deployment"
@@ -47,7 +52,28 @@ func newDestroyCommandHandler() CobraHandler {
 			env = args[0]
 		}
 
-		d := deployment.NewDestroyer(ctx)
-		d.Execute(ctx, env)
+		// Keep asking until we receive a valid option
+		for correct := false; !correct; {
+			fmt.Printf("\n\tThe `destroy` command is a highly destructive command and cannot be undone.\n\tAre you sure you want to destroy the namespace: \"%s-%s\"? [y/n]\n", ctx.ProjectName, env)
+
+			// Read the selection from the user
+			reader := bufio.NewReader(os.Stdin)
+			char, _, err := reader.ReadRune()
+			if err != nil {
+				log.Errorf("Unable to read the selection. err: %+v", err)
+			}
+
+			switch strings.ToLower(string(char)) {
+			case "y":
+				correct = true
+				d := deployment.NewDestroyer(ctx)
+				d.Execute(ctx, env)
+			case "n":
+				correct = true
+				log.Infof("Destroy command aborted.")
+			default:
+				log.Infof("Invalid option provided")
+			}
+		}
 	}
 }
