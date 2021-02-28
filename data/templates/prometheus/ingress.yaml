@@ -41,7 +41,7 @@ spec:
             name: {{.NAME}}-{{.ENV}}-service
             port: 
               number: {{.SERVICE_PORT}}
-  - host: "*.winkoz.com"
+  - host: {{.WILDCARD_HOST}}
     http:
       paths:
       - path: / 
@@ -110,8 +110,10 @@ spec:
   tls:
     - hosts:
       - {{.HOSTNAME}}
-      {{ if (eq .USE_WILDCARD_TLS_CERTIFICATE "true") }}secretName: {{.WILDCARD_TLS_SECRET}}
-      {{else}}secretName: {{.NAME}}-{{.ENV}}-tls
+      {{ if (eq .USE_WILDCARD_TLS_CERTIFICATE "true") }}
+      secretName: {{.WILDCARD_TLS_SECRET}}
+      {{else}}
+      secretName: {{.NAME}}-{{.ENV}}-tls
       {{end}}
   rules:
   - host: {{.HOSTNAME}}
@@ -124,14 +126,16 @@ spec:
             name: {{.NAME}}-{{.ENV}}-oauth2-proxy
             port: 
               number: {{.OAUTH_CONTAINER_PORT}}
-  - host: "*.winkoz.com"
+  {{ if (eq .USE_WILDCARD_TLS_CERTIFICATE "true") }}
+  - host: {{.WILDCARD_HOST}}
     http:
       paths:
-      - path: "/oauth2"
+      - path: /oauth2
         pathType: Prefix
         backend:
           service:
             name: {{.NAME}}-{{.ENV}}-oauth2-proxy
             port: 
               number: {{.OAUTH_CONTAINER_PORT}}
+  {{end}}
 {{end}}
