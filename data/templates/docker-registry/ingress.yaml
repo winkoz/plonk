@@ -1,3 +1,56 @@
+{{ if (eq .USE_WILDCARD_TLS_CERTIFICATE "true") }}
+#######################################################
+## Wildcard TLS Cert
+#######################################################
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{.NAME}}-{{.ENV}}-ingress
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: docker-registry
+  annotations:
+    ingress.kubernetes.io/force-ssl-redirect: "false"
+    kubernetes.io/ingress.class: nginx
+    {{if (eq .REQUIRES_AUTH "true")}}
+    # type of authentication
+    nginx.ingress.kubernetes.io/auth-type: {{.AUTH_TYPE}}
+    # name of the secret that contains the user/password definitions
+    nginx.ingress.kubernetes.io/auth-secret: {{.NAME}}-{{.ENV}}-auth-secret
+    # message to display with an appropriate context why the authentication is required
+    nginx.ingress.kubernetes.io/auth-realm: '{{.AUTH_MESSAGE}}'
+    {{end}}
+spec:
+  tls:
+  - hosts: 
+    - {{.HOSTNAME}}
+    secretName: {{.WILDCARD_TLS_SECRET}}
+  rules:
+  - host: {{.HOSTNAME}}
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: {{.NAME}}-{{.ENV}}-service
+            port: 
+              number: {{.SERVICE_PORT}}
+  - host: "*.winkoz.com"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: {{.NAME}}-{{.ENV}}-service
+            port: 
+              number: {{.SERVICE_PORT}}
+{{ else }}
+#######################################################
+## Let's Encrypt issued TLS
+#######################################################
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -8,8 +61,16 @@ metadata:
     component: docker-registry
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    {{if (eq .REQUIRES_AUTH "true")}}
+    # type of authentication
+    nginx.ingress.kubernetes.io/auth-type: {{.AUTH_TYPE}}
+    # name of the secret that contains the user/password definitions
+    nginx.ingress.kubernetes.io/auth-secret: {{.NAME}}-{{.ENV}}-auth-secret
+    # message to display with an appropriate context why the authentication is required
+    nginx.ingress.kubernetes.io/auth-realm: '{{.AUTH_MESSAGE}}'
+    {{end}}
 spec:
   tls:
     - hosts:
@@ -19,8 +80,11 @@ spec:
   - host: {{.HOSTNAME}}
     http:
       paths:
-      - backend:
+      - path: "/"
+        pathType: Prefix
+        backend:
           service:
             name: {{.NAME}}-{{.ENV}}-service
             port: 
               number: {{.SERVICE_PORT}}
+{{ end }} 
