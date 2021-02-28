@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{.NAME}}-{{.ENV}}-rolebinding
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: grafana
+subjects:
+  - kind: ServiceAccount
+    name: {{.NAME}}-{{.ENV}}-service-account
+    namespace: {{.NAME}}-{{.ENV}}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{.NAME}}-{{.ENV}}-cluster-role

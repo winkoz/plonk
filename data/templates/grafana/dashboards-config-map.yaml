@@ -1,0 +1,19 @@
+{{if .DASHBOARDS}}
+{{range $idx, $dashboardMap := .DASHBOARDS | yamlArrayToObj}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{$.NAME}}-{{$.ENV}}
+  name: {{$.NAME}}-{{$.ENV}}-dashboards-{{$dashboardMap.provider}}-config-map
+  labels:
+    app: {{$.NAME}}-{{$.ENV}}
+    component: grafana
+    dashboard-provider: {{$dashboardMap.provider}}
+    {{$.SIDECAR_WATCH_LABEL}}: {{$.SIDECAR_WATCH_LABEL}}
+data:
+  {{$dashboardMap.filename}}:
+    |-
+      {{indent ($dashboardMap.filename | readFileToStr) 6}}
+---
+{{end}}
+{{end}}

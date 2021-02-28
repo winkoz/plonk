@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/winkoz/plonk/data"
@@ -32,6 +33,7 @@ type Service interface {
 	IsValidPath(path string) error
 	Base64Encode(v []byte) (string, error)
 	StringToBytes(s string) ([]byte, error)
+	Indent(s string, numberOfSpaces int) (string, error)
 }
 
 type service struct{}
@@ -189,4 +191,11 @@ func (s service) StringToBytes(str string) ([]byte, error) {
 }
 func (s service) Base64Encode(v []byte) (string, error) {
 	return base64.StdEncoding.EncodeToString(v), nil
+}
+
+// Indent indents every line of the `source` string by the `numberOfSpaces` passed and returns the transformed string.
+func (s service) Indent(source string, numberOfSpaces int) (string, error) {
+	indent := "\n" + strings.Repeat(" ", numberOfSpaces)
+	re := regexp.MustCompile(`\r?\n`)
+	return re.ReplaceAllString(source, indent), nil
 }

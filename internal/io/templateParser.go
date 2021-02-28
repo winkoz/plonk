@@ -39,6 +39,7 @@ func (t templateParser) Parse(variables map[string]interface{}, templateContent 
 		"walkDirectory":  t.service.WalkDirectory,
 		"baseFilename":   filepath.Base,
 		"yamlArrayToObj": t.service.YamlToMapArray,
+    "indent":         t.service.Indent,
 	}
 
 	template, err := template.
