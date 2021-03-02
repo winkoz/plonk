@@ -15,6 +15,12 @@ func (oc *OrchestratorCommandMock) Deploy(manifestPath string) error {
 	return args.Error(0)
 }
 
+// Destroy …
+func (oc *OrchestratorCommandMock) Destroy(env string) error {
+	args := oc.Called(env)
+	return args.Error(0)
+}
+
 // Diff …
 func (oc *OrchestratorCommandMock) Diff(manifestPath string) error {
 	args := oc.Called(manifestPath)

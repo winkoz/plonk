@@ -27,6 +27,7 @@ func Execute() {
 	// Commands
 	addInitCommand(rootCmd)
 	addDeployCommand(rootCmd)
+	addDestroyCommand(rootCmd)
 	addDiffCommand(rootCmd)
 	addShowCommand(rootCmd)
 	addLogsCommand(rootCmd)
