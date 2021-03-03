@@ -15,13 +15,16 @@ type TemplateParser interface {
 }
 
 type templateParser struct {
-	service Service
+	service         Service
+	dataManipulator DataManipulator
 }
 
 // NewTemplateParser returns a fully initialised TemplateParser
 func NewTemplateParser() TemplateParser {
+	service := NewService()
 	return templateParser{
-		service: NewService(),
+		service:         service,
+		dataManipulator: NewDataManipulator(service),
 	}
 }
 
@@ -34,12 +37,12 @@ func (t templateParser) Parse(variables map[string]interface{}, templateContent 
 		"title":          strings.Title,
 		"readFile":       t.service.ReadFile,
 		"readFileToStr":  t.service.ReadFileToString,
-		"strToBytes":     t.service.StringToBytes,
-		"base64Encode":   t.service.Base64Encode,
+		"strToBytes":     t.dataManipulator.StringToBytes,
+		"base64Encode":   t.dataManipulator.Base64Encode,
 		"walkDirectory":  t.service.WalkDirectory,
 		"baseFilename":   filepath.Base,
-		"yamlArrayToObj": t.service.YamlToMapArray,
-		"indent":         t.service.Indent,
+		"yamlArrayToObj": t.dataManipulator.YamlToMapArray,
+		"indent":         t.dataManipulator.Indent,
 	}
 
 	template, err := template.
