@@ -3,8 +3,8 @@ variables:
   build:
     USE_WILDCARD_TLS_CERTIFICATE: true
     IMAGE_PULLPOLICY: IfNotPresent
-    DOCKER_IMAGE: "grafana/grafana:7.0.3"
-    CHOWNDATA_DOCKER_IMAGE: "busybox:1.31.1"
+    DOCKER_IMAGE: 'grafana/grafana:7.0.3'
+    CHOWNDATA_DOCKER_IMAGE: 'busybox:1.31.1'
     DOCKER_IMAGE_PULL_SECRET: docker-registry-production-imgpull-secret
     SERVICE_PORT: 80
     CONTAINER_PORT: 3000
@@ -24,9 +24,9 @@ variables:
     #################################################
     READINESS_PROBE_INITIAL_DELAY: 30
     READINESS_PROBE_TIMEOUT: 30
-    GRAFANA_PLUGINS: ""
-    GRAFANA_INI_FILEPATH: ""
-    DATASOURCES_DIRECTORYPATH: ""
+    GRAFANA_PLUGINS: ''
+    GRAFANA_INI_FILEPATH: ''
+    DATASOURCES_DIRECTORYPATH: ''
     STRATEGY_TYPE: RollingUpdate
 
     #################################################
@@ -40,19 +40,19 @@ variables:
     #################################################
     # Credentials variables
     #################################################
-    # - Variables for "gatekeeping"
+    # - Variables for 'gatekeeping'
     REQUIRES_AUTH: true
     AUTH_TYPE: basic
-    AUTH_MESSAGE: "Authentication required - Grafana"
-    AUTH_HTPASSWD_PATH: ""
+    AUTH_MESSAGE: 'Authentication required - Grafana'
+    AUTH_HTPASSWD_PATH: ''
     # - Grafana admin vars
     ADMIN_USER: winkoz-admin
-    ADMIN_PASSWORD: ""
+    ADMIN_PASSWORD: ''
     
     #################################################
     # Dashboard specific information
     #################################################
-    DASHBOARDS: ""
+    DASHBOARDS: ''
     DASHBOARDS_DOWNLOAD_IMAGE: curlimages/curl:7.73.0
     # - Sidecar variables (needed for loading the dashboards)
     SIDECAR_DOCKER_IMAGE: kiwigrid/k8s-sidecar:1.1.0
@@ -60,7 +60,7 @@ variables:
     SIDECAR_DASHBOARDS_FOLDER: /tmp/dashboards
     #   - Sidecar provider variables
     SIDECAR_PROVIDER_NAME: sidecar-provider
-    SIDECAR_PROVIDER_FOLDER: ""
+    SIDECAR_PROVIDER_FOLDER: ''
     SIDECAR_PROVIDER_TYPE: file
     SIDECAR_PROVIDER_ALLOW_DASHBOARD_DELETION: false
     SIDECAR_PROVIDER_ALLOW_DASHBOARD_UI_UPDATES: false

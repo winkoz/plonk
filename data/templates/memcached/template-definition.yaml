@@ -2,7 +2,7 @@ name: memcached
 variables: 
   build:
     COMPONENT: memcached
-    DOCKER_IMAGE: "memcached:alpine"
+    DOCKER_IMAGE: 'memcached:alpine'
     SERVICE_PORT: 11211
     CONTAINER_PORT: 11211
     REPLICAS: 1
