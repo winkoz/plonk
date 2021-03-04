@@ -22,7 +22,7 @@ spec:
       - name: {{.NAME}}
         image: {{.DOCKER_IMAGE}}
         args:
-          - "-m {{.MB_MEMORY_STORAGE}}"
+          - '-m {{.MB_MEMORY_STORAGE}}'
         ports:
         - name: memcached
           containerPort: {{.CONTAINER_PORT}}

@@ -94,7 +94,7 @@ spec:
             #   mountPath: "/etc/grafana/provisioning/datasources/datasources.yaml"
             #   subPath: datasources.yaml
             {{range $idx, $dashboardMap := .DASHBOARDS | yamlArrayToObj}}- name: dashboards-{{$dashboardMap.provider}}
-              mountPath: "/var/lib/grafana/dashboards/{{$dashboardMap.provider}}/{{$dashboardMap.filename}}"
+              mountPath: '/var/lib/grafana/dashboards/{{$dashboardMap.provider}}/{{$dashboardMap.filename}}'
               subPath: {{$dashboardMap.filename}}
             {{end}}
             - name: dashboards-volume
