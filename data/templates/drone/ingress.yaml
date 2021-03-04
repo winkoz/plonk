@@ -17,10 +17,10 @@ metadata:
 spec:
   tls:
   - hosts: 
-    - {{.HOSTNAME}}
+    - {{.HOSTNAME | wrapInQuotes}}
     secretName: {{.WILDCARD_TLS_SECRET}}
   rules:
-  - host: {{.HOSTNAME}}
+  - host: {{.HOSTNAME | wrapInQuotes}}
     http:
       paths:
       - backend:
@@ -28,7 +28,7 @@ spec:
             name: {{.NAME}}-{{.ENV}}-service
             port:
               number: {{.SERVICE_PORT}}
-  - host: {{.WILDCARD_HOST}}
+  - host: {{.WILDCARD_HOST | wrapInQuotes}}
     http:
       paths:
       - backend:
@@ -56,10 +56,10 @@ metadata:
 spec:
   tls:
     - hosts:
-      - {{.HOSTNAME}}
+      - {{.HOSTNAME | wrapInQuotes}}
       secretName: {{.NAME}}-{{.ENV}}-tls
   rules:
-  - host: {{.HOSTNAME}}
+  - host: {{.HOSTNAME | wrapInQuotes}}
     http:
       paths:
       - backend:

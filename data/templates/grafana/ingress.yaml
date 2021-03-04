@@ -24,10 +24,10 @@ metadata:
 spec:
   tls:
   - hosts: 
-    - {{.HOSTNAME}}
+    - {{.HOSTNAME | wrapInQuotes}}
     secretName: {{.WILDCARD_TLS_SECRET}}
   rules:
-  - host: {{.HOSTNAME}}
+  - host: {{.HOSTNAME | wrapInQuotes}}
     http:
       paths:
       - path: "/"
@@ -74,10 +74,10 @@ metadata:
 spec:
   tls:
     - hosts:
-      - {{.HOSTNAME}}
+      - {{.HOSTNAME | wrapInQuotes}}
       secretName: {{.NAME}}-{{.ENV}}-tls
   rules:
-  - host: {{.HOSTNAME}}
+  - host: {{.HOSTNAME | wrapInQuotes}}
     http:
       paths:
       - path: "/"

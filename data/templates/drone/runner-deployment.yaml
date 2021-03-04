@@ -42,7 +42,7 @@ spec:
           imagePullPolicy: {{.IMAGE_PULLPOLICY}}
           env: 
           - name: DRONE_SERVER_HOST
-            value : {{.HOSTNAME}}
+            value : {{.HOSTNAME | wrapInQuotes}}
           - name: SECRET_ENVIRONMENT_VARIABLES
             value: {{.NAME}}-{{.ENV}}-env-secret
           - name: DRONE_RPC_HOST
