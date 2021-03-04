@@ -2,6 +2,7 @@ package io
 
 import (
 	"encoding/base64"
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -12,6 +13,7 @@ type DataManipulator interface {
 	Base64Encode(v []byte) (string, error)
 	StringToBytes(s string) ([]byte, error)
 	Indent(s string, numberOfSpaces int) (string, error)
+	WrapInQuotes(s string) (string, error)
 }
 
 type dataManipulator struct {
@@ -48,4 +50,10 @@ func (dm dataManipulator) Indent(source string, numberOfSpaces int) (string, err
 	indent := "\n" + strings.Repeat(" ", numberOfSpaces)
 	re := regexp.MustCompile(`\r?\n`)
 	return re.ReplaceAllString(source, indent), nil
+}
+
+// WraInQuotes returns the passed in `source` string wrapped in double quotation marks ("source")
+func (dm dataManipulator) WrapInQuotes(source string) (string, error) {
+	result := fmt.Sprintf("\"%s\"", source)
+	return result, nil
 }

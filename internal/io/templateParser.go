@@ -43,6 +43,7 @@ func (t templateParser) Parse(variables map[string]interface{}, templateContent 
 		"baseFilename":   filepath.Base,
 		"yamlArrayToObj": t.dataManipulator.YamlToMapArray,
 		"indent":         t.dataManipulator.Indent,
+		"wrapInQuotes":   t.dataManipulator.WrapInQuotes,
 	}
 
 	template, err := template.
