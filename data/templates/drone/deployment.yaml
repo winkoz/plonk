@@ -32,7 +32,7 @@ spec:
       {{ end }}
       containers:
         - name: {{.NAME}}-{{.ENV}}-server
-          image: "{{.DOCKER_IMAGE}}"
+          image: {{.DOCKER_IMAGE | wrapInQuotes}}
           imagePullPolicy: {{.IMAGE_PULLPOLICY}}
           resources:
             limits:
@@ -55,7 +55,7 @@ spec:
             value: {{.DRONE_SERVER_PROTO}}
           {{range $k, $v := .ENVIRONMENT_VARIABLES}}
           - name: {{$k}} 
-            value: "{{$v}}"
+            value: {{$v | wrapInQuotes}}
           {{end}}ports:
             - containerPort: {{.CONTAINER_PORT}}
           livenessProbe:

@@ -31,7 +31,7 @@ spec:
       volumes:
       containers:
         - name: {{.NAME}}-{{.ENV}}-runner
-          image: "{{.RUNNER_DOCKER_IMAGE}}"
+          image: {{.RUNNER_DOCKER_IMAGE | wrapInQuotes}}
           resources:
             limits:
               cpu: {{.RUNNER_CPU_LIMIT_MAX}}
@@ -49,7 +49,7 @@ spec:
             value: {{.NAME}}-{{.ENV}}-service
           {{range $k, $v := .ENVIRONMENT_VARIABLES}}
           - name: {{$k}} 
-            value: "{{$v}}"
+            value: {{$v | wrapInQuotes}}
           {{end}}
           {{if .SECRET_ENVIRONMENT_VARIABLES}}
           envFrom:

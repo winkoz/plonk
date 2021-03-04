@@ -28,7 +28,7 @@ spec:
           containerPort: {{.CONTAINER_PORT}}
         env: {{range $k, $v := .ENVIRONMENT_VARIABLES}} 
           - name: {{$k}} 
-            value: "{{$v}}"
+            value: {{$v | wrapInQuotes}}
         {{end}}
       imagePullSecrets:
         - name: {{.DOCKER_IMAGE_PULL_SECRET}}
