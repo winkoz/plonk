@@ -17,8 +17,6 @@ limitations under the License.
 */
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 	"github.com/winkoz/plonk/internal/building"
 	"github.com/winkoz/plonk/internal/config"
@@ -44,17 +42,19 @@ func newBuildCommandHandler() CobraHandler {
 			log.Fatal(err)
 		}
 
-		// env := defaultDeployEnvironment
-		// if len(args) == 1 {
-		// 	env = args[0]
-		// }
+		env := defaultDeployEnvironment
+		if len(args) == 1 {
+			env = args[0]
+		}
 
 		builder := building.NewBuilder(ctx)
-		//err = builder.Build(env)
-		head, err := builder.VersionControlCurrentHead()
-		log.Info(fmt.Sprintf("CTX %v+", ctx.TargetPath))
-		log.Info(fmt.Sprintf("THE CURRENT HEAD IS %s", head))
-		log.Info(fmt.Sprintf("THE CURRENT ERR %s", err))
-		log.Debug("hola mundoooooo")
+
+		tag, err := builder.Build(env)
+		if err != nil {
+			log.Errorf("Failed building current docker project %s.", env, err)
+			return
+		}
+		log.Infof("Build tag: %s", tag)
+		log.Info("Build executed successfully.")
 	}
 }

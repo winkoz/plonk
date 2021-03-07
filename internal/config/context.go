@@ -12,6 +12,7 @@ import (
 type Context struct {
 	// Project Config
 	ProjectName   string
+	Registry      string
 	DeployCommand string
 	BuildCommand  string
 	Environments  map[string][]string
@@ -36,6 +37,7 @@ func NewContext(projectName string) (Context, error) {
 	return Context{
 		// Project Config
 		ProjectName:   projectName,
+		Registry:      projectName,
 		DeployCommand: deployDeployCommand,
 		BuildCommand:  deployBuildCommand,
 
@@ -68,6 +70,7 @@ func NewContextFromFile() (Context, error) {
 	return Context{
 		// Project Config
 		ProjectName:   configFile.Name,
+		Registry:      configFile.Registry,
 		DeployCommand: configFile.Command,
 		BuildCommand:  deployBuildCommand,
 		Environments:  configFile.Environments,

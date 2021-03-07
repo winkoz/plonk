@@ -12,7 +12,7 @@ type OrchestratorCommand interface {
 
 // BuilderCommand interface for executing commands against the builder cli tool
 type BuilderCommand interface {
-	Build(namespace string) error
+	Build(namespace string, isLatest bool) error
 }
 
 // VersionControllerCommand interface for executing commands against the version control used (right now it's only git)

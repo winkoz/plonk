@@ -11,6 +11,7 @@ const defaultDeployCommand = "kubectl"
 type PlonkConfigFile struct {
 	Name         string              `yaml:"name"`
 	Command      string              `yaml:"command,omitempty"`
+	Registry     string              `yaml:"registry,omitempty"`
 	TemplatesDir string              `yaml:"templates,omitempty"`
 	Environments map[string][]string `yaml:"environments"`
 }

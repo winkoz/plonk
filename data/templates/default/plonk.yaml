@@ -1,5 +1,6 @@
 name: {{.NAME}}
 command: kubectl
+registry: {{.NAME}}
 templates: ~/.templates
 environments:
   base:

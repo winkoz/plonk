@@ -14,8 +14,26 @@ type dockerCommand struct {
 	ctx          config.Context
 }
 
-func (d dockerCommand) Build(tagName string) error {
-	_, err := d.executeCommand("Build", "build", "--no-cache", "--tag", tagName, ".")
+func (d dockerCommand) Build(tagName string, isLatest bool) error {
+	// We build with a unique tag and if specified the latest
+	tags := []string{
+		"--tag",
+		tagName,
+	}
+	if isLatest {
+		tags = append(tags, "--tag")
+		tags = append(tags, "latest")
+	}
+
+	// Docker command line arguments
+	args := []string{
+		"build",
+		"--no-cache",
+	}
+	args = append(args, tags...)
+	args = append(args, ".")
+
+	_, err := d.executeCommand("Build", args...)
 	return err
 }
 
