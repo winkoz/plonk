@@ -36,7 +36,7 @@ func NewDeployer(ctx config.Context) Deployer {
 		templateReader: scaffolding.NewTemplateReader(ctx),
 		ioService:      io.NewService(),
 		templateParser: io.NewTemplateParser(),
-		//TODO: change this
+		//TODO: https://github.com/winkoz/plonk/issues/59 change this
 		orchestratorCommand: commands.NewOrchestrator(ctx, "kubectl"),
 	}
 }

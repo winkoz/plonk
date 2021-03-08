@@ -30,7 +30,7 @@ spec:
         fsGroup: {{.FS_GROUP}}
       initContainers:
         - name: init-chown-data
-          image: "{{.CHOWNDATA_DOCKER_IMAGE}}"
+          image: {{.CHOWNDATA_DOCKER_IMAGE | wrapInQuotes}}
           imagePullPolicy: {{.IMAGE_PULLPOLICY}}
           securityContext:
             runAsNonRoot: {{.RUN_AS_NON_ROOT}}
@@ -42,11 +42,11 @@ spec:
               mountPath: "/var/lib/grafana"
       containers:
         - name: {{.NAME}}-{{.ENV}}
-          image: "{{.DOCKER_IMAGE}}"
-          imagePullPolicy: "{{.IMAGE_PULLPOLICY}}"
+          image: {{.DOCKER_IMAGE | wrapInQuotes}}
+          imagePullPolicy: {{.IMAGE_PULLPOLICY | wrapInQuotes}}
           env: {{range $k, $v := .ENVIRONMENT_VARIABLES}} 
           - name: {{$k}} 
-            value: "{{$v}}"{{end}}
+            value: {{$v | wrapInQuotes}}{{end}}
           - name: GF_SECURITY_ADMIN_USER
             valueFrom:
               secretKeyRef:
@@ -94,7 +94,7 @@ spec:
             #   mountPath: "/etc/grafana/provisioning/datasources/datasources.yaml"
             #   subPath: datasources.yaml
             {{range $idx, $dashboardMap := .DASHBOARDS | yamlArrayToObj}}- name: dashboards-{{$dashboardMap.provider}}
-              mountPath: "/var/lib/grafana/dashboards/{{$dashboardMap.provider}}/{{$dashboardMap.filename}}"
+              mountPath: '/var/lib/grafana/dashboards/{{$dashboardMap.provider}}/{{$dashboardMap.filename}}'
               subPath: {{$dashboardMap.filename}}
             {{end}}
             - name: dashboards-volume

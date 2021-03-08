@@ -22,11 +22,11 @@ spec:
       serviceAccountName: {{.NAME}}-{{.ENV}}-service-account
       containers:
         - name: {{.NAME}}-{{.ENV}}
-          image: "{{.DOCKER_IMAGE}}"
-          imagePullPolicy: "{{.IMAGE_PULLPOLICY}}"
+          image: {{.DOCKER_IMAGE | wrapInQuotes}}
+          imagePullPolicy: {{.IMAGE_PULLPOLICY | wrapInQuotes}}
           env: {{range $k, $v := .ENVIRONMENT_VARIABLES}} 
           - name: {{$k}} 
-            value: "{{$v}}"{{end}}
+            value: {{$v | wrapInQuotes}}{{end}}
           - name: POD_IP
             valueFrom:
               fieldRef:
@@ -49,12 +49,12 @@ spec:
             - name: config-volume
               mountPath: /etc/config
             - name: storage-volume
-              mountPath: "{{.MOUNT_PATH}}"
+              mountPath: {{.MOUNT_PATH | wrapInQuotes}}
               subPath: ""
 
         - name: {{.NAME}}-{{.ENV}}-configmap-reload
-          image: "{{.CONFIGMAP_RELOAD_IMAGE}}"
-          imagePullPolicy: "{{.IMAGE_PULLPOLICY}}"
+          image: {{.CONFIGMAP_RELOAD_IMAGE | wrapInQuotes}}
+          imagePullPolicy: {{.IMAGE_PULLPOLICY | wrapInQuotes}}
           args:
             - --volume-dir=/etc/config
             - --webhook-url=http://127.0.0.1:{{.CONTAINER_PORT}}/-/reload

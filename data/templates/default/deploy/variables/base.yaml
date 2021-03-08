@@ -1,7 +1,7 @@
 # base.yaml
 build:
-  NAME: "{{.NAME}}"
-  NAMESPACE: "$ENV-{{.NAME}}"
-  HOSTNAME: "{{.NAME}}.example.com"
+  NAME: '{{.NAME}}'
+  NAMESPACE: '$ENV-{{.NAME}}'
+  HOSTNAME: '{{.NAME}}.example.com'
 environment:
-  APP_ENV: "$ENV"
+  APP_ENV: '$ENV'

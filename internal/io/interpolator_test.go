@@ -10,7 +10,7 @@ func TestNewInterpolator(t *testing.T) {
 		name string
 		want Interpolator
 	}{
-		// TODO: Add test cases.
+		// TODO: https://github.com/winkoz/plonk/issues/58 Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

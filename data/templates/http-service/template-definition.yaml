@@ -1,26 +1,26 @@
 name: http-service
 variables: 
   build:
-    COMPONENT: http-service
-    DOCKER_IMAGE: ""
+    COMPONENT: 'http-service'
+    DOCKER_IMAGE: ''
     SERVICE_PORT: 80
     CONTAINER_PORT: 8080
     REPLICAS: 1
-    DOCKER_IMAGE_PULL_SECRET: docker-registry-production-imgpull-secret
-    USE_WILDCARD_TLS_CERTIFICATE: true
+    DOCKER_IMAGE_PULL_SECRET: 'docker-registry-production-imgpull-secret'
+    USE_WILDCARD_TLS_CERTIFICATE: 'true'
     WILDCARD_TLS_SECRET: 
-    IMAGE_PULLPOLICY: IfNotPresent
-    CONTAINER_ARGS: ""
+    IMAGE_PULLPOLICY: 'IfNotPresent'
+    CONTAINER_ARGS: ''
     # OAuth configuration
-    OAUTH_PROVIDER: github
-    OAUTH_EMAIL_DOMAIN: "*"
-    OAUTH_ORGANIZATION: "*"
-    OAUTH2_PROXY_CLIENT_ID: ""
-    OAUTH2_PROXY_CLIENT_SECRET: ""
-    OAUTH2_PROXY_COOKIE_SECRET: ""
+    OAUTH_PROVIDER: 'github'
+    OAUTH_EMAIL_DOMAIN: '*'
+    OAUTH_ORGANIZATION: '*'
+    OAUTH2_PROXY_CLIENT_ID: ''
+    OAUTH2_PROXY_CLIENT_SECRET: ''
+    OAUTH2_PROXY_COOKIE_SECRET: ''
     OAUTH_DOCKER_IMAGE: quay.io/oauth2-proxy/oauth2-proxy:latest
     OAUTH_CONTAINER_PORT: 4180
-    AUTH_TYPE: None
+    AUTH_TYPE: 'None'
   # environment:
   #   PORT: $CONTAINER_PORT
 manifests:

@@ -1,13 +1,13 @@
 name: memcached
 variables: 
   build:
-    COMPONENT: memcached
-    DOCKER_IMAGE: "memcached:alpine"
+    COMPONENT: 'memcached'
+    DOCKER_IMAGE: 'memcached:alpine'
     SERVICE_PORT: 11211
     CONTAINER_PORT: 11211
     REPLICAS: 1
-    DOCKER_IMAGE_PULL_SECRET: docker-registry-production-imgpull-secret
-    IMAGE_PULLPOLICY: IfNotPresent
+    DOCKER_IMAGE_PULL_SECRET: 'docker-registry-production-imgpull-secret'
+    IMAGE_PULLPOLICY: 'IfNotPresent'
     MB_MEMORY_STORAGE: 64
   environment:
     PORT: 11211

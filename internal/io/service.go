@@ -1,12 +1,10 @@
 package io
 
 import (
-	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/winkoz/plonk/data"
@@ -27,13 +25,9 @@ type Service interface {
 	ReadFileToString(path string) (string, error)
 	Walk(root string, walkFn WalkFunc) error
 	WalkDirectory(root string) ([]interface{}, error)
-	YamlToMapArray(maybeYaml string) ([]map[string]string, error)
 	Append(targetFilePath string, content string) error
 	Write(targetFilePath string, content string) error
 	IsValidPath(path string) error
-	Base64Encode(v []byte) (string, error)
-	StringToBytes(s string) ([]byte, error)
-	Indent(s string, numberOfSpaces int) (string, error)
 }
 
 type service struct{}
@@ -149,14 +143,6 @@ func (s service) WalkDirectory(root string) ([]interface{}, error) {
 	return files, nil
 }
 
-// YamlToMapArray attempts to parse `maybeYaml` into an array of objects and will return it as a map from string to string array.
-func (s service) YamlToMapArray(maybeYaml string) ([]map[string]string, error) {
-	output := []map[string]string{}
-	yamlReader := NewYamlReader(s)
-	err := yamlReader.Parse([]byte(maybeYaml), &output)
-	return output, err
-}
-
 // Append opens or creates file at `targetFilePath` and appends the `content` to it
 func (s service) Append(targetFilePath string, content string) error {
 	//Append second line
@@ -184,18 +170,4 @@ func (s service) Write(targetFilePath string, content string) error {
 func (s service) IsValidPath(path string) error {
 	_, err := os.Stat(path)
 	return err
-}
-
-func (s service) StringToBytes(str string) ([]byte, error) {
-	return []byte(str), nil
-}
-func (s service) Base64Encode(v []byte) (string, error) {
-	return base64.StdEncoding.EncodeToString(v), nil
-}
-
-// Indent indents every line of the `source` string by the `numberOfSpaces` passed and returns the transformed string.
-func (s service) Indent(source string, numberOfSpaces int) (string, error) {
-	indent := "\n" + strings.Repeat(" ", numberOfSpaces)
-	re := regexp.MustCompile(`\r?\n`)
-	return re.ReplaceAllString(source, indent), nil
 }

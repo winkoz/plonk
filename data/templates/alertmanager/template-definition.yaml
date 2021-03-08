@@ -1,40 +1,40 @@
 name: alertmanager
 variables: 
   build:
-    COMPONENT: alertmanager
-    DOCKER_IMAGE: "quay.io/prometheus/alertmanager:v0.21.0"
+    COMPONENT: 'alertmanager'
+    DOCKER_IMAGE: 'quay.io/prometheus/alertmanager:v0.21.0'
     SERVICE_PORT: 80
     CONTAINER_PORT: 9093
     REPLICAS: 1
-    DOCKER_IMAGE_PULL_SECRET: docker-registry-production-imgpull-secret
-    PVC_STORAGE_SIZE: 4Gi
-    PVC_ACCESS_MODE: ReadWriteOnce
-    PVC_STORAGE_CLASS_NAME: do-block-storage
+    DOCKER_IMAGE_PULL_SECRET: 'docker-registry-production-imgpull-secret'
+    PVC_STORAGE_SIZE: '4Gi'
+    PVC_ACCESS_MODE: 'ReadWriteOnce'
+    PVC_STORAGE_CLASS_NAME: 'do-block-storage'
     READINESS_PROBE_INITIAL_DELAY: 30
     READINESS_PROBE_TIMEOUT: 4
-    IMAGE_PULLPOLICY: IfNotPresent
-    PROMETHEUS_NAMESPACE: ""
+    IMAGE_PULLPOLICY: 'IfNotPresent'
+    PROMETHEUS_NAMESPACE: ''
     CONFIGMAP_RELOAD_IMAGE: jimmidyson/configmap-reload:v0.4.0
-    ALERT_MANAGER_FILES_FILE_PATH: ""
-    CONFIG_FILE_NAME: "alertmanager.yml"
+    ALERT_MANAGER_FILES_FILE_PATH: ''
+    CONFIG_FILE_NAME: 'alertmanager.yml'
     MOUNT_PATH: /data
     RUN_AS_USER: 65534
-    RUN_AS_NON_ROOT: true
+    RUN_AS_NON_ROOT: 'true'
     RUN_AS_GROUP: 65534
     FS_GROUP: 65534
-    AUTH_MESSAGE: "Authentication required - alertmanager"
-    AUTH_HTPASSWD_PATH: ""
-    USE_WILDCARD_TLS_CERTIFICATE: false
+    AUTH_MESSAGE: 'Authentication required - alertmanager'
+    AUTH_HTPASSWD_PATH: ''
+    USE_WILDCARD_TLS_CERTIFICATE: 'false'
     # OAuth configuration
-    OAUTH_PROVIDER: github
-    OAUTH_EMAIL_DOMAIN: "*"
-    OAUTH_ORGANIZATION: "*"
-    OAUTH2_PROXY_CLIENT_ID: ""
-    OAUTH2_PROXY_CLIENT_SECRET: ""
-    OAUTH2_PROXY_COOKIE_SECRET: ""
+    OAUTH_PROVIDER: 'github'
+    OAUTH_EMAIL_DOMAIN: '*'
+    OAUTH_ORGANIZATION: '*'
+    OAUTH2_PROXY_CLIENT_ID: ''
+    OAUTH2_PROXY_CLIENT_SECRET: ''
+    OAUTH2_PROXY_COOKIE_SECRET: ''
     OAUTH_DOCKER_IMAGE: quay.io/oauth2-proxy/oauth2-proxy:latest
     OAUTH_CONTAINER_PORT: 4180
-    AUTH_TYPE: basic
+    AUTH_TYPE: 'basic'
   environment:
     PORT: 9093
 manifests:

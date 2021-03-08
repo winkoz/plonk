@@ -28,10 +28,10 @@ metadata:
 spec:
   tls:
   - hosts: 
-    - {{.HOSTNAME}}
+    - {{.HOSTNAME | wrapInQuotes}}
     secretName: {{.WILDCARD_TLS_SECRET}}
   rules:
-  - host: {{.HOSTNAME}}
+  - host: {{.HOSTNAME | wrapInQuotes}}
     http:
       paths:
       - path: / 
@@ -41,7 +41,7 @@ spec:
             name: {{.NAME}}-{{.ENV}}-service
             port: 
               number: {{.SERVICE_PORT}}
-  - host: {{.WILDCARD_HOST}}
+  - host: {{.WILDCARD_HOST | wrapInQuotes}}
     http:
       paths:
       - path: / 
@@ -82,10 +82,10 @@ metadata:
 spec:
   tls:
     - hosts:
-      - {{.HOSTNAME}}
+      - {{.HOSTNAME | wrapInQuotes}}
       secretName: {{.NAME}}-{{.ENV}}-tls
   rules:
-  - host: {{.HOSTNAME}}
+  - host: {{.HOSTNAME | wrapInQuotes}}
     http:
       paths:
       - path: / 
@@ -109,14 +109,14 @@ metadata:
 spec:
   tls:
     - hosts:
-      - {{.HOSTNAME}}
+      - {{.HOSTNAME | wrapInQuotes}}
       {{ if (eq .USE_WILDCARD_TLS_CERTIFICATE "true") }}
       secretName: {{.WILDCARD_TLS_SECRET}}
       {{else}}
       secretName: {{.NAME}}-{{.ENV}}-tls
       {{end}}
   rules:
-  - host: {{.HOSTNAME}}
+  - host: {{.HOSTNAME | wrapInQuotes}}
     http:
       paths:
       - path: /oauth2
@@ -127,7 +127,7 @@ spec:
             port: 
               number: {{.OAUTH_CONTAINER_PORT}}
   {{ if (eq .USE_WILDCARD_TLS_CERTIFICATE "true") }}
-  - host: {{.WILDCARD_HOST}}
+  - host: {{.WILDCARD_HOST | wrapInQuotes}}
     http:
       paths:
       - path: /oauth2

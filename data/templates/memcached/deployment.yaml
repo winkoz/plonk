@@ -22,13 +22,13 @@ spec:
       - name: {{.NAME}}
         image: {{.DOCKER_IMAGE}}
         args:
-          - "-m {{.MB_MEMORY_STORAGE}}"
+          - '-m {{.MB_MEMORY_STORAGE}}'
         ports:
         - name: memcached
           containerPort: {{.CONTAINER_PORT}}
         env: {{range $k, $v := .ENVIRONMENT_VARIABLES}} 
           - name: {{$k}} 
-            value: "{{$v}}"
+            value: {{$v | wrapInQuotes}}
         {{end}}
       imagePullSecrets:
         - name: {{.DOCKER_IMAGE_PULL_SECRET}}

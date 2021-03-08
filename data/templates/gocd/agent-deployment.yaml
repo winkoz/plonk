@@ -50,7 +50,7 @@ spec:
             path: /usr/bin
       containers:
         - name: {{.NAME}}-{{.ENV}}-agent
-          image: "{{.AGENT_DOCKER_IMAGE}}"
+          image: {{.AGENT_DOCKER_IMAGE | wrapInQuotes}}
           resources:
             limits:
               cpu: {{.AGENT_CPU_LIMIT_MAX}}
@@ -64,7 +64,7 @@ spec:
             value: "https://{{.HOSTNAME}}/go"
           {{range $k, $v := .ENVIRONMENT_VARIABLES}}
           - name: {{$k}} 
-            value: "{{$v}}"
+            value: {{$v | wrapInQuotes}}
         {{end}}
         {{ if (eq .AGENT_AUTOREGISTER "true") }}
           - name: AGENT_AUTO_REGISTER_KEY
