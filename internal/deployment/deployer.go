@@ -14,7 +14,7 @@ import (
 
 // Deployer creates a manifest file from templates and executes it with the deploy command.
 type Deployer interface {
-	Execute(ctx config.Context, stackName string, dryRun bool) error
+	Execute(ctx config.Context, stackName string, tagName string, dryRun bool) error
 }
 
 type deployer struct {
@@ -41,7 +41,7 @@ func NewDeployer(ctx config.Context) Deployer {
 	}
 }
 
-func (d deployer) Execute(ctx config.Context, env string, dryRun bool) (err error) {
+func (d deployer) Execute(ctx config.Context, env string, tagName string, dryRun bool) (err error) {
 	signal := log.StartTrace("Execute")
 	defer log.StopTrace(signal, err)
 
@@ -50,6 +50,11 @@ func (d deployer) Execute(ctx config.Context, env string, dryRun bool) (err erro
 	// load variables
 	variables, err := d.varReader.GetVariablesFromFile(ctx.ProjectName, env)
 	log.Debugf("Loaded variables: %v", variables)
+
+	_, ok := variables.Build["DOCKER_IMAGE"]
+	if !ok {
+		variables.Build["DOCKER_IMAGE"] = tagName
+	}
 
 	// load secrets
 	secrets, err := d.secretsReader.GetSecretsFromFile(ctx.ProjectName, env)

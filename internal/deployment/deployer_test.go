@@ -105,7 +105,7 @@ variables:
 func (suite *DeployerTestSuite) TestExecute_ShouldCallOrchestratorDeploy() {
 	suite.setupHappyPath()
 	suite.setupIOServiceDelete()
-	assert.Nil(suite.T(), suite.sut.Execute(suite.ctx, suite.env, false))
+	assert.Nil(suite.T(), suite.sut.Execute(suite.ctx, suite.env, "tag", false))
 	suite.ioService.AssertNumberOfCalls(suite.T(), "DeletePath", 1)
 }
 
@@ -113,7 +113,7 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToLoadTheEnvir
 	expectedErr := errors.New("TestExecuteReadEnvTemplate")
 	suite.setupVariablesAndSecretsMocks(nil, nil)
 	suite.setupTemplateReader(nil, expectedErr)
-	err := suite.sut.Execute(suite.ctx, suite.env, false)
+	err := suite.sut.Execute(suite.ctx, suite.env, "tag", false)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
 	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
@@ -130,7 +130,7 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToReadManifest
 	suite.setupVariablesAndSecretsMocks(nil, nil)
 	suite.setupTemplateReader(td, nil)
 	suite.setupIOServiceReadFile(expectedErr)
-	err := suite.sut.Execute(suite.ctx, suite.env, false)
+	err := suite.sut.Execute(suite.ctx, suite.env, "tag", false)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
 	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
@@ -148,7 +148,7 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToParseManifes
 	suite.setupTemplateReader(td, nil)
 	suite.setupIOServiceReadFile(nil)
 	suite.setupTemplateParser(expectedErr)
-	err := suite.sut.Execute(suite.ctx, suite.env, false)
+	err := suite.sut.Execute(suite.ctx, suite.env, "tag", false)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
 	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
@@ -168,7 +168,7 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToWriteDeployF
 	suite.setupTemplateParser(nil)
 	suite.setupTemplateParser(nil)
 	suite.setupIOServiceWrite(expectedErr)
-	err := suite.sut.Execute(suite.ctx, suite.env, false)
+	err := suite.sut.Execute(suite.ctx, suite.env, "tag", false)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
 	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
@@ -189,7 +189,7 @@ func (suite *DeployerTestSuite) TestExecute_ShouldError_WhenUnableToExecuteTheDe
 	suite.setupTemplateParser(nil)
 	suite.setupIOServiceWrite(nil)
 	suite.setupOrchestrator(expectedErr)
-	err := suite.sut.Execute(suite.ctx, suite.env, false)
+	err := suite.sut.Execute(suite.ctx, suite.env, "tag", false)
 	assert.EqualError(suite.T(), err, expectedErr.Error())
 	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
@@ -203,7 +203,7 @@ func (suite *DeployerTestSuite) TestExecute_ShouldCallOrchestratorDiff_WhenDryRu
 		On("Diff", deployFullPath).
 		Once().
 		Return(nil)
-	assert.Nil(suite.T(), suite.sut.Execute(suite.ctx, suite.env, true))
+	assert.Nil(suite.T(), suite.sut.Execute(suite.ctx, suite.env, "tag", true))
 	suite.ioService.AssertNotCalled(suite.T(), "DeletePath")
 }
 

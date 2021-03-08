@@ -18,6 +18,7 @@ limitations under the License.
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/winkoz/plonk/internal/building"
 	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/deployment"
 	"github.com/winkoz/plonk/internal/io/log"
@@ -47,7 +48,16 @@ func newDeployCommandHandler() CobraHandler {
 			env = args[0]
 		}
 
+		builder := building.NewBuilder(ctx)
+
+		var tag string
+		tag, err = builder.Build(env)
+		if err != nil {
+			log.Errorf("Failed building current docker project %s - %s.", env, err)
+			return
+		}
+
 		d := deployment.NewDeployer(ctx)
-		d.Execute(ctx, env, false)
+		d.Execute(ctx, env, tag, false)
 	}
 }
