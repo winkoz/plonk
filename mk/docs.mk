@@ -1,6 +1,6 @@
 .PHONY: start-docs-server stop-docs-container debug-docs-container create-site docs-logs
 
-IMAGE=g0lden/mkdocs
+IMAGE=squidfunk/mkdocs-material
 WORK_DIR?=
 DETACHED=
 DOCS_DOCKER?=docker run -it --rm --mount type=bind,source=$(PWD)$(WORK_DIR),target=/src --workdir=/src --privileged $(DETACHED) -p 8000:8000 $(IMAGE)
@@ -15,11 +15,9 @@ create-site:
 
 start-docs-server:
 	@echo "\n🎬 Starting mkdocs container"
-	$(eval DETACHED=-d)
 	$(eval WORK_DIR=/plonk-docs)
-	$(DOCS_DOCKER) tail -f /dev/null 
-	$(DOCS_DOCKER_EXEC) mkdocs serve
-	$(MAKE) serve-docs
+	$(eval DETACHED=-d)
+	$(DOCS_DOCKER)
 	@echo "✅ Finished booting up mkdocs container\n"
 
 stop-docs-container:
