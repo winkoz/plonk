@@ -51,7 +51,7 @@ func newBuildCommandHandler() CobraHandler {
 
 		tag, err := builder.Build(env)
 		if err != nil {
-			log.Errorf("Failed building current docker project %s.", env, err)
+			log.Errorf("Failed building current docker project %s - %s.", env, err)
 			return
 		}
 		log.Infof("Build tag: %s", tag)
