@@ -67,6 +67,22 @@ func (suite *DockerTestSuite) TestBuild_ShouldCallDockerBuildWithTagArgs() {
 	assert.Nil(suite.T(), err)
 }
 
+func (suite *DockerTestSuite) TestBuild_ShouldFailIfTheCLICommandFailed() {
+	tagName := fmt.Sprintf("%s/%s:%s", suite.ctx.Registry, suite.ctx.ProjectName, "madeup-tag")
+	dockerErr := fmt.Errorf("this is an error")
+	args := []string{
+		"build",
+		"--no-cache",
+		"--tag",
+		tagName,
+		".",
+	}
+	suite.setupExecutor(args, nil, dockerErr)
+	err := suite.sat.Build(tagName, false)
+	suite.verifyExecutor(args)
+	assert.Error(suite.T(), err)
+}
+
 func TestDockerTestSuite(t *testing.T) {
 	suite.Run(t, new(DockerTestSuite))
 }

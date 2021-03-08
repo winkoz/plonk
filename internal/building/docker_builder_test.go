@@ -50,7 +50,7 @@ func (suite *BuilderTestSuite) TestBuild_ShouldSuccessfully() {
 	assert.Equal(suite.T(), tagName, head)
 }
 
-func (suite *BuilderTestSuite) TestBuild_FailsWhenVersionControlErrors() {
+func (suite *BuilderTestSuite) TestBuild_ShouldFailWhenVersionControlErrors() {
 	uuid := "thisisavalidheads"
 	errorMessage := "this is an error message"
 	suite.setupFailVersionControlPath(uuid, errorMessage)
