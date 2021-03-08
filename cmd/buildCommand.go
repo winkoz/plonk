@@ -42,7 +42,7 @@ func newBuildCommandHandler() CobraHandler {
 			log.Fatal(err)
 		}
 
-		env := defaultDeployEnvironment
+		env := defaultEnvironment
 		if len(args) == 1 {
 			env = args[0]
 		}
