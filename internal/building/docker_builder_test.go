@@ -41,12 +41,29 @@ func (suite *BuilderTestSuite) SetupTest() {
 // Tests
 //-------------------------------------------------
 
-func (suite *BuilderTestSuite) TestExecute_ShouldCallOrchestratorDeploy() {
+func (suite *BuilderTestSuite) TestBuild_ShouldSuccessfully() {
 	uuid := "thisisavalidheads"
+	tagName := fmt.Sprintf("%s/%s:%s-%s", suite.ctx.Registry, suite.ctx.ProjectName, suite.env, uuid)
 	suite.setupHappyPath(uuid)
 	head, err := suite.sut.Build(suite.env)
 	assert.Nil(suite.T(), err)
-	assert.Equal(suite.T(), uuid, head)
+	assert.Equal(suite.T(), tagName, head)
+}
+
+func (suite *BuilderTestSuite) TestBuild_FailsWhenVersionControlErrors() {
+	uuid := "thisisavalidheads"
+	errorMessage := "this is an error message"
+	suite.setupFailVersionControlPath(uuid, errorMessage)
+	_, err := suite.sut.Build(suite.env)
+	assert.Error(suite.T(), err)
+}
+
+func (suite *BuilderTestSuite) TestBuild_FailsWhenBuildCommandErrors() {
+	uuid := "thisisavalidheads"
+	errorMessage := "this is an error message"
+	suite.setupFailBuildPath(uuid, errorMessage)
+	_, err := suite.sut.Build(suite.env)
+	assert.Error(suite.T(), err)
 }
 
 func TestDeployerTestSuite(t *testing.T) {
@@ -69,4 +86,16 @@ func (suite *BuilderTestSuite) setupHappyPath(uuid string) {
 	tagName := fmt.Sprintf("%s/%s:%s-%s", suite.ctx.Registry, suite.ctx.ProjectName, suite.env, uuid)
 	suite.setupVersionControlCommand(uuid, nil)
 	suite.setupBuildCommand(tagName, true, nil)
+}
+
+func (suite *BuilderTestSuite) setupFailVersionControlPath(uuid string, errorMessage string) {
+	err := fmt.Errorf(errorMessage)
+	suite.setupVersionControlCommand(uuid, err)
+}
+
+func (suite *BuilderTestSuite) setupFailBuildPath(uuid string, errorMessage string) {
+	tagName := fmt.Sprintf("%s/%s:%s-%s", suite.ctx.Registry, suite.ctx.ProjectName, suite.env, uuid)
+	err := fmt.Errorf(errorMessage)
+	suite.setupVersionControlCommand(uuid, nil)
+	suite.setupBuildCommand(tagName, true, err)
 }
