@@ -1,3 +1,5 @@
+include mk/docs.mk
+
 PROJECT_NAME=winkoz-plonk
 VERSION=$(shell git rev-parse --short HEAD)
 TAG=winkoz/plonk:$(VERSION)
