@@ -31,6 +31,7 @@ func Execute() {
 	addDiffCommand(rootCmd)
 	addShowCommand(rootCmd)
 	addLogsCommand(rootCmd)
+	addRestartCommand(rootCmd)
 
 	// Execute
 	if err := rootCmd.Execute(); err != nil {
