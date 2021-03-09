@@ -5,7 +5,7 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: grafana
+    component: {{.COMPONENT}}
 spec:
   replicas: {{.REPLICAS}}
   revisionHistoryLimit: {{.REVISION_HISTORY_LIMIT}}
@@ -14,13 +14,13 @@ spec:
   selector:
     matchLabels:
       app: {{.NAME}}-{{.ENV}}
-      component: grafana
+      component: {{.COMPONENT}}
   template:
     metadata:
       namespace: {{.NAME}}-{{.ENV}}
       labels:
         app: {{.NAME}}-{{.ENV}}
-        component: grafana
+        component: {{.COMPONENT}}
     spec:
       serviceAccountName: {{.NAME}}-{{.ENV}}-service-account
       securityContext:

@@ -7,7 +7,7 @@ metadata:
   name: {{$.NAME}}-{{$.ENV}}-dashboards-{{$dashboardMap.provider}}-config-map
   labels:
     app: {{$.NAME}}-{{$.ENV}}
-    component: grafana
+    component: {{.COMPONENT}}
     dashboard-provider: {{$dashboardMap.provider}}
     {{$.SIDECAR_WATCH_LABEL}}: {{$.SIDECAR_WATCH_LABEL}}
 data:

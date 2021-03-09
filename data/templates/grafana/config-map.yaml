@@ -5,7 +5,7 @@ metadata:
   name: {{.NAME}}-{{.ENV}}-config-map
   labels:
     app: {{.NAME}}-{{.ENV}}
-    component: grafana
+    component: {{.COMPONENT}}
 data:
   {{if .GRAFANA_PLUGINS}}plugins: {{.GRAFANA_PLUGINS}}{{end}}
   grafana.ini: |+

@@ -11,6 +11,7 @@ variables:
     REPLICAS: 1
     REVISION_HISTORY_LIMIT: 10
     ORG_ID: 1
+    COMPONENT: grafana
 
     #################################################
     # PVC data storage variables
