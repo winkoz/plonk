@@ -27,12 +27,6 @@ func (oc *OrchestratorCommandMock) Diff(manifestPath string) error {
 	return args.Error(0)
 }
 
-// Show …
-func (oc *OrchestratorCommandMock) Show(env string) error {
-	args := oc.Called(env)
-	return args.Error(0)
-}
-
 // GetPods …
 func (oc *OrchestratorCommandMock) GetPods(namespace string) ([]byte, error) {
 	args := oc.Called(namespace)
@@ -42,5 +36,11 @@ func (oc *OrchestratorCommandMock) GetPods(namespace string) ([]byte, error) {
 // GetLogs …
 func (oc *OrchestratorCommandMock) GetLogs(namespace string, component *string) ([]byte, error) {
 	args := oc.Called(namespace, component)
+	return args.Get(0).([]byte), args.Error(1)
+}
+
+// Restart …
+func (oc *OrchestratorCommandMock) Restart(namespace string, deploymentName string) ([]byte, error) {
+	args := oc.Called(namespace, deploymentName)
 	return args.Get(0).([]byte), args.Error(1)
 }
