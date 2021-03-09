@@ -15,15 +15,16 @@ import (
 
 type KubectlTestSuite struct {
 	suite.Suite
-	executor      *sharedtesting.ExecutorMock
-	ctx           config.Context
-	deployCommand string
-	env           string
-	namespace     string
-	component     *string
-	manifestPath  string
-	targetPath    string
-	sat           kubectlCommand
+	executor       *sharedtesting.ExecutorMock
+	ctx            config.Context
+	deployCommand  string
+	env            string
+	namespace      string
+	deploymentName string
+	component      *string
+	manifestPath   string
+	targetPath     string
+	sat            kubectlCommand
 }
 
 func (suite *KubectlTestSuite) SetupTest() {
@@ -38,6 +39,7 @@ func (suite *KubectlTestSuite) SetupTest() {
 		ProjectName:   "Plonk-KubeCtl-Test",
 	}
 	suite.namespace = fmt.Sprintf("%s-%s", suite.ctx.ProjectName, suite.env)
+	suite.deploymentName = fmt.Sprintf("%s-%s-deployment", suite.ctx.ProjectName, suite.env)
 	suite.component = nil
 	suite.sat = kubectlCommand{
 		executor:     suite.executor,
@@ -183,6 +185,32 @@ func (suite *KubectlTestSuite) TestGetLogs_ShouldReturnAnError_WhenExecutorFails
 
 func TestKubectlTestSuite(t *testing.T) {
 	suite.Run(t, new(KubectlTestSuite))
+}
+
+//----- Restart Tests
+
+func (suite *KubectlTestSuite) TestRestart_ShouldCallExecutorWithRestartCommand() {
+	args := []string{"--namespace", suite.namespace, "rollout", "restart", "deployment", suite.deploymentName}
+	suite.setupExecutor(args, nil, nil)
+	_, err := suite.sat.Restart(suite.namespace, suite.deploymentName)
+	suite.verifyExecutor(args)
+	assert.Nil(suite.T(), err)
+}
+
+func (suite *KubectlTestSuite) TestRestart_ShouldForwardOutputFromExecutor_WhenExecutorSucceeds() {
+	args := []string{"--namespace", suite.namespace, "rollout", "restart", "deployment", suite.deploymentName}
+	expectedOutput := []byte(suite.T().Name())
+	suite.setupExecutor(args, expectedOutput, nil)
+	gotOutput, err := suite.sat.Restart(suite.namespace, suite.deploymentName)
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), string(expectedOutput), string(gotOutput))
+}
+
+func (suite *KubectlTestSuite) TestRestart_ShouldReturnAnError_WhenExecutorFails() {
+	expectedErr := errors.New(suite.T().Name())
+	suite.setupExecutor([]string{"--namespace", suite.namespace, "rollout", "restart", "deployment", suite.deploymentName}, nil, expectedErr)
+	_, gotErr := suite.sat.Restart(suite.namespace, suite.deploymentName)
+	assert.EqualError(suite.T(), gotErr, expectedErr.Error())
 }
 
 //-------------------------------------------------

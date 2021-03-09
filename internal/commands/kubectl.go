@@ -30,10 +30,6 @@ func (k kubectlCommand) Diff(manifestPath string) error {
 	return err
 }
 
-func (k kubectlCommand) Show(env string) error {
-	return nil
-}
-
 func (k kubectlCommand) GetPods(namespace string) ([]byte, error) {
 	return k.executeCommand("GetPods", "get", "pods", "--namespace", namespace, "-o", "json")
 }
@@ -48,6 +44,10 @@ func (k kubectlCommand) GetLogs(namespace string, component *string) ([]byte, er
 	}
 
 	return k.executeCommand("GetLogs", args...)
+}
+
+func (k kubectlCommand) Restart(namespace string, deploymentName string) ([]byte, error) {
+	return k.executeCommand("Restart", "--namespace", namespace, "rollout", "restart", "deployment", deploymentName)
 }
 
 func (k kubectlCommand) executeCommand(logName string, args ...string) (output []byte, err error) {
