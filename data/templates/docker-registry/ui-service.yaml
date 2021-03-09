@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.NAME}}-{{.ENV}}-ui-service
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: {{.COMPONENT}}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{.UI_SERVICE_PORT}}
+    targetPort: {{.UI_SERVICE_PORT}}
+  selector:
+    app: {{.NAME}}-{{.ENV}}
