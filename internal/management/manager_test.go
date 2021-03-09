@@ -19,6 +19,7 @@ type ManagerTestSuite struct {
 	orchestratorCommand *sharedtesting.OrchestratorCommandMock
 	renderer            *sharedtesting.RendererMock
 	namespace           string
+	deploymentName      string
 	component           *string
 	sut                 Manager
 }
@@ -30,6 +31,7 @@ func (suite *ManagerTestSuite) SetupTest() {
 		ProjectName: "Manager-GetPods-Test",
 	}
 	suite.namespace = fmt.Sprintf("%s-%s", suite.ctx.ProjectName, suite.env)
+	suite.deploymentName = fmt.Sprintf("%s-%s-deployment", suite.ctx.ProjectName, suite.env)
 	suite.component = nil
 	suite.renderer = new(sharedtesting.RendererMock)
 	suite.sut = manager{
@@ -118,6 +120,29 @@ func (suite *ManagerTestSuite) TestGetLogs_ShouldError_WhenOrchestratorFailsToEx
 	_, gotErr := suite.sut.GetLogs(suite.env, suite.component)
 	assert.EqualError(suite.T(), gotErr, expectedErr.Error())
 }
+
+//----- Restart Tests
+
+func (suite *ManagerTestSuite) TestRestart_ShouldCallOrchestratorRestart() {
+	suite.orchestratorCommand.
+		On("Restart", suite.namespace, suite.deploymentName).
+		Once().
+		Return(make([]byte, 0), nil)
+	_, _ = suite.sut.Restart(suite.ctx, suite.env)
+	assert.True(suite.T(), suite.orchestratorCommand.AssertCalled(suite.T(), "Restart", suite.namespace, suite.deploymentName))
+}
+
+func (suite *ManagerTestSuite) TestRestart_ShouldError_WhenOrchestratorFailsToExecuteCommand() {
+	expectedErr := errors.New("kubectl error restarting deployment")
+	suite.orchestratorCommand.
+		On("Restart", suite.namespace, suite.deploymentName).
+		Once().
+		Return(make([]byte, 0), expectedErr)
+	_, gotErr := suite.sut.Restart(suite.ctx, suite.env)
+	assert.EqualError(suite.T(), gotErr, expectedErr.Error())
+}
+
+//---- Suite
 
 func TestManagerTestSuite(t *testing.T) {
 	suite.Run(t, new(ManagerTestSuite))

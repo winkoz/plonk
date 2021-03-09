@@ -96,6 +96,10 @@ func (d deployer) Execute(ctx config.Context, env string, dryRun bool) (err erro
 	return nil
 }
 
+// *************************************************************************************
+// Private methods
+// *************************************************************************************
+
 func (d deployer) environmentTemplates(env string) ([]scaffolding.TemplateData, error) {
 	templateNames := []string{}
 	if desiredEnv := d.ctx.Environments[env]; desiredEnv != nil {
