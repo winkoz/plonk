@@ -1,0 +1,28 @@
+dev_addr: 0.0.0.0:8000
+site_name: Plonk! documentation
+repo_name: plonk
+repo_url: https://github.com/winkoz/plonk
+
+site_name: Plonk! Documentation
+
+plugins:
+  - search
+  # - git-revision-date-localized:
+      # type: date
+      # fallback_to_build_date: true
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.details
+  - toc:
+      permalink: "#"
+
+theme:
+  name: material
+  logo: 'images/plonk-logo.svg'
+  features:
+    - tabs
