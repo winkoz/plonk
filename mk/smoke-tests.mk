@@ -1,5 +1,5 @@
 
-.PHONY: smoke-tests smoke-test start-tests-container stop-tests-container debug-tests-container
+.PHONY: smoke-tests smoke-test start-tests-container stop-tests-container debug-tests-container tests-container-logs
 
 TESTS_IMAGE_NAME=smoke-tests:local-dev
 TESTS_CONTAINER_ID?=$(shell docker container ls | grep smoke-tests | awk '{print $$1}')
@@ -20,7 +20,7 @@ smoke-tests: tests-docker-container
 	$(MAKE) stop-tests-container
 
 smoke-test:
-	@echo "\t🏋️‍♀️ Testing "$(TEST)" in container: $(TESTS_CONTAINER_ID)"
+	@echo "\t🏋️‍♀️ Testing \"$(TEST)\" in container: $(TESTS_CONTAINER_ID)"
 	smoke-test/scripts/run-smoke-test.sh $(TEST)
 	@echo "\t✅ Done testing init\n"
 
@@ -38,3 +38,6 @@ stop-tests-container:
 
 debug-tests-container:
 	docker exec --privileged -it `docker container ls | grep smoke-tests | awk '{print $$1}'` /bin/bash
+
+tests-container-logs:
+	docker logs --follow $(TESTS_CONTAINER_ID)
