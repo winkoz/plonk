@@ -1,8 +1,0 @@
-name: deploy-test
-command: docker exec 7b0d22c39586 kubectl
-templates: ~/.templates
-environments:
-  base:
-    - http-service
-  production:
-    - http-service

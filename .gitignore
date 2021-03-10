@@ -53,4 +53,7 @@ Temporary Items
 test
 data/data.go
 unit-tests.xml
+
+# smoke tests
 smoke-test/**/plonk.yaml
+smoke-test/**/deploy/deploy.yaml
