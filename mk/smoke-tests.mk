@@ -1,5 +1,5 @@
 
-.PHONY: tests-docker-container smoke-tests smoke-test start-tests-container stop-tests-container debug-tests-container
+.PHONY: smoke-tests smoke-test start-tests-container stop-tests-container debug-tests-container
 
 TESTS_IMAGE_NAME=smoke-tests:local-dev
 TESTS_CONTAINER_ID?=$(shell docker container ls | grep smoke-tests | awk '{print $$1}')
@@ -13,20 +13,22 @@ tests-docker-container:
 	@echo "✅ Finished creating 'kind' 🐳 Docker Image\n"
 
 smoke-tests: tests-docker-container 
+	$(MAKE) start-tests-container
 	@echo "\n🏃‍♂️ Starting 💨 Smoke tests"
 	$(MAKE) smoke-test TEST=deploy-test
 	@echo "✅ Done running 💨 Smoke tests\n"
+	$(MAKE) stop-tests-container
 
 smoke-test:
-	$(MAKE) start-tests-container TEST=$(TEST)
-	@echo "\t🏋️‍♀️ Testing deploy in container: $(TESTS_CONTAINER_ID)"
-	# smoke-test/scripts/run-smoke-test.sh $(TEST)
+	@echo "\t🏋️‍♀️ Testing "$(TEST)" in container: $(TESTS_CONTAINER_ID)"
+	smoke-test/scripts/run-smoke-test.sh $(TEST)
 	@echo "\t✅ Done testing init\n"
-	# $(MAKE) stop-tests-container
 
 start-tests-container:
 	@echo "\n🎬 Starting tests container"
-	docker run --mount type=bind,source=$(PWD)/smoke-test/$(TEST),target=/app -d --privileged $(TESTS_IMAGE_NAME) 
+	rm -rf $(PWD)/smoke-test/sandbox
+	mkdir $(PWD)/smoke-test/sandbox
+	docker run --mount type=bind,source=$(PWD)/smoke-test/sandbox,target=/app -d --privileged $(TESTS_IMAGE_NAME) 
 	@echo "✅ Finished booting up test container\n"
 
 stop-tests-container:

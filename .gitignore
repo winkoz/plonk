@@ -57,3 +57,4 @@ unit-tests.xml
 # smoke tests
 smoke-test/**/plonk.yaml
 smoke-test/**/deploy/deploy.yaml
+smoke-test/sandbox/.
