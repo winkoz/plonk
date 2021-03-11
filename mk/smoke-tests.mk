@@ -12,7 +12,7 @@ tests-docker-container:
 	cd ..
 	@echo "✅ Finished creating 'kind' 🐳 Docker Image\n"
 
-smoke-tests: tests-docker-container 
+smoke-tests:  
 	$(MAKE) start-tests-container
 	@echo "\n🏃‍♂️ Starting 💨 Smoke tests"
 	$(MAKE) smoke-test TEST=deploy-test
@@ -24,7 +24,7 @@ smoke-test:
 	smoke-test/scripts/run-smoke-test.sh $(TEST)
 	@echo "\t✅ Done testing init\n"
 
-start-tests-container:
+start-tests-container: tests-docker-container
 	@echo "\n🎬 Starting tests container"
 	rm -rf $(PWD)/smoke-test/sandbox
 	mkdir $(PWD)/smoke-test/sandbox

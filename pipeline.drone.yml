@@ -39,6 +39,11 @@ steps:
     - name: cache
       path: /cache
 
+  - name: smoke-Tests
+    image: docker:20.10.5-dind
+    commands:
+    - make smoke-tests
+
 volumes:
 - name: cache
   host:
