@@ -37,6 +37,16 @@ func (d dockerCommand) Build(tagName string, isLatest bool) error {
 	return err
 }
 
+func (d dockerCommand) Push(tagName string) error {
+	// Docker command line arguments
+	args := []string{
+		"push",
+		tagName,
+	}
+	_, err := d.executeCommand("Push", args...)
+	return err
+}
+
 func (d dockerCommand) executeCommand(logName string, args ...string) (output []byte, err error) {
 	signal := log.StartTrace(logName)
 	defer log.StopTrace(signal, err)

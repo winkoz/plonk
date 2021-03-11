@@ -50,7 +50,7 @@ func (suite *DockerTestSuite) SetupTest() {
 // Tests
 //-------------------------------------------------
 
-//----- Deploy Tests
+//----- Build Tests
 
 func (suite *DockerTestSuite) TestBuild_ShouldCallDockerBuildWithTagArgs() {
 	tagName := fmt.Sprintf("%s/%s:%s", suite.ctx.Registry, suite.ctx.ProjectName, "madeup-tag")
@@ -79,6 +79,33 @@ func (suite *DockerTestSuite) TestBuild_ShouldFailIfTheCLICommandFailed() {
 	}
 	suite.setupExecutor(args, nil, dockerErr)
 	err := suite.sat.Build(tagName, false)
+	suite.verifyExecutor(args)
+	assert.Error(suite.T(), err)
+}
+
+//----- Push Tests
+
+func (suite *DockerTestSuite) TestPush_ShouldCallDockerPushWithTagArgs() {
+	tagName := fmt.Sprintf("%s/%s:%s", suite.ctx.Registry, suite.ctx.ProjectName, "madeup-tag")
+	args := []string{
+		"push",
+		tagName,
+	}
+	suite.setupExecutor(args, nil, nil)
+	err := suite.sat.Push(tagName)
+	suite.verifyExecutor(args)
+	assert.Nil(suite.T(), err)
+}
+
+func (suite *DockerTestSuite) TestPush_ShouldFailIfTheCLICommandFailed() {
+	tagName := fmt.Sprintf("%s/%s:%s", suite.ctx.Registry, suite.ctx.ProjectName, "madeup-tag")
+	dockerErr := fmt.Errorf("this is an error")
+	args := []string{
+		"push",
+		tagName,
+	}
+	suite.setupExecutor(args, nil, dockerErr)
+	err := suite.sat.Push(tagName)
 	suite.verifyExecutor(args)
 	assert.Error(suite.T(), err)
 }

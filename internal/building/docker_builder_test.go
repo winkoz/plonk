@@ -41,7 +41,7 @@ func (suite *BuilderTestSuite) SetupTest() {
 // Tests
 //-------------------------------------------------
 
-func (suite *BuilderTestSuite) TestBuild_ShouldSuccessfully() {
+func (suite *BuilderTestSuite) TestBuild_ShouldExecuteSuccessfully() {
 	uuid := "thisisavalidheads"
 	tagName := fmt.Sprintf("%s/%s:%s-%s", suite.ctx.Registry, suite.ctx.ProjectName, suite.env, uuid)
 	suite.setupHappyPath(uuid)
@@ -66,6 +66,14 @@ func (suite *BuilderTestSuite) TestBuild_FailsWhenBuildCommandErrors() {
 	assert.Error(suite.T(), err)
 }
 
+func (suite *BuilderTestSuite) Test_FailsWhenBuildCommandErrors() {
+	uuid := "thisisavalidheads"
+	errorMessage := "this is an error message"
+	suite.setupFailPushPath(uuid, errorMessage)
+	_, err := suite.sut.Build(suite.env)
+	assert.Error(suite.T(), err)
+}
+
 func TestDeployerTestSuite(t *testing.T) {
 	suite.Run(t, new(BuilderTestSuite))
 }
@@ -82,10 +90,15 @@ func (suite *BuilderTestSuite) setupBuildCommand(tagName string, isLatest bool, 
 	suite.buildCommand.On("Build", tagName, isLatest).Return(err)
 }
 
+func (suite *BuilderTestSuite) setupPushCommand(tagName string, err error) {
+	suite.buildCommand.On("Push", tagName).Return(err)
+}
+
 func (suite *BuilderTestSuite) setupHappyPath(uuid string) {
 	tagName := fmt.Sprintf("%s/%s:%s-%s", suite.ctx.Registry, suite.ctx.ProjectName, suite.env, uuid)
 	suite.setupVersionControlCommand(uuid, nil)
-	suite.setupBuildCommand(tagName, true, nil)
+	suite.setupBuildCommand(tagName, false, nil)
+	suite.setupPushCommand(tagName, nil)
 }
 
 func (suite *BuilderTestSuite) setupFailVersionControlPath(uuid string, errorMessage string) {
@@ -97,5 +110,13 @@ func (suite *BuilderTestSuite) setupFailBuildPath(uuid string, errorMessage stri
 	tagName := fmt.Sprintf("%s/%s:%s-%s", suite.ctx.Registry, suite.ctx.ProjectName, suite.env, uuid)
 	err := fmt.Errorf(errorMessage)
 	suite.setupVersionControlCommand(uuid, nil)
-	suite.setupBuildCommand(tagName, true, err)
+	suite.setupBuildCommand(tagName, false, err)
+}
+
+func (suite *BuilderTestSuite) setupFailPushPath(uuid string, errorMessage string) {
+	tagName := fmt.Sprintf("%s/%s:%s-%s", suite.ctx.Registry, suite.ctx.ProjectName, suite.env, uuid)
+	err := fmt.Errorf(errorMessage)
+	suite.setupVersionControlCommand(uuid, nil)
+	suite.setupBuildCommand(tagName, false, nil)
+	suite.setupPushCommand(tagName, err)
 }
