@@ -23,7 +23,7 @@ func (b dockerBuilder) Build(stackName string) (string, error) {
 	}
 
 	tagName := fmt.Sprintf("%s/%s:%s-%s", b.ctx.Registry, b.ctx.ProjectName, stackName, uuid)
-	err = b.buildCommand.Build(tagName, false)
+	err = b.buildCommand.Build(tagName)
 
 	if err == nil {
 		err = b.buildCommand.Push(tagName)

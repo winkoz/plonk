@@ -10,8 +10,8 @@ type BuildCommandMock struct {
 }
 
 // Build …
-func (oc *BuildCommandMock) Build(namespace string, isLatest bool) error {
-	args := oc.Called(namespace, isLatest)
+func (oc *BuildCommandMock) Build(namespace string) error {
+	args := oc.Called(namespace)
 	return args.Error(0)
 }
 

@@ -62,7 +62,7 @@ func (suite *DockerTestSuite) TestBuild_ShouldCallDockerBuildWithTagArgs() {
 		".",
 	}
 	suite.setupExecutor(args, nil, nil)
-	err := suite.sat.Build(tagName, false)
+	err := suite.sat.Build(tagName)
 	suite.verifyExecutor(args)
 	assert.Nil(suite.T(), err)
 }
@@ -78,7 +78,7 @@ func (suite *DockerTestSuite) TestBuild_ShouldFailIfTheCLICommandFailed() {
 		".",
 	}
 	suite.setupExecutor(args, nil, dockerErr)
-	err := suite.sat.Build(tagName, false)
+	err := suite.sat.Build(tagName)
 	suite.verifyExecutor(args)
 	assert.Error(suite.T(), err)
 }

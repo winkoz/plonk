@@ -14,15 +14,11 @@ type dockerCommand struct {
 	ctx          config.Context
 }
 
-func (d dockerCommand) Build(tagName string, isLatest bool) error {
+func (d dockerCommand) Build(tagName string) error {
 	// We build with a unique tag and if specified the latest
 	tags := []string{
 		"--tag",
 		tagName,
-	}
-	if isLatest {
-		tags = append(tags, "--tag")
-		tags = append(tags, "latest")
 	}
 
 	// Docker command line arguments

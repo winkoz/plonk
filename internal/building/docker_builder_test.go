@@ -86,8 +86,8 @@ func (suite *BuilderTestSuite) setupVersionControlCommand(uuid string, err error
 	suite.versionControlCommand.On("Head").Return(uuid, err)
 }
 
-func (suite *BuilderTestSuite) setupBuildCommand(tagName string, isLatest bool, err error) {
-	suite.buildCommand.On("Build", tagName, isLatest).Return(err)
+func (suite *BuilderTestSuite) setupBuildCommand(tagName string, err error) {
+	suite.buildCommand.On("Build", tagName).Return(err)
 }
 
 func (suite *BuilderTestSuite) setupPushCommand(tagName string, err error) {
@@ -97,7 +97,7 @@ func (suite *BuilderTestSuite) setupPushCommand(tagName string, err error) {
 func (suite *BuilderTestSuite) setupHappyPath(uuid string) {
 	tagName := fmt.Sprintf("%s/%s:%s-%s", suite.ctx.Registry, suite.ctx.ProjectName, suite.env, uuid)
 	suite.setupVersionControlCommand(uuid, nil)
-	suite.setupBuildCommand(tagName, false, nil)
+	suite.setupBuildCommand(tagName, nil)
 	suite.setupPushCommand(tagName, nil)
 }
 
@@ -110,13 +110,13 @@ func (suite *BuilderTestSuite) setupFailBuildPath(uuid string, errorMessage stri
 	tagName := fmt.Sprintf("%s/%s:%s-%s", suite.ctx.Registry, suite.ctx.ProjectName, suite.env, uuid)
 	err := fmt.Errorf(errorMessage)
 	suite.setupVersionControlCommand(uuid, nil)
-	suite.setupBuildCommand(tagName, false, err)
+	suite.setupBuildCommand(tagName, err)
 }
 
 func (suite *BuilderTestSuite) setupFailPushPath(uuid string, errorMessage string) {
 	tagName := fmt.Sprintf("%s/%s:%s-%s", suite.ctx.Registry, suite.ctx.ProjectName, suite.env, uuid)
 	err := fmt.Errorf(errorMessage)
 	suite.setupVersionControlCommand(uuid, nil)
-	suite.setupBuildCommand(tagName, false, nil)
+	suite.setupBuildCommand(tagName, nil)
 	suite.setupPushCommand(tagName, err)
 }
