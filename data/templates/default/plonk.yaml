@@ -1,6 +1,6 @@
 name: {{.NAME}}
 command: kubectl
-registry: {{.NAME}}
+registry: registry.hub.docker.com
 templates: ~/.templates
 environments:
   base:
