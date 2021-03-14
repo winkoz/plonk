@@ -19,6 +19,7 @@ type PlonkConfigFile struct {
 func loadPlonkConfigFile(ioService io.Service, filePath string) (PlonkConfigFile, error) {
 	config := PlonkConfigFile{
 		Command:      deployDeployCommand,
+		Registry:     registryDefaultValue,
 		TemplatesDir: defaultCustomTemplatesPath,
 	}
 

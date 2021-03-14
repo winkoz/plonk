@@ -37,7 +37,7 @@ func NewContext(projectName string) (Context, error) {
 	return Context{
 		// Project Config
 		ProjectName:   projectName,
-		Registry:      projectName,
+		Registry:      registryDefaultValue,
 		DeployCommand: deployDeployCommand,
 		BuildCommand:  deployBuildCommand,
 
