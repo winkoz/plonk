@@ -17,6 +17,8 @@ limitations under the License.
 */
 
 import (
+	"strconv"
+
 	"github.com/spf13/cobra"
 	"github.com/winkoz/plonk/internal/building"
 	"github.com/winkoz/plonk/internal/config"
@@ -33,6 +35,9 @@ func addDeployCommand(rootCmd *cobra.Command) {
 		Args:    cobra.MaximumNArgs(1),
 	}
 
+	skipBuild := false
+	deployCmd.Flags().BoolVarP(&skipBuild, "skip-build-n-publish", "", false, "skip docker build step")
+
 	rootCmd.AddCommand(deployCmd)
 }
 
@@ -48,15 +53,35 @@ func newDeployCommandHandler() CobraHandler {
 			env = args[0]
 		}
 
-		builder := building.NewBuilder(ctx)
-
-		var tag string
-		tag, err = builder.Build(env)
+		tag := ""
+		skipBuildNPublishFlag := cmd.Flags().Lookup("skip-build-n-publish")
+		skipBuildNPublish, err := strconv.ParseBool(skipBuildNPublishFlag.Value.String())
 		if err != nil {
-			log.Errorf("Failed building current docker project %s - %s.", env, err)
+			log.Errorf("Failed reading skip-build-n-publish flag %s.", err)
 			return
 		}
 
+		if skipBuildNPublish {
+			log.Info("skipping build and publish procedures")
+		} else {
+			builder := building.NewBuilder(ctx)
+
+			// Build current docker project & create a tag for the deploy
+			tag, err = builder.Build(env)
+			if err != nil {
+				log.Errorf("Failed building current docker project %s - %s.", env, err)
+				return
+			}
+
+			// Publish the tag to the docker repository
+			err = builder.Publish(tag)
+			if err != nil {
+				log.Errorf("Failed publishing tag %s %s - %s.", tag, env, err)
+				return
+			}
+		}
+
+		//Deploy the tag
 		d := deployment.NewDeployer(ctx)
 		d.Execute(ctx, env, tag, false)
 	}

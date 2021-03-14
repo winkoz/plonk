@@ -51,8 +51,7 @@ func (d deployer) Execute(ctx config.Context, env string, tagName string, dryRun
 	variables, err := d.varReader.GetVariablesFromFile(ctx.ProjectName, env)
 	log.Debugf("Loaded variables: %v", variables)
 
-	_, ok := variables.Build["DOCKER_IMAGE"]
-	if !ok {
+	if tagName != "" {
 		variables.Build["DOCKER_IMAGE"] = tagName
 	}
 
