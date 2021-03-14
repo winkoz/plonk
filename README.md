@@ -140,7 +140,7 @@ $ plonk show
 ...
 ```
 
-If you want to skip the docker build and publish steps you can execute the command with the flag `--skip-build-n-publish`
+If you want to skip the docker build and publish steps you can execute the command with the flag `--skip-build-n-publish` in which case the of `DOCKER_IMAGE` in the templates won't be replaced:
 
 ```console
 $ plonk deploy --skip-build-n-publish
