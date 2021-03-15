@@ -6,9 +6,9 @@ TESTS_CONTAINER_ID?=$(shell docker container ls | grep smoke-tests | awk '{print
 PWD=$(shell pwd)
 
 tests-docker-container: 
-	# $(MAKE) build 
+	$(MAKE) build 
 	@echo "\n🛠 Building 'kind' 🐳 Docker Image"
-	cd smoke-test && cp ../bin/plonk . && docker build . -t $(TESTS_IMAGE_NAME)--privileged -f Dockerfile.kind
+	cd smoke-test && cp ../bin/plonk . && docker build . -t $(TESTS_IMAGE_NAME) -f Dockerfile.kind
 	cd ..
 	@echo "✅ Finished creating 'kind' 🐳 Docker Image\n"
 
