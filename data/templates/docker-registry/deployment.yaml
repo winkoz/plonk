@@ -47,6 +47,8 @@ spec:
         - name: auth
           mountPath: {{.REGISTRY_HTPASSWD_PATH}}
           readOnly: true
+        - name: config
+          mountPath: "/etc/docker/registry"
       volumes:
       - name: data
         persistentVolumeClaim:
@@ -57,5 +59,8 @@ spec:
           items:
             - key: htpasswd
               path: htpasswd
+      - name: config
+        configMap:
+          name: {{.NAME}}-{{.ENV}}-config
 
           

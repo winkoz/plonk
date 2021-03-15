@@ -1,0 +1,33 @@
+{{if (eq .DEPLOY_UI "true")}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.NAME}}-{{.ENV}}-ui-deployment
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: {{.COMPONENT}}
+spec:
+  replicas: {{.REPLICAS}}
+  selector:
+    matchLabels:
+      app: {{.NAME}}-{{.ENV}}
+  template:
+    metadata:
+      labels:
+        app: {{.NAME}}-{{.ENV}}
+    spec:
+      containers:
+      - name: {{.NAME}}-ui
+        image: {{.DOCKER_UI_IMAGE}}
+        imagePullPolicy: {{.IMAGE_PULLPOLICY}}
+        ports:
+        - containerPort: {{.UI_SERVICE_PORT}}
+        env: 
+          - name: REGISTRY_URL
+            value: "{{.NAME}}-{{.ENV}}-service.{{.NAME}}-{{.ENV}}.svc.cluster.local:{{.CONTAINER_PORT}}"
+          - name: DELETE_IMAGES
+            value: {{.DELETE_IMAGES | wrapInQuotes}}
+          - name: NGINX_PROXY_HEADER_Authorization
+            value: Basic {{.DOCKER_BASIC_AUTH_64ENCODED}}
+{{end}}
