@@ -41,7 +41,20 @@ func (b dockerBuilder) GenerateTagName(stackName string) (string, error) {
 		return "", err
 	}
 
-	tagName := fmt.Sprintf("%s/%s:%s-%s", b.ctx.Registry, b.ctx.ProjectName, stackName, uuid)
+	tagName := fmt.Sprintf("%s:%s-%s", b.ctx.ProjectName, stackName, uuid)
+
+	return tagName, nil
+}
+
+// GenerateFullImageName returns a generated full image name which is the registry address plus the tag name
+func (b dockerBuilder) GenerateFullImageName(stackName string) (string, error) {
+	tag, err := b.GenerateTagName(stackName)
+	if err != nil {
+		log.Errorf("There was an error generating the tag.")
+		return "", err
+	}
+
+	tagName := fmt.Sprintf("%s/%s", b.ctx.Registry, tag)
 
 	return tagName, nil
 }

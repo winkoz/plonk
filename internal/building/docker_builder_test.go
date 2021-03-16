@@ -60,9 +60,18 @@ func (suite *BuilderTestSuite) TestPublish_ShouldExecuteSuccessfully() {
 
 func (suite *BuilderTestSuite) TestGenerateTagName_ShouldExecuteSuccessfully() {
 	uuid := "thisisavalidheads"
-	tagName := fmt.Sprintf("%s/%s:%s-%s", suite.ctx.Registry, suite.ctx.ProjectName, suite.env, uuid)
+	tagName := fmt.Sprintf("%s:%s-%s", suite.ctx.ProjectName, suite.env, uuid)
 	suite.setupVersionControlCommand(uuid, nil)
 	res, err := suite.sut.GenerateTagName(suite.env)
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), tagName, res)
+}
+
+func (suite *BuilderTestSuite) TestGenerateFullImageName_ShouldExecuteSuccessfully() {
+	uuid := "thisisavalidheads"
+	tagName := fmt.Sprintf("%s/%s:%s-%s", suite.ctx.Registry, suite.ctx.ProjectName, suite.env, uuid)
+	suite.setupVersionControlCommand(uuid, nil)
+	res, err := suite.sut.GenerateFullImageName(suite.env)
 	assert.Nil(suite.T(), err)
 	assert.Equal(suite.T(), tagName, res)
 }
@@ -80,6 +89,14 @@ func (suite *BuilderTestSuite) TestGenerateTagName_ShouldFailWhenVersionControlE
 	errorMessage := "this is an error message"
 	suite.setupFailVersionControlPath(uuid, errorMessage)
 	_, err := suite.sut.GenerateTagName(suite.env)
+	assert.Error(suite.T(), err)
+}
+
+func (suite *BuilderTestSuite) TestGenerateFullImageName_ShouldFailWhenVersionControlErrors() {
+	uuid := "thisisavalidheads"
+	errorMessage := "this is an error message"
+	suite.setupFailVersionControlPath(uuid, errorMessage)
+	_, err := suite.sut.GenerateFullImageName(suite.env)
 	assert.Error(suite.T(), err)
 }
 

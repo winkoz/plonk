@@ -49,18 +49,18 @@ func newPublishCommandHandler() CobraHandler {
 
 		builder := building.NewBuilder(ctx)
 
-		tag, err := builder.GenerateTagName(env)
+		imageName, err := builder.GenerateFullImageName(env)
 		if err != nil {
 			log.Errorf("Failed fetching git head for %s - %s.", env, err)
 			return
 		}
 
-		err = builder.Publish(tag)
+		err = builder.Publish(imageName)
 		if err != nil {
-			log.Errorf("Failed publishing %s %s - %s.", tag, env, err)
+			log.Errorf("Failed publishing %s %s - %s.", imageName, env, err)
 			return
 		}
-		log.Infof("Publish tag: %s", tag)
+		log.Infof("Publish tag: %s", imageName)
 		log.Info("Publish executed successfully.")
 	}
 }
