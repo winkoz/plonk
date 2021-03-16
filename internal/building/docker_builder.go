@@ -16,7 +16,7 @@ type dockerBuilder struct {
 
 // Build builds the current stack
 func (b dockerBuilder) Build(stackName string) (string, error) {
-	uuid, err := b.VersionControlCurrentHead()
+	uuid, err := b.versionControlCurrentHead()
 	if err != nil {
 		log.Errorf("There was an error fetching your current head. Please make sure you are using version control.")
 		return "", err
@@ -33,14 +33,9 @@ func (b dockerBuilder) Publish(tagName string) error {
 	return b.buildCommand.Push(tagName)
 }
 
-// VersionControlCurrentHead returns the current position of the code in the version control
-func (b dockerBuilder) VersionControlCurrentHead() (string, error) {
-	return b.versionControlCommand.Head()
-}
-
 // GenerateTagName returns a generated tag name based on the hash of the current git head
 func (b dockerBuilder) GenerateTagName(stackName string) (string, error) {
-	uuid, err := b.VersionControlCurrentHead()
+	uuid, err := b.versionControlCurrentHead()
 	if err != nil {
 		log.Errorf("There was an error fetching your current head. Please make sure you are using version control.")
 		return "", err
@@ -49,4 +44,13 @@ func (b dockerBuilder) GenerateTagName(stackName string) (string, error) {
 	tagName := fmt.Sprintf("%s/%s:%s-%s", b.ctx.Registry, b.ctx.ProjectName, stackName, uuid)
 
 	return tagName, nil
+}
+
+// *************************************************************************************
+// Private methods
+// *************************************************************************************
+
+// versionControlCurrentHead returns the current position of the code in the version control
+func (b dockerBuilder) versionControlCurrentHead() (string, error) {
+	return b.versionControlCommand.Head()
 }

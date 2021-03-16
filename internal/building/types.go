@@ -4,6 +4,5 @@ package building
 type Builder interface {
 	Build(stackName string) (tagName string, err error)
 	Publish(tagName string) error
-	VersionControlCurrentHead() (string, error)
 	GenerateTagName(stackName string) (string, error)
 }
