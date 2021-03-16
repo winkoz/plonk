@@ -112,7 +112,7 @@ apiVersion: apps/v1
 
 ## Deploy your application to the cluster
 
-The following command will execute `kubectl apply -f deploy/deploy.yaml` against the cluster you currently have configured.
+The following command will build a docker image, publish that image to a remote docker repository and then execute `kubectl apply -f deploy/deploy.yaml` against the cluster you currently have configured with a manifest file built from the templates you have defined in your `plonk.yml`.
 
 ```console
 $ plonk deploy
@@ -140,6 +140,44 @@ $ plonk show
 ...
 ```
 
+If you want to skip the docker build and publish steps you can execute the command with the flag `--skip-build-n-publish` in which case the of `DOCKER_IMAGE` in the templates won't be replaced:
+
+```console
+$ plonk deploy --skip-build-n-publish
+```
+
+### Build your application
+
+Whenever Plonk tries to deploy it will do so with an image tag generated based on the current git head, this commands builds the docker image and tags it with that tag name.
+
+```console
+$ plonk build [env]
+$ plonk build production
+```
+
+After that you should be able to verify the tag locally with something like
+```console
+$ docker images --format "table {{.ID}}\t{{.Repository}}\t{{.Tag}}" [your registry address]]/[the project name]
+IMAGE ID       REPOSITORY                       TAG
+e3c12ec20d7d   registry.winkoz.com/winkoz-web   production-5f0436344ab18ad9047f69d7bbff1389ee91dabf
+```
+
+### Publish your application
+
+The orchestrator cluster or service will need to fetch the tag from some repository, be it docker hub or a private one. This command pushes a built tag to that repository:
+
+```console
+$ plonk publish [env]
+$ plonk publish production
+```
+
+You can check the tag on your docker repository, the tag will be printed by the command like:
+```console
+$ plonk publish [env]
+$ plonk publish production
+• info		 Publish tag: registry.winkoz.com/winkoz-web:production-5f0436344ab18ad9047f69d7bbff1389ee91dabf file=publishCommand.go line=63
+• info		 Publish executed successfully. file=publishCommand.go line=64
+```
 
 # Configure your Kubectl command
 

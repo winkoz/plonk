@@ -3,7 +3,10 @@ package commands
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/winkoz/plonk/internal/io/log"
 )
@@ -22,20 +25,24 @@ type executor struct {
 }
 
 func (e executor) Run(command string, args ...string) ([]byte, error) {
-	cmd := exec.Command(command, args...)
-	cmdOutput := &bytes.Buffer{}
-	errOutput := &bytes.Buffer{}
-	cmd.Stdout = cmdOutput
-	cmd.Stderr = errOutput
+	var stdoutBuf, stderrBuf bytes.Buffer
 
+	cmd := exec.Command(command, args...)
+	cmd.Stdout = io.MultiWriter(os.Stdout, &stdoutBuf)
+	cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
+
+	log.Infof("Executing command: %s %s", command, strings.Join(args, " "))
 	err := cmd.Run()
 	if err != nil {
-		errBytes := errOutput.Bytes()
-		runErr := fmt.Errorf("Command could not be executed successfully. error = %v\n\t%s", err, string(errBytes))
+		errOutput := string(stderrBuf.Bytes())
+		runErr := fmt.Errorf("Command could not be executed successfully. error = %v\n\t%s", err, errOutput)
 		log.Errorf(runErr.Error())
 		return nil, runErr
 	}
-	outputBytes := cmdOutput.Bytes()
-	log.Infof("[INFO] Executed command:\n\t%s", string(outputBytes))
-	return outputBytes, nil
+
+	cmdOutput := string(stdoutBuf.Bytes())
+	log.Infof("Command executed successfully. output = \n%s\n", cmdOutput)
+
+	log.Infof("Executed command: %s %s", command, strings.Join(args, " "))
+	return []byte(cmdOutput), nil
 }
