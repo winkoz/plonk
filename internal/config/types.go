@@ -15,4 +15,4 @@ const deployDeployCommand = "kubectl"
 
 const deployBuildCommand = "docker"
 
-const registryDefaultValue = "registry.hub.docker.com"
+const registryDefaultValue = "index.docker.io"
