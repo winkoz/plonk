@@ -39,6 +39,12 @@ steps:
     - name: cache
       path: /cache
 
+  - name: smoke-Tests
+    image: docker:20.10.5-dind
+    commands:
+    - apk add --no-cache make
+    - make smoke-tests
+
 volumes:
 - name: cache
   host:
@@ -46,6 +52,6 @@ volumes:
 
 ---
 kind: signature
-hmac: 881baaf63487014e761f50a3b3cc480babe4e8c2b78756d3e75eda34b729c24d
+hmac: aa8c62243dc7dfddbac9205c624abdeec04c070c48e32128ecc144b887da43d6
 
 ...

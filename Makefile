@@ -1,12 +1,15 @@
 include mk/docs.mk
 include mk/go.mk
+include mk/smoke-tests.mk
 
+export LANG=en_US.UTF-8
 PROJECT_NAME=winkoz-plonk
-VERSION=$(shell git rev-parse --short HEAD)
-TAG=winkoz/plonk:$(VERSION)
+VERSION:=$(shell git rev-parse --short HEAD)
+TAG:=winkoz/plonk:$(VERSION)
 INTERACTIVE?=-it
 GO-BIN-FOLDER?=
-DOCKER=docker run $(INTERACTIVE) -v $(shell pwd):/go $(TAG)
+DOCKER:=docker run $(INTERACTIVE) -v $(shell pwd):/go $(TAG)
+GOOS=darwin
 
 .PHONY: clean build test ssh docker-build run
 # -----------------------------------------------
@@ -16,7 +19,7 @@ clean:
 	rm -rf ./bin
 
 build: clean docker-build
-	$(DOCKER) make go-build
+	$(DOCKER) make go-build -e GOOS=$(GOOS)
 	@echo "Applications built successfully!"
 
 test: docker-build
