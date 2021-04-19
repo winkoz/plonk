@@ -34,13 +34,13 @@ func (e executor) Run(command string, args ...string) ([]byte, error) {
 	log.Infof("Executing command: %s %s", command, strings.Join(args, " "))
 	err := cmd.Run()
 	if err != nil {
-		errOutput := string(stderrBuf.Bytes())
-		runErr := fmt.Errorf("Command could not be executed successfully. error = %v\n\t%s", err, errOutput)
+		errOutput := stderrBuf.String()
+		runErr := fmt.Errorf("command could not be executed successfully. error = %v\n\t%s", err, errOutput)
 		log.Errorf(runErr.Error())
 		return nil, runErr
 	}
 
-	cmdOutput := string(stdoutBuf.Bytes())
+	cmdOutput := stdoutBuf.String()
 	log.Infof("Command executed successfully. output = \n%s\n", cmdOutput)
 
 	log.Infof("Executed command: %s %s", command, strings.Join(args, " "))
