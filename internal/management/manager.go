@@ -10,11 +10,13 @@ import (
 	"github.com/winkoz/plonk/internal/io/render"
 )
 
+const allDeploymentsFlag = "--all"
+
 // Manager allows interaction with orchestrators environments
 type Manager interface {
 	GetPods(env string) ([]byte, error)
 	GetLogs(env string, component *string) ([]byte, error)
-	Restart(ctx config.Context, env string) ([]byte, error)
+	Restart(ctx config.Context, env string, allDeployments bool) ([]byte, error)
 }
 
 // NewManager creates a manager object
@@ -65,12 +67,15 @@ func (m manager) GetLogs(env string, component *string) (output []byte, err erro
 }
 
 // Restart rollout restarts the deployment for the passed in `env`
-func (m manager) Restart(ctx config.Context, env string) (output []byte, err error) {
+func (m manager) Restart(ctx config.Context, env string, allDeployments bool) (output []byte, err error) {
 	signal := log.StartTrace("Restart")
 	defer log.StopTrace(signal, err)
 
 	namespace := m.buildNamespace(env)
-	deploymentName := m.buildDeploymentName(env)
+	deploymentName := allDeploymentsFlag
+	if !allDeployments {
+		deploymentName = m.buildDeploymentName(env)
+	}
 	output, err = m.orchestratorCommand.Restart(namespace, deploymentName)
 	if err != nil {
 		log.Errorf("Unable to restart the deployment from the orchestrator. err = %v", err)
