@@ -9,6 +9,8 @@ import (
 	"github.com/winkoz/plonk/internal/io/log"
 )
 
+const allDeploymentsFlag = "--all"
+
 type kubectlCommand struct {
 	executor     Executor
 	interpolator io.Interpolator
@@ -47,7 +49,14 @@ func (k kubectlCommand) GetLogs(namespace string, component *string) ([]byte, er
 }
 
 func (k kubectlCommand) Restart(namespace string, deploymentName string) ([]byte, error) {
-	return k.executeCommand("Restart", "--namespace", namespace, "rollout", "restart", "deployment", deploymentName)
+	args := []string{"--namespace", namespace, "rollout", "restart"}
+	sanitisedDeployment := strings.ToLower(strings.Trim(deploymentName, " "))
+	if strings.EqualFold(sanitisedDeployment, allDeploymentsFlag) {
+		args = append(args, "deployments")
+	} else {
+		args = append(args, "deployment", deploymentName)
+	}
+	return k.executeCommand("Restart", args...)
 }
 
 func (k kubectlCommand) executeCommand(logName string, args ...string) (output []byte, err error) {

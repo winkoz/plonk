@@ -197,6 +197,14 @@ func (suite *KubectlTestSuite) TestRestart_ShouldCallExecutorWithRestartCommand(
 	assert.Nil(suite.T(), err)
 }
 
+func (suite *KubectlTestSuite) TestRestart_ShouldCallExecutorWithRestartDeploymentsCommand_WhenAllIsPassed() {
+	args := []string{"--namespace", suite.namespace, "rollout", "restart", "deployments"}
+	suite.setupExecutor(args, nil, nil)
+	_, err := suite.sat.Restart(suite.namespace, "--all")
+	suite.verifyExecutor(args)
+	assert.Nil(suite.T(), err)
+}
+
 func (suite *KubectlTestSuite) TestRestart_ShouldForwardOutputFromExecutor_WhenExecutorSucceeds() {
 	args := []string{"--namespace", suite.namespace, "rollout", "restart", "deployment", suite.deploymentName}
 	expectedOutput := []byte(suite.T().Name())

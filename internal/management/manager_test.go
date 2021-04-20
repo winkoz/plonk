@@ -128,7 +128,7 @@ func (suite *ManagerTestSuite) TestRestart_ShouldCallOrchestratorRestart() {
 		On("Restart", suite.namespace, suite.deploymentName).
 		Once().
 		Return(make([]byte, 0), nil)
-	_, _ = suite.sut.Restart(suite.ctx, suite.env)
+	_, _ = suite.sut.Restart(suite.ctx, suite.env, false)
 	assert.True(suite.T(), suite.orchestratorCommand.AssertCalled(suite.T(), "Restart", suite.namespace, suite.deploymentName))
 }
 
@@ -138,7 +138,26 @@ func (suite *ManagerTestSuite) TestRestart_ShouldError_WhenOrchestratorFailsToEx
 		On("Restart", suite.namespace, suite.deploymentName).
 		Once().
 		Return(make([]byte, 0), expectedErr)
-	_, gotErr := suite.sut.Restart(suite.ctx, suite.env)
+	_, gotErr := suite.sut.Restart(suite.ctx, suite.env, false)
+	assert.EqualError(suite.T(), gotErr, expectedErr.Error())
+}
+
+func (suite *ManagerTestSuite) TestRestart_ShouldCallOrchestratorRestartWithFlagAll_WhenAllDeploymentsArgumentIsTrue() {
+	suite.orchestratorCommand.
+		On("Restart", suite.namespace, "--all").
+		Once().
+		Return(make([]byte, 0), nil)
+	_, _ = suite.sut.Restart(suite.ctx, suite.env, true)
+	assert.True(suite.T(), suite.orchestratorCommand.AssertCalled(suite.T(), "Restart", suite.namespace, "--all"))
+}
+
+func (suite *ManagerTestSuite) TestRestart_ShouldError_WhenOrchestratorFailsToExecuteCommand_WhenallDeploymentsArgumentIsTrue() {
+	expectedErr := errors.New("kubectl error restarting deployment")
+	suite.orchestratorCommand.
+		On("Restart", suite.namespace, "--all").
+		Once().
+		Return(make([]byte, 0), expectedErr)
+	_, gotErr := suite.sut.Restart(suite.ctx, suite.env, true)
 	assert.EqualError(suite.T(), gotErr, expectedErr.Error())
 }
 

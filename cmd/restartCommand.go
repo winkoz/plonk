@@ -26,12 +26,14 @@ import (
 func addRestartCommand(rootCmd *cobra.Command) {
 	var restartCmd = &cobra.Command{
 		Use:     "restart",
-		Short:   "Restarts the deployment for the project matching the desired environment",
+		Short:   "Restarts the deployment for the project matching the desired environment. If the flag --all is specified it will restart all deployments available in the passed in environment.",
 		Run:     newRestartCommandHandler(),
-		Example: "plonk restart",
-		Args:    cobra.MaximumNArgs(1),
+		Example: "plonk restart [environment] [--all]",
+		Args:    cobra.MaximumNArgs(2),
 	}
 
+	allDeployments := false
+	restartCmd.Flags().BoolVarP(&allDeployments, "all", "a", false, "Restart all deployments in environment")
 	rootCmd.AddCommand(restartCmd)
 }
 
@@ -47,7 +49,9 @@ func newRestartCommandHandler() CobraHandler {
 			env = args[0]
 		}
 
+		allDeployments, _ := cmd.Flags().GetBool("all")
+
 		m := management.NewManager(ctx)
-		m.Restart(ctx, env)
+		m.Restart(ctx, env, allDeployments)
 	}
 }
