@@ -1,7 +1,0 @@
-name: ingress
-variables: 
-  build:
-  environment:
-manifests:
-  - wildcard-cert-issuer.yaml
-  - ingress.yaml
