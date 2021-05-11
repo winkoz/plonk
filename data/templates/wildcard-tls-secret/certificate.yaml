@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{.NAME}}-{{.ENV}}-certificate
+  namespace: {{.NAME}}-{{.ENV}}
+spec:
+  secretName: {{.NAME}}-{{.ENV}}-tls-secret
+  commonName: {{.HOSTNAME | wrapInQuotes}}
+  dnsNames: {{range $k, $v := .DNS_NAMES | yamlArrayToArray }}
+    - {{$v | wrapInQuotes}}
+  {{end}}
+  issuerRef:
+    name: {{.ISSUER_NAME}}
+    kind: {{.ISSUER_TYPE}}
