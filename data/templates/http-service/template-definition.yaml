@@ -9,6 +9,7 @@ variables:
     DOCKER_IMAGE_PULL_SECRET: 'docker-registry-production-imgpull-secret'
     USE_WILDCARD_TLS_CERTIFICATE: 'true'
     WILDCARD_TLS_SECRET: 
+    WILDCARD_TLS_NAMESPACE: 'default'
     IMAGE_PULLPOLICY: 'IfNotPresent'
     CONTAINER_ARGS: ''
     # OAuth configuration
@@ -27,4 +28,5 @@ manifests:
   - service.yaml
   - deployment.yaml
   - ingress.yaml
+  - tls-replication-empty-secret.yaml
   - oauth.yaml
