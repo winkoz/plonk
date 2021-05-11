@@ -25,6 +25,7 @@ variables:
     AUTH_MESSAGE: 'Authentication required - alertmanager'
     AUTH_HTPASSWD_PATH: ''
     USE_WILDCARD_TLS_CERTIFICATE: 'false'
+    WILDCARD_TLS_NAMESPACE: 'default'
     # OAuth configuration
     OAUTH_PROVIDER: 'github'
     OAUTH_EMAIL_DOMAIN: '*'
@@ -45,6 +46,7 @@ manifests:
   - pvc.yaml
   - service.yaml
   - service-account.yaml
+  - tls-replication-empty-secret.yaml
   - deployment.yaml
   - ingress.yaml
   - oauth.yaml

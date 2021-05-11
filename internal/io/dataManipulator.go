@@ -10,6 +10,7 @@ import (
 // DataManipulator processes data (strings and bytes) and manipulates them accordingly to produce the desired outcomes (byes or strings)/
 type DataManipulator interface {
 	YamlToMapArray(maybeYaml string) ([]map[string]string, error)
+	YamlToStringArray(maybeYaml string) ([]string, error)
 	Base64Encode(v []byte) (string, error)
 	StringToBytes(s string) ([]byte, error)
 	Indent(s string, numberOfSpaces int) (string, error)
@@ -30,6 +31,14 @@ func NewDataManipulator(service Service) DataManipulator {
 // YamlToMapArray attempts to parse `maybeYaml` into an array of objects and will return it as a map from string to string array.
 func (dm dataManipulator) YamlToMapArray(maybeYaml string) ([]map[string]string, error) {
 	output := []map[string]string{}
+	yamlReader := NewYamlReader(dm.service)
+	err := yamlReader.Parse([]byte(maybeYaml), &output)
+	return output, err
+}
+
+// YamlToStringArray attempts to parse `maybeYaml` into an array of strings and will return it as a string array.
+func (dm dataManipulator) YamlToStringArray(maybeYaml string) ([]string, error) {
+	output := []string{}
 	yamlReader := NewYamlReader(dm.service)
 	err := yamlReader.Parse([]byte(maybeYaml), &output)
 	return output, err

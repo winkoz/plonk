@@ -18,6 +18,7 @@ variables:
     DOCKER_CONFIG_PATH: ~/.docker/config.json
     REGISTRY_HTPASSWD_PATH: ./auth
     USE_WILDCARD_TLS_CERTIFICATE: true
+    WILDCARD_TLS_NAMESPACE: 'default'
     AUTH_TYPE: "none"
     DOCKER_BASIC_AUTH_64ENCODED: ""
     # OAuth configuration
@@ -46,6 +47,7 @@ manifests:
   - service.yaml
   - deployment.yaml
   - ingress.yaml
+  - tls-replication-empty-secret.yaml
   - ui-oauth.yaml
   - ui-service.yaml
   - ui-deployment.yaml

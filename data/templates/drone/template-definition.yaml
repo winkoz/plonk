@@ -4,6 +4,7 @@ variables:
     COMPONENT: 'drone'
     USE_WILDCARD_TLS_CERTIFICATE: 'false'
     WILDCARD_TLS_SECRET: ''
+    WILDCARD_TLS_NAMESPACE: 'default'
     WILDCARD_HOST: ''
     DOCKER_IMAGE: 'drone/drone:1.10.1'
     IMAGE_PULLPOLICY: 'IfNotPresent'
@@ -47,4 +48,5 @@ manifests:
   - runner-service.yaml
   - deployment.yaml
   - runner-deployment.yaml
+  - tls-replication-empty-secret.yaml
   - ingress.yaml

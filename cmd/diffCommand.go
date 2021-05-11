@@ -17,6 +17,8 @@ limitations under the License.
 */
 
 import (
+	"strconv"
+
 	"github.com/spf13/cobra"
 	"github.com/winkoz/plonk/internal/building"
 	"github.com/winkoz/plonk/internal/config"
@@ -34,6 +36,8 @@ func addDiffCommand(rootCmd *cobra.Command) {
 		Args:    cobra.MaximumNArgs(1),
 	}
 
+	skipBuild := false
+	diffCmd.Flags().BoolVarP(&skipBuild, "skip-build-n-publish", "", false, "skip docker build step")
 	rootCmd.AddCommand(diffCmd)
 }
 
@@ -44,18 +48,30 @@ func newDiffCommandHandler() CobraHandler {
 			log.Fatal(err)
 		}
 
+		var tag string
+		skipBuildNPublishFlag := cmd.Flags().Lookup("skip-build-n-publish")
+		skipBuildNPublish, err := strconv.ParseBool(skipBuildNPublishFlag.Value.String())
+
+		if err != nil {
+			log.Errorf("Failed reading skip-build-n-publish flag %s.", err)
+			return
+		}
+
 		env := defaultEnvironment
 		if len(args) == 1 {
 			env = args[0]
 		}
 
-		builder := building.NewBuilder(ctx)
+		if skipBuildNPublish {
+			log.Info("skipping build and publish procedures")
+		} else {
+			builder := building.NewBuilder(ctx)
 
-		var tag string
-		tag, err = builder.Build(env)
-		if err != nil {
-			log.Errorf("Failed building current docker project %s - %s.", env, err)
-			return
+			tag, err = builder.Build(env)
+			if err != nil {
+				log.Errorf("Failed building current docker project %s - %s.", env, err)
+				return
+			}
 		}
 
 		d := deployment.NewDeployer(ctx)

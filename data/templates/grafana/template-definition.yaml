@@ -2,6 +2,7 @@ name: grafana
 variables: 
   build:
     USE_WILDCARD_TLS_CERTIFICATE: 'true'
+    WILDCARD_TLS_NAMESPACE: 'default'
     IMAGE_PULLPOLICY: 'IfNotPresent'
     DOCKER_IMAGE: 'grafana/grafana:7.0.3'
     CHOWNDATA_DOCKER_IMAGE: 'busybox:1.31.1'
@@ -80,4 +81,5 @@ manifests:
   - service.yaml
   - service-account.yaml
   - ingress.yaml
+  - tls-replication-empty-secret.yaml
   - deployment.yaml

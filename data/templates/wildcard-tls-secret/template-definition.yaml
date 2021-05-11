@@ -1,0 +1,11 @@
+name: secret
+variables: 
+  build:
+    COMPONENT: tls-secret
+    ISSUER_NAME: ''
+    ISSUER_TYPE: 'ClusterIssuer'
+    SECRET_SHOULD_REPLICATE: true
+  environment:
+manifests:
+  - tls-secret.yaml
+  - certificate.yaml

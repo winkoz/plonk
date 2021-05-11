@@ -35,6 +35,7 @@ variables:
     EVALUATION_INTERVAL: 1m
     USE_WILDCARD_TLS_CERTIFICATE: 'false'
     WILDCARD_TLS_SECRET: ''
+    WILDCARD_TLS_NAMESPACE: 'default'
     AUTH_TYPE: 'basic'
     AUTH_MESSAGE: 'Authentication required - prometheus'
     AUTH_HTPASSWD_PATH: ''
@@ -65,4 +66,5 @@ manifests:
   - service-account.yaml
   - deployment.yaml
   - ingress.yaml
+  - tls-replication-empty-secret.yaml
   - oauth.yaml

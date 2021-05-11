@@ -34,16 +34,17 @@ func (t templateParser) Parse(variables map[string]interface{}, templateContent 
 
 	funcMap := template.FuncMap{
 		// The name "title" is what the function will be called in the template text.
-		"title":          strings.Title,
-		"readFile":       t.service.ReadFile,
-		"readFileToStr":  t.service.ReadFileToString,
-		"strToBytes":     t.dataManipulator.StringToBytes,
-		"base64Encode":   t.dataManipulator.Base64Encode,
-		"walkDirectory":  t.service.WalkDirectory,
-		"baseFilename":   filepath.Base,
-		"yamlArrayToObj": t.dataManipulator.YamlToMapArray,
-		"indent":         t.dataManipulator.Indent,
-		"wrapInQuotes":   t.dataManipulator.WrapInQuotes,
+		"title":          	strings.Title,
+		"readFile":       	t.service.ReadFile,
+		"readFileToStr":  	t.service.ReadFileToString,
+		"strToBytes":     	t.dataManipulator.StringToBytes,
+		"base64Encode":   	t.dataManipulator.Base64Encode,
+		"walkDirectory":  	t.service.WalkDirectory,
+		"baseFilename":   	filepath.Base,
+		"yamlArrayToObj": 	t.dataManipulator.YamlToMapArray,
+		"yamlArrayToArray": t.dataManipulator.YamlToStringArray,
+		"indent":         	t.dataManipulator.Indent,
+		"wrapInQuotes":   	t.dataManipulator.WrapInQuotes,
 	}
 
 	template, err := template.

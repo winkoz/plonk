@@ -1,0 +1,24 @@
+name: replicator
+variables: 
+  build:
+    COMPONENT: replicator
+    LIVENESS_PROBE_INITIAL_DELAY_SECONDS: 60
+    LIVENESS_PROBE_PERIOD_SECONDS: 10
+    LIVENESS_PROBE_TIMEOUT_SECONDS: 1
+    LIVENESS_PROBE_SUCCESS_THRESHOLD: 1
+    LIVENESS_PROBE_FAILURE_THRESHOLD: 3
+    READINESS_PROBE_INITIAL_DELAY_SECONDS: 60
+    READINESS_PROBE_PERIOD_SECONDS: 10
+    READINESS_PROBE_TIMEOUT_SECONDS: 1
+    READINESS_PROBE_SUCCESS_THRESHOLD: 1
+    READINESS_PROBE_FAILURE_THRESHOLD: 3
+    DEFAULT_API_GROUPS: '[ "", "apps", "extensions" ]'
+    DEFAULT_API_GROUPS_RESOURCES: '["secrets", "configmaps", "roles", "rolebindings",
+      "cronjobs", "deployments", "events", "ingresses", "jobs", "pods", "pods/attach", "pods/exec", "pods/log", "pods/portforward", "services"]'
+    BATCH_API_GROUPS: '[ "batch" ]'
+    BATCH_API_GROUPS_RESOURCES: '["configmaps", "cronjobs", "deployments", "events", "ingresses", "jobs", "pods", "pods/attach", "pods/exec", "pods/log", "pods/portforward", "services"]'
+  environment:
+manifests:
+  - service-account.yaml
+  - cluster-role.yaml
+  - deployment.yaml
