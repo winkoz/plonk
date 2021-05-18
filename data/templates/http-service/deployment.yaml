@@ -33,5 +33,5 @@ spec:
         {{end}}
       {{if (eq .USE_IMAGE_PULL_SECRET "true")}}
       imagePullSecrets:
-        - name: {{.DOCKER_IMAGE_PULL_SECRET}}
+        - name: {{.NAME}}-{{.ENV}}-docker-imgpull-secret
       {{end}}
