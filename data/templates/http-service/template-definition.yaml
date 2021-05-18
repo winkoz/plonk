@@ -8,6 +8,7 @@ variables:
     REPLICAS: 1
     USE_IMAGE_PULL_SECRET: true
     DOCKER_IMAGE_PULL_SECRET: 'docker-registry-production-imgpull-secret'
+    DOCKER_SECRET_NAMESPACE: "docker-registry-production"
     USE_WILDCARD_TLS_CERTIFICATE: 'true'
     WILDCARD_TLS_SECRET: 
     WILDCARD_TLS_NAMESPACE: 'default'
