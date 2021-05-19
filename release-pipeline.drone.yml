@@ -1,0 +1,53 @@
+---
+kind: pipeline
+type: kubernetes
+name: publish
+
+steps:
+  - name: restore-cache-with-filesystem
+    image: drillster/drone-volume-cache
+    settings:
+      restore: true
+      mount:
+        - ./go-bin
+    volumes:
+    - name: cache
+      path: /cache
+  - name: build
+    image: golang:1.15.6
+    commands:
+    # If no cache found with the tools, download them
+    - "[ ! -f go-bin/go-bindata ] && go get -u gotest.tools/gotestsum"
+    # Make a go-bin directory if none exists
+    - mkdir -p go-bin
+    # Copy tools binaries into the local bin path
+    - "[ ! -f go-bin/go-bindata ] && cp $GOPATH/bin/go-bindata go-bin/."
+    # Builds the binaries
+    - make go-build GO-BIN-FOLDER=go-bin/ GOOS=darwin GOARCH=amd64 BINARY_NAME=darwin-plonk
+    - make go-build GO-BIN-FOLDER=go-bin/ GOOS=linux GOARCH=amd64 BINARY_NAME=linux-plonk
+  - name: publish
+    image: plugins/github-release
+    settings:
+      from_secret: github_token
+      files:
+        - bin/*
+      checksum:
+        - md5
+        - sha1
+        - sha256
+        - sha512
+        - adler32
+        - crc32
+    when:
+      event: tag
+
+volumes:
+- name: cache
+  host:
+    path: /tmp/drone/cache
+
+---
+kind: signature
+hmac: 061fce382687990baa500fdc734f09483325abd5a46ad5fab5447fe30c40d32e
+
+...
