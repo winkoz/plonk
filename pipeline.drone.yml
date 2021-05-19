@@ -26,7 +26,8 @@ steps:
     - "[ ! -f go-bin/go-bindata ] && cp $GOPATH/bin/go-bindata go-bin/."
     - "[ ! -f go-bin/gotestsum ] && cp $GOPATH/bin/gotestsum go-bin/."
     # Builds & Tests the code
-    - make go-build GO-BIN-FOLDER=go-bin/
+    - make go-build GO-BIN-FOLDER=go-bin/ GOOS=darwin GOARCH=amd64 BINARY_NAME=darwin-plonk
+    - make go-build GO-BIN-FOLDER=go-bin/ GOOS=linux GOARCH=amd64 BINARY_NAME=linux-plonk
     - make go-test GO-BIN-FOLDER=go-bin/
 
   - name: rebuild-cache-with-filesystem
@@ -39,6 +40,23 @@ steps:
     - name: cache
       path: /cache
 
+  - name: publish
+    image: plugins/github-release
+    settings:
+      from_secret: github_token
+      files:
+        - bin/*
+      checksum:
+        - md5
+        - sha1
+        - sha256
+        - sha512
+        - adler32
+        - crc32
+    when:
+      event: tag
+
+
 volumes:
 - name: cache
   host:
@@ -46,6 +64,6 @@ volumes:
 
 ---
 kind: signature
-hmac: 881baaf63487014e761f50a3b3cc480babe4e8c2b78756d3e75eda34b729c24d
+hmac: 04026acdfda3d9ac0524f9c662de4129ebd4c955702c66fb094f5af6842f244e
 
 ...
