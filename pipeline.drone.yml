@@ -43,7 +43,8 @@ steps:
   - name: publish
     image: plugins/github-release
     settings:
-      from_secret: github_token
+      api_key:
+        from_secret: github_token
       files:
         - bin/*
       checksum:
@@ -64,6 +65,6 @@ volumes:
 
 ---
 kind: signature
-hmac: 04026acdfda3d9ac0524f9c662de4129ebd4c955702c66fb094f5af6842f244e
+hmac: 25c7783e03c68bc4e0d0dc1c81e8e4d3ce6d2382ede0bef951a4e3d1b141f5df
 
 ...
