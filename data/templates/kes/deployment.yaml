@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.NAME}}-{{.ENV}}-deployment
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: {{.COMPONENT}}
+spec:
+  replicas: {{.REPLICAS}}
+  selector:
+    matchLabels:
+      app: {{.NAME}}-{{.ENV}}
+      component: {{.COMPONENT}}
+  template:
+    metadata:
+      labels:
+        app: {{.NAME}}-{{.ENV}}
+        component: {{.COMPONENT}}
+    spec:
+      volumes:
+      - name: certs-dir
+        emptyDir: {}
+      initContainers:
+        - name: {{.NAME}}-create-certs
+          image: {{.DOCKER_IMAGE}}
+          imagePullPolicy: {{.IMAGE_PULLPOLICY}}
+          command: ['sh', '-c'] 
+          args:
+            - >-
+              if [ ! -f {{.MOUNT_PATH}}/server.key ]; then
+                ./kes tool identity new --server --key {{.MOUNT_PATH}}/server.key --cert {{.MOUNT_PATH}}/server.cert --ip "127.0.0.1" --dns localhost 
+                ./kes tool identity new --key={{.MOUNT_PATH}}/root.key --cert={{.MOUNT_PATH}}/root.cert root
+              fi
+          volumeMounts:
+            - name: certs-dir
+              mountPath: {{.MOUNT_PATH | wrapInQuotes}}
+              subPath: ""
+      containers:
+      - name: {{.NAME}}
+        image: {{.DOCKER_IMAGE}}
+        ports:
+        - containerPort: {{.CONTAINER_PORT}}
+        env: {{range $k, $v := .ENVIRONMENT_VARIABLES}} 
+          - name: {{$k}} 
+            value: {{$v | wrapInQuotes}}
+        {{end}}
+        command: ['sh', '-c'] 
+        args:
+          - >-
+              ./kes server --key={{.MOUNT_PATH}}/server.key --cert={{.MOUNT_PATH}}/server.cert --root=$(./kes tool identity of {{.MOUNT_PATH}}/root.cert) --auth=off
+        volumeMounts:
+          - name: certs-dir
+            mountPath: {{.MOUNT_PATH | wrapInQuotes}}
+            subPath: ""
+      volumes:
+        - name: certs-dir
+          persistentVolumeClaim:
+            claimName: {{.NAME}}-{{.ENV}}-pvc
