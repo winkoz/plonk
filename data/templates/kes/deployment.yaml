@@ -18,9 +18,6 @@ spec:
         app: {{.NAME}}-{{.ENV}}
         component: {{.COMPONENT}}
     spec:
-      volumes:
-      - name: certs-dir
-        emptyDir: {}
       initContainers:
         - name: {{.NAME}}-create-certs
           image: {{.DOCKER_IMAGE}}
@@ -28,8 +25,7 @@ spec:
           command: ['sh', '-c'] 
           args:
             - >-
-              if [ ! -f {{.MOUNT_PATH}}/server.key ]; then
-                ./kes tool identity new --server --key {{.MOUNT_PATH}}/server.key --cert {{.MOUNT_PATH}}/server.cert --ip "127.0.0.1" --dns localhost 
+              if [ ! -f {{.MOUNT_PATH}}/root.cert ]; then
                 ./kes tool identity new --key={{.MOUNT_PATH}}/root.key --cert={{.MOUNT_PATH}}/root.cert root
               fi
           volumeMounts:
@@ -48,12 +44,23 @@ spec:
         command: ['sh', '-c'] 
         args:
           - >-
-              ./kes server --key={{.MOUNT_PATH}}/server.key --cert={{.MOUNT_PATH}}/server.cert --root=$(./kes tool identity of {{.MOUNT_PATH}}/root.cert) --auth=off
+              ./kes server --key={{.MOUNT_PATH}}-tls/server.key --cert={{.MOUNT_PATH}}-tls/server.cert --root=$(./kes tool identity of {{.MOUNT_PATH}}/root.cert) --auth=off
         volumeMounts:
           - name: certs-dir
             mountPath: {{.MOUNT_PATH | wrapInQuotes}}
-            subPath: ""
+            readOnly: true
+          - name: tls-dir
+            mountPath: {{.MOUNT_PATH}}-tls
+            readOnly: true
       volumes:
+        - name: tls-dir
+          secret:
+            secretName: {{.WILDCARD_TLS_SECRET}}
+            items:
+            - key: tls.crt
+              path: server.cert
+            - key: tls.key
+              path: server.key
         - name: certs-dir
           persistentVolumeClaim:
             claimName: {{.NAME}}-{{.ENV}}-pvc
