@@ -15,7 +15,10 @@ variables:
     PVC_ACCESS_MODE: 'ReadWriteOnce'
     PVC_STORAGE_SIZE: '3Gi'
     PVC_STORAGE_CLASS_NAME: 'do-block-storage'
-    MOUNT_PATH: /certs
+    MOUNT_PATH: /data
+    TLS_PROXY_ROOT_IDENTITY: ""
+    CLIENT_CERT_HEADER: "X-Tls-Client-Cert"
+    CLIENT_CERT_PEM_PATH: ""
   environment:
     PORT: 80
 manifests:

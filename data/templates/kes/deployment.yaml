@@ -19,19 +19,23 @@ spec:
         component: {{.COMPONENT}}
     spec:
       initContainers:
-        - name: {{.NAME}}-create-certs
-          image: {{.DOCKER_IMAGE}}
-          imagePullPolicy: {{.IMAGE_PULLPOLICY}}
-          command: ['sh', '-c'] 
-          args:
-            - >-
-              if [ ! -f {{.MOUNT_PATH}}/root.cert ]; then
-                ./kes tool identity new --key={{.MOUNT_PATH}}/root.key --cert={{.MOUNT_PATH}}/root.cert root
-              fi
-          volumeMounts:
-            - name: certs-dir
-              mountPath: {{.MOUNT_PATH | wrapInQuotes}}
-              subPath: ""
+      - name: {{.NAME}}-create-certs
+        image: {{.DOCKER_IMAGE}}
+        imagePullPolicy: {{.IMAGE_PULLPOLICY}}
+        command: ['sh', '-c'] 
+        args:
+          - >-
+            mkdir -p {{.MOUNT_PATH}}/certs;
+            mkdir -p {{.MOUNT_PATH}}/keys;
+
+            if [ ! -f {{.MOUNT_PATH}}/certs/root.cert ]; then
+              KES_CLIENT_CERT={{.MOUNT_PATH}}-tls/server.cert ./kes tool identity new --key={{.MOUNT_PATH}}/certs/root.key --cert={{.MOUNT_PATH}}/certs/root.cert root;
+            fi
+            
+        volumeMounts:
+          - name: data
+            mountPath: {{.MOUNT_PATH | wrapInQuotes}}
+            readOnly: false
       containers:
       - name: {{.NAME}}
         image: {{.DOCKER_IMAGE}}
@@ -44,14 +48,17 @@ spec:
         command: ['sh', '-c'] 
         args:
           - >-
-              ./kes server --key={{.MOUNT_PATH}}-tls/server.key --cert={{.MOUNT_PATH}}-tls/server.cert --root=$(./kes tool identity of {{.MOUNT_PATH}}/root.cert) --auth=off
+              export MY_APP_IDENTITY=$(./kes tool identity of {{.MOUNT_PATH}}/certs/root.cert);
+              KES_CLIENT_CERT={{.MOUNT_PATH}}-tls/server.cert ./kes server --auth=off --root $MY_APP_IDENTITY --config=/etc/config/server-config.yaml;
         volumeMounts:
-          - name: certs-dir
+          - name: data
             mountPath: {{.MOUNT_PATH | wrapInQuotes}}
-            readOnly: true
+            readOnly: false
           - name: tls-dir
             mountPath: {{.MOUNT_PATH}}-tls
             readOnly: true
+          - name: config-volume
+            mountPath: /etc/config
       volumes:
         - name: tls-dir
           secret:
@@ -61,6 +68,9 @@ spec:
               path: server.cert
             - key: tls.key
               path: server.key
-        - name: certs-dir
+        - name: data
           persistentVolumeClaim:
             claimName: {{.NAME}}-{{.ENV}}-pvc
+        - name: config-volume
+          configMap:
+            name: {{.NAME}}-{{.ENV}}-config-map

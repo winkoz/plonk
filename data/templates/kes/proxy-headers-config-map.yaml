@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{.NAME}}-{{.ENV}}
+  name: {{.NAME}}-{{.ENV}}-proxy-headers-config-map
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: {{.COMPONENT}}
+data:
+  {{.CLIENT_CERT_HEADER}}: {{ .CLIENT_CERT_PEM_PATH | readFileToStr | urlquery}}
