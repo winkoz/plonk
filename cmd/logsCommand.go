@@ -85,7 +85,7 @@ func retrieveComponent(ctx config.Context, env string) (desiredComponent *string
 					desiredComponent = &(components[option])
 					component = *desiredComponent
 				}
-				log.Infof("Selected logs for %s component(s).", component)
+				log.Debugf("Selected logs for %s component(s).", component)
 			} else {
 				fmt.Println("Invalid option provided")
 			}

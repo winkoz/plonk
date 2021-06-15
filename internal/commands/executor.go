@@ -20,10 +20,7 @@ type Executor interface {
 func NewExecutor() Executor {
 	return executor{}
 }
-./bin/kafka-topics.sh --create --zookeeper localhost:2181 --partitions 100 --replication-factor 2 --config compression.type=snappy --config cleanup.policy=compact --topic search-production-v20-poke
-./bin/kafka-topics.sh --create --zookeeper localhost:2181 --partitions 100 --replication-factor 2 --config compression.type=snappy --config cleanup.policy=compact --topic search-production-v20-sound
-./bin/kafka-topics.sh --create --zookeeper localhost:2181 --partitions 100 --replication-factor 2 --config compression.type=snappy --config cleanup.policy=compact --topic search-production-v20-set
-./bin/kafka-topics.sh --create --zookeeper localhost:2181 --partitions 100 --replication-factor 2 --config compression.type=snappy --config cleanup.policy=compact --topic search-production-v20-person
+
 type executor struct {
 }
 
@@ -34,7 +31,7 @@ func (e executor) Run(command string, args ...string) ([]byte, error) {
 	cmd.Stdout = io.MultiWriter(os.Stdout, &stdoutBuf)
 	cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
 
-	log.Infof("Executing command: %s %s", command, strings.Join(args, " "))
+	log.Debugf("Executing command: %s %s", command, strings.Join(args, " "))
 	err := cmd.Run()
 	if err != nil {
 		errOutput := stderrBuf.String()
@@ -44,8 +41,8 @@ func (e executor) Run(command string, args ...string) ([]byte, error) {
 	}
 
 	cmdOutput := stdoutBuf.String()
-	log.Infof("Command executed successfully. output = \n%s\n", cmdOutput)
+	log.Debugf("Command executed successfully. output = \n%s\n", cmdOutput)
 
-	log.Infof("Executed command: %s %s", command, strings.Join(args, " "))
+	log.Debugf("Executed command: %s %s", command, strings.Join(args, " "))
 	return []byte(cmdOutput), nil
 }
