@@ -16,7 +16,7 @@ clean:
 	rm -rf ./bin
 
 build: clean docker-build
-	$(DOCKER) make go-build
+	$(DOCKER) make go-build GOOS=$(GOOS)
 	@echo "Applications built successfully!"
 
 test: docker-build
