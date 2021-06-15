@@ -20,7 +20,10 @@ type Executor interface {
 func NewExecutor() Executor {
 	return executor{}
 }
-
+./bin/kafka-topics.sh --create --zookeeper localhost:2181 --partitions 100 --replication-factor 2 --config compression.type=snappy --config cleanup.policy=compact --topic search-production-v20-poke
+./bin/kafka-topics.sh --create --zookeeper localhost:2181 --partitions 100 --replication-factor 2 --config compression.type=snappy --config cleanup.policy=compact --topic search-production-v20-sound
+./bin/kafka-topics.sh --create --zookeeper localhost:2181 --partitions 100 --replication-factor 2 --config compression.type=snappy --config cleanup.policy=compact --topic search-production-v20-set
+./bin/kafka-topics.sh --create --zookeeper localhost:2181 --partitions 100 --replication-factor 2 --config compression.type=snappy --config cleanup.policy=compact --topic search-production-v20-person
 type executor struct {
 }
 

@@ -24,7 +24,7 @@ func (d dockerCommand) Build(tagName string) error {
 	// Docker command line arguments
 	args := []string{
 		"build",
-		"--no-cache",
+		// "--no-cache",
 	}
 	args = append(args, tags...)
 	args = append(args, ".")

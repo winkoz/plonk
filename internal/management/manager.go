@@ -24,7 +24,7 @@ func NewManager(ctx config.Context) Manager {
 	return manager{
 		ctx:                 ctx,
 		orchestratorCommand: commands.NewOrchestrator(ctx, "kubectl"),
-		renderer:            render.NewPlainOutputRenderer(),
+		renderer:            render.NewKubernetesOutputRenderer(),
 	}
 }
 
