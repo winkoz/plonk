@@ -14,4 +14,5 @@ require (
 	k8s.io/api v0.21.1
 	k8s.io/apimachinery v0.21.1
 	k8s.io/client-go v0.21.1
+	github.com/gizak/termui/v3 v3.1.0
 )
