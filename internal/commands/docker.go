@@ -14,7 +14,7 @@ type dockerCommand struct {
 	ctx          config.Context
 }
 
-func (d dockerCommand) Build(tagName string) error {
+func (d dockerCommand) Build(tagName string, skipCache bool) error {
 	// We build with a unique tag and if specified the latest
 	tags := []string{
 		"--tag",
@@ -22,10 +22,12 @@ func (d dockerCommand) Build(tagName string) error {
 	}
 
 	// Docker command line arguments
-	args := []string{
-		"build",
-		"--no-cache",
+	args := []string{"build"}
+
+	if !skipCache {
+		args = append(args, "--no-cache")
 	}
+
 	args = append(args, tags...)
 	args = append(args, ".")
 

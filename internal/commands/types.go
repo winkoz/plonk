@@ -12,7 +12,7 @@ type OrchestratorCommand interface {
 
 // BuilderCommand interface for executing commands against the builder cli tool
 type BuilderCommand interface {
-	Build(namespace string) error
+	Build(namespace string, skipCache bool) error
 	Push(namespace string) error
 }
 

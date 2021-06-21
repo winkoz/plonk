@@ -62,7 +62,23 @@ func (suite *DockerTestSuite) TestBuild_ShouldCallDockerBuildWithTagArgs() {
 		".",
 	}
 	suite.setupExecutor(args, nil, nil)
-	err := suite.sat.Build(tagName)
+	skipeCache := false
+	err := suite.sat.Build(tagName, skipeCache)
+	suite.verifyExecutor(args)
+	assert.Nil(suite.T(), err)
+}
+
+func (suite *DockerTestSuite) TestBuild_ShouldCallDockerBuildWithNoCacheFlag_WhenSkipFlagIsTrue() {
+	tagName := fmt.Sprintf("%s/%s:%s", suite.ctx.Registry, suite.ctx.ProjectName, "madeup-tag")
+	args := []string{
+		"build",
+		"--tag",
+		tagName,
+		".",
+	}
+	suite.setupExecutor(args, nil, nil)
+	skipeCache := true
+	err := suite.sat.Build(tagName, skipeCache)
 	suite.verifyExecutor(args)
 	assert.Nil(suite.T(), err)
 }
@@ -78,7 +94,8 @@ func (suite *DockerTestSuite) TestBuild_ShouldFailIfTheCLICommandFailed() {
 		".",
 	}
 	suite.setupExecutor(args, nil, dockerErr)
-	err := suite.sat.Build(tagName)
+	skipCache := false
+	err := suite.sat.Build(tagName, skipCache)
 	suite.verifyExecutor(args)
 	assert.Error(suite.T(), err)
 }

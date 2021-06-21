@@ -17,6 +17,8 @@ limitations under the License.
 */
 
 import (
+	"strconv"
+
 	"github.com/spf13/cobra"
 	"github.com/winkoz/plonk/internal/building"
 	"github.com/winkoz/plonk/internal/config"
@@ -32,6 +34,8 @@ func addBuildCommand(rootCmd *cobra.Command) {
 		Args:    cobra.MaximumNArgs(1),
 	}
 
+	skipCache := true
+	buildCmd.Flags().BoolVarP(&skipCache, "skip-cache", "", true, "skip docker cache when building image")
 	rootCmd.AddCommand(buildCmd)
 }
 
@@ -47,9 +51,16 @@ func newBuildCommandHandler() CobraHandler {
 			env = args[0]
 		}
 
+		skipCacheFlag := cmd.Flags().Lookup("skip-cache")
+		skipCache, err := strconv.ParseBool(skipCacheFlag.Value.String())
+		if err != nil {
+			log.Errorf("Failed reading skip-cache flag %s.", err)
+			return
+		}
+
 		builder := building.NewBuilder(ctx)
 
-		tag, err := builder.Build(env)
+		tag, err := builder.Build(env, skipCache)
 		if err != nil {
 			log.Errorf("Failed building current docker project %s - %s.", env, err)
 			return

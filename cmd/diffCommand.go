@@ -67,7 +67,7 @@ func newDiffCommandHandler() CobraHandler {
 		} else {
 			builder := building.NewBuilder(ctx)
 
-			tag, err = builder.Build(env)
+			tag, err = builder.Build(env, true)
 			if err != nil {
 				log.Errorf("Failed building current docker project %s - %s.", env, err)
 				return
