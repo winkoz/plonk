@@ -1,7 +1,7 @@
 apiVersion: batch/v1beta1 #batch/v1 => Our cluster is at 1.20. When we reach 1.21 we need to use batch/v1 
 kind: CronJob 
 metadata:
-  name: {{.NAME}}-{{.ENV}}-deployment
+  name: {{.NAME}}-{{.ENV}}-cronjob
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
@@ -21,3 +21,7 @@ spec:
             - -c
             {{range $idx, $cmd := .COMMANDS | yamlArrayToArray}}- {{$cmd}}{{end}}
           restartPolicy: OnFailure
+          {{if (eq .USE_IMAGE_PULL_SECRET "true")}}
+          imagePullSecrets:
+            - name: {{.NAME}}-{{.ENV}}-docker-imgpull-secret
+          {{end}}
