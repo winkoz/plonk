@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob 
+metadata:
+  name: {{.NAME}}-{{.ENV}}-deployment
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: {{.COMPONENT}}
+spec:
+  schedule: {{.CRON_SCHEDULE | wrapInQuotes}}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{.NAME}}-{{.ENV}}-cron
+            image: {{.DOCKER_IMAGE}}
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            {{range $idx, $cmd := .COMMANDS | yamlArrayToArray}}- {{$cmd}}{{end}}
+          restartPolicy: OnFailure
