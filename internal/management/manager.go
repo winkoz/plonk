@@ -5,6 +5,7 @@ import (
 
 	"github.com/winkoz/plonk/internal/commands"
 	"github.com/winkoz/plonk/internal/config"
+	"github.com/winkoz/plonk/internal/events"
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
 	"github.com/winkoz/plonk/internal/io/render"
@@ -37,6 +38,7 @@ type manager struct {
 // GetPods returns all the pods for the namespace under project-name and environment
 func (m manager) GetPods(env string) (output []byte, err error) {
 	signal := log.StartTrace("GetPods")
+	m.ctx.RuntimeContext.Broker.PostMessage(events.NewCommandSelectedMessage("GetPods"))
 	defer log.StopTrace(signal, err)
 
 	namespace := m.buildNamespace(env)

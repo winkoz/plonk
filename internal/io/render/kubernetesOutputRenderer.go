@@ -4,8 +4,6 @@ import (
 	"log"
 	"os"
 
-	ui "github.com/gizak/termui/v3"
-	"github.com/gizak/termui/v3/widgets"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
@@ -30,7 +28,7 @@ func (pr KubernetesOutputRenderer) RenderComponents(output []byte) {
 	object := &v1.List{}
 	err := runtime.DecodeInto(decoder, output, object)
 	if err != nil {
-		pr.log.Panicf("ERROR ESTO ES UN ERROR %v+", err)
+		pr.log.Panicf("Error while trying to decode kubectl show pods %v+", err)
 	}
 
 	pods := make([]*v1.Pod, 0, len(object.Items))
@@ -40,32 +38,32 @@ func (pr KubernetesOutputRenderer) RenderComponents(output []byte) {
 		pods = append(pods, pod)
 	}
 
-	for _, p := range pods {
-		pr.log.Printf("%s - %s", p.Namespace, p.Name)
-	}
+	// for _, p := range pods {
+	// 	pr.log.Printf("%s - %s", p.Namespace, p.Name)
+	// }
 
-	if err := ui.Init(); err != nil {
-		log.Fatalf("failed to initialize termui: %v", err)
-	}
-	defer ui.Close()
-	table1 := widgets.NewTable()
-	table1.Rows = [][]string{
-		[]string{"header1", "header2", "header3"},
-		[]string{"你好吗", "Go-lang is so cool", "Im working on Ruby"},
-		[]string{"2016", "10", "11"},
-	}
-	table1.TextStyle = ui.NewStyle(ui.ColorWhite)
-	table1.SetRect(0, 0, 60, 10)
+	// if err := ui.Init(); err != nil {
+	// 	log.Fatalf("failed to initialize termui: %v", err)
+	// }
+	// defer ui.Close()
+	// table1 := widgets.NewTable()
+	// table1.Rows = [][]string{
+	// 	[]string{"header1", "header2", "header3"},
+	// 	[]string{"你好吗", "Go-lang is so cool", "Im working on Ruby"},
+	// 	[]string{"2016", "10", "11"},
+	// }
+	// table1.TextStyle = ui.NewStyle(ui.ColorWhite)
+	// table1.SetRect(0, 0, 60, 10)
 
-	ui.Render(table1)
-	uiEvents := ui.PollEvents()
-	for {
-		e := <-uiEvents
-		switch e.ID {
-		case "q", "<C-c>":
-			return
-		}
-	}
+	// ui.Render(table1)
+	// uiEvents := ui.PollEvents()
+	// for {
+	// 	e := <-uiEvents
+	// 	switch e.ID {
+	// 	case "q", "<C-c>":
+	// 		return
+	// 	}
+	// }
 }
 
 // RenderLogs renders the passed in output to the console via simple stdout call

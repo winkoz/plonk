@@ -10,6 +10,9 @@ import (
 
 // Context holds the current state of the application
 type Context struct {
+	// Runtime Context
+	RuntimeContext internal.RuntimeContext
+
 	// Project Config
 	ProjectName   string
 	Registry      string
@@ -35,6 +38,9 @@ func NewContext(projectName string) (Context, error) {
 	ioService := io.NewService()
 
 	return Context{
+		// Runtime Context
+		RuntimeContext: internal.RuntimeContext{},
+
 		// Project Config
 		ProjectName:   projectName,
 		Registry:      registryDefaultValue,
