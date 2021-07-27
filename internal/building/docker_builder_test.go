@@ -13,6 +13,7 @@ import (
 type BuilderTestSuite struct {
 	suite.Suite
 	env                   string
+	skipCache             bool
 	ctx                   config.Context
 	buildCommand          *sharedtesting.BuildCommandMock
 	versionControlCommand *sharedtesting.VersionControllerCommandMock
@@ -28,6 +29,7 @@ func (suite *BuilderTestSuite) SetupTest() {
 		Environments:  map[string][]string{"test": {"test"}},
 		TargetPath:    "/tmp/deploy",
 	}
+	suite.skipCache = false
 	suite.buildCommand = new(sharedtesting.BuildCommandMock)
 	suite.versionControlCommand = new(sharedtesting.VersionControllerCommandMock)
 	suite.sut = dockerBuilder{
@@ -45,7 +47,7 @@ func (suite *BuilderTestSuite) TestBuild_ShouldExecuteSuccessfully() {
 	uuid := "thisisavalidheads"
 	tagName := fmt.Sprintf("%s/%s:%s-%s", suite.ctx.Registry, suite.ctx.ProjectName, suite.env, uuid)
 	suite.setupHappyPathBuild(uuid)
-	head, err := suite.sut.Build(suite.env)
+	head, err := suite.sut.Build(suite.env, suite.skipCache)
 	assert.Nil(suite.T(), err)
 	assert.Equal(suite.T(), tagName, head)
 }
@@ -80,7 +82,7 @@ func (suite *BuilderTestSuite) TestBuild_ShouldFailWhenVersionControlErrors() {
 	uuid := "thisisavalidheads"
 	errorMessage := "this is an error message"
 	suite.setupFailVersionControlPath(uuid, errorMessage)
-	_, err := suite.sut.Build(suite.env)
+	_, err := suite.sut.Build(suite.env, suite.skipCache)
 	assert.Error(suite.T(), err)
 }
 
@@ -104,7 +106,7 @@ func (suite *BuilderTestSuite) TestBuild_FailsWhenBuildCommandErrors() {
 	uuid := "thisisavalidheads"
 	errorMessage := "this is an error message"
 	suite.setupFailBuildPath(uuid, errorMessage)
-	_, err := suite.sut.Build(suite.env)
+	_, err := suite.sut.Build(suite.env, suite.skipCache)
 	assert.Error(suite.T(), err)
 }
 
@@ -130,7 +132,7 @@ func (suite *BuilderTestSuite) setupVersionControlCommand(uuid string, err error
 }
 
 func (suite *BuilderTestSuite) setupBuildCommand(tagName string, err error) {
-	suite.buildCommand.On("Build", tagName).Return(err)
+	suite.buildCommand.On("Build", tagName, suite.skipCache).Return(err)
 }
 
 func (suite *BuilderTestSuite) setupPushCommand(tagName string, err error) {

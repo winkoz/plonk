@@ -38,6 +38,9 @@ func addDeployCommand(rootCmd *cobra.Command) {
 	skipBuild := false
 	deployCmd.Flags().BoolVarP(&skipBuild, "skip-build-n-publish", "", false, "skip docker build step")
 
+	skipCache := true
+	deployCmd.Flags().BoolVarP(&skipCache, "skip-cache", "", true, "skip docker cache when building image")
+
 	rootCmd.AddCommand(deployCmd)
 }
 
@@ -64,10 +67,17 @@ func newDeployCommandHandler() CobraHandler {
 		if skipBuildNPublish {
 			log.Info("skipping build and publish procedures")
 		} else {
+			skipCacheFlag := cmd.Flags().Lookup("skip-cache")
+			skipCache, err := strconv.ParseBool(skipCacheFlag.Value.String())
+			if err != nil {
+				log.Errorf("Failed reading skip-cache flag %s.", err)
+				return
+			}
+
 			builder := building.NewBuilder(ctx)
 
 			// Build current docker project & create a tag for the deploy
-			tag, err = builder.Build(env)
+			tag, err = builder.Build(env, skipCache)
 			if err != nil {
 				log.Errorf("Failed building current docker project %s - %s.", env, err)
 				return

@@ -15,7 +15,7 @@ type dockerBuilder struct {
 }
 
 // Build builds the current stack
-func (b dockerBuilder) Build(stackName string) (string, error) {
+func (b dockerBuilder) Build(stackName string, skipCache bool) (string, error) {
 	uuid, err := b.versionControlCurrentHead()
 	if err != nil {
 		log.Errorf("There was an error fetching your current head. Please make sure you are using version control.")
@@ -23,7 +23,7 @@ func (b dockerBuilder) Build(stackName string) (string, error) {
 	}
 
 	tagName := fmt.Sprintf("%s/%s:%s-%s", b.ctx.Registry, b.ctx.ProjectName, stackName, uuid)
-	err = b.buildCommand.Build(tagName)
+	err = b.buildCommand.Build(tagName, skipCache)
 
 	return tagName, err
 }
