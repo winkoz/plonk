@@ -10,8 +10,8 @@ type BuildCommandMock struct {
 }
 
 // Build …
-func (oc *BuildCommandMock) Build(namespace string) error {
-	args := oc.Called(namespace)
+func (oc *BuildCommandMock) Build(namespace string, skipCache bool) error {
+	args := oc.Called(namespace, skipCache)
 	return args.Error(0)
 }
 
