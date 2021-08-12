@@ -1,0 +1,7 @@
+name: ingress-nginx
+variables: 
+  build:
+    COMPONENT: 'ingress-nignx'
+  environment:
+manifests:
+  -
