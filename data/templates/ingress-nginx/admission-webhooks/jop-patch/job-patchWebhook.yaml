@@ -1,28 +1,21 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ingress-nginx-admission-patch
-  annotations:
-    helm.sh/hook: post-install,post-upgrade
-    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+  name: {{.NAME}}-{{.ENV}}-admission-webhook-patch-webhook
+  namespace: {{.NAME}}-{{.ENV}}
   labels:
-    helm.sh/chart: ingress-nginx-3.33.0
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.47.0
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/instance: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/managed-by: Plonk
     app.kubernetes.io/component: admission-webhook
-  namespace: ingress-nginx
 spec:
   template:
     metadata:
-      name: ingress-nginx-admission-patch
+      name: {{.NAME}}-{{.ENV}}-admission-webhook-patch-webhook
       labels:
-        helm.sh/chart: ingress-nginx-3.33.0
-        app.kubernetes.io/name: ingress-nginx
-        app.kubernetes.io/instance: ingress-nginx
-        app.kubernetes.io/version: 0.47.0
-        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
+        app.kubernetes.io/instance: {{.NAME}}-{{.ENV}}
+        app.kubernetes.io/managed-by: Plonk
         app.kubernetes.io/component: admission-webhook
     spec:
       containers:
@@ -31,10 +24,10 @@ spec:
           imagePullPolicy: IfNotPresent
           args:
             - patch
-            - --webhook-name=ingress-nginx-admission
+            - --webhook-name={{.NAME}}-{{.ENV}}-admission-patch-webhook
             - --namespace=$(POD_NAMESPACE)
             - --patch-mutating=false
-            - --secret-name=ingress-nginx-admission
+            - --secret-name={{.NAME}}-{{.ENV}}-admission-secret
             - --patch-failure-policy=Fail
           env:
             - name: POD_NAMESPACE
@@ -42,7 +35,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
       restartPolicy: OnFailure
-      serviceAccountName: ingress-nginx-admission
+      serviceAccountName: {{.NAME}}-{{.ENV}}-admission-webhook-serviceaccount
       securityContext:
         runAsNonRoot: true
         runAsUser: 2000
