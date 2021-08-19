@@ -1,0 +1,7 @@
+{
+	"Plonk Variable": {
+		"prefix": ["pvar", "plonk-var"],
+		"body": ["{{.$CLIPBOARD}}"],
+		"description": "Plonk template variable."
+	}
+}
