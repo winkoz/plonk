@@ -35,10 +35,10 @@ spec:
                   - /wait-shutdown
           args:
             - /nginx-ingress-controller
-            - --publish-service=$(POD_NAMESPACE)//{{.NAME}}-{{.ENV}}-controller-service
+            - --publish-service=$(POD_NAMESPACE)/{{.NAME}}-{{.ENV}}-controller-service
             - --election-id=ingress-controller-leader
             - --ingress-class=nginx
-            - --configmap=$(POD_NAMESPACE)//{{.NAME}}-{{.ENV}}-controller-configmap
+            - --configmap=$(POD_NAMESPACE)/{{.NAME}}-{{.ENV}}-controller-configmap
             - --validating-webhook=:{{.CONTROLLER_VALIDATING_WEBHOOK_PORT}}
             - --validating-webhook-certificate=/usr/local/certificates/cert
             - --validating-webhook-key=/usr/local/certificates/key
