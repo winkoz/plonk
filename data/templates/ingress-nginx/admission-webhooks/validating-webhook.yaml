@@ -15,7 +15,7 @@ webhooks:
       - apiGroups:
           - networking.k8s.io
         apiVersions:
-          - v1beta1
+          - {{.WEBHOOK_API_VERSION}}
         operations:
           - CREATE
           - UPDATE
@@ -25,7 +25,7 @@ webhooks:
     sideEffects: None
     admissionReviewVersions:
       - v1
-      - v1beta1
+      - {{.WEBHOOK_API_VERSION}}
     clientConfig:
       service:
         namespace: {{.NAME}}-{{.ENV}}

@@ -20,8 +20,8 @@ spec:
     spec:
       containers:
         - name: patch
-          image: docker.io/jettech/kube-webhook-certgen:v1.5.1
-          imagePullPolicy: IfNotPresent
+          image: {{.WEBHOOK_IMAGE}}
+          imagePullPolicy: {{.IMAGE_PULLPOLICY}}
           args:
             - patch
             - --webhook-name={{.NAME}}-{{.ENV}}-admission-patch-webhook
@@ -34,8 +34,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-      restartPolicy: OnFailure
+      restartPolicy: {{.WEBHOOK_RESTART_POLICY}}
       serviceAccountName: {{.NAME}}-{{.ENV}}-admission-webhook-serviceaccount
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 2000
+        runAsNonRoot: {{.WEBHOOK_RUN_AS_NON_ROOT}}
+        runAsUser: {{.WEBHOOK_RUN_AS_USER}}

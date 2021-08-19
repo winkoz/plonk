@@ -2,7 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
+    {{if (eq .SERVICE_PROVIDER "digital_ocean")}}
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: 'true'
+    {{end}}
   labels:
     app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
     app.kubernetes.io/instance: {{.NAME}}-{{.ENV}}
@@ -15,11 +17,11 @@ spec:
   externalTrafficPolicy: Local
   ports:
     - name: http
-      port: 80
+      port: {{.CONTROLLER_SERVICE_HTTP_PORT}}
       protocol: TCP
       targetPort: http
     - name: https
-      port: 443
+      port: {{.CONTROLLER_SERVICE_HTTPS_PORT}}
       protocol: TCP
       targetPort: https
   selector:

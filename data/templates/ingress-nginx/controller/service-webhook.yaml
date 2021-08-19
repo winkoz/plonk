@@ -12,7 +12,7 @@ spec:
   type: ClusterIP
   ports:
     - name: https-webhook
-      port: 443
+      port: {{.CONTROLLER_SERVICE_WEBHOOK_HTTPS_PORT}}
       targetPort: webhook
   selector:
     app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
