@@ -45,4 +45,20 @@ variables:
     CONTROLLER_AUTOMOUNT_SERVICE_TOKEN: true
   environment:
 manifests:
-  -
+  - controller/serviceaccount.yaml
+  - controller/configmap.yaml
+  - cluster-role.yaml
+  - cluster-rolebinding.yaml
+  - controller/role.yaml
+  - controller/rolebinding.yaml
+  - controller/service-webhook.yaml
+  - controller/service.yaml
+  - controller/deployment.yaml
+  - admission-webhooks/validating-webhook.yaml
+  - admission-webhooks/job-patch/serviceaccount.yaml
+  - admission-webhooks/job-patch/clusterrole.yaml
+  - admission-webhooks/job-patch/clusterrolebinding.yaml
+  - admission-webhooks/job-patch/role.yaml
+  - admission-webhooks/job-patch/rolebinding.yaml
+  - admission-webhooks/job-patch/job-createSecret.yaml
+  - admission-webhooks/job-patch/job-patchWebhook.yaml
