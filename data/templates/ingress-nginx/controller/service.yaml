@@ -14,7 +14,7 @@ metadata:
   namespace: {{.NAME}}-{{.ENV}}
 spec:
   type: LoadBalancer
-  externalTrafficPolicy: Local
+  externalTrafficPolicy: Cluster
   ports:
     - name: http
       port: {{.CONTROLLER_SERVICE_HTTP_PORT}}
