@@ -1,0 +1,33 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: {{.NAME}}-{{.ENV}}-admission-webhook-validating
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/instance: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/managed-by: Plonk
+    app.kubernetes.io/component: admission-webhook
+webhooks:
+  - name: validate.nginx.ingress.kubernetes.io
+    matchPolicy: Equivalent
+    rules:
+      - apiGroups:
+          - networking.k8s.io
+        apiVersions:
+          - {{.WEBHOOK_API_VERSION}}
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - ingresses
+    failurePolicy: Fail
+    sideEffects: None
+    admissionReviewVersions:
+      - v1
+      - {{.WEBHOOK_API_VERSION}}
+    clientConfig:
+      service:
+        namespace: {{.NAME}}-{{.ENV}}
+        name: {{.NAME}}-{{.ENV}}-controller-admission 
+        path: /networking/v1beta1/ingresses

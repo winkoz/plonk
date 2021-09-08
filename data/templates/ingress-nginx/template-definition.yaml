@@ -1,0 +1,64 @@
+name: ingress-nginx
+variables: 
+  build:
+    COMPONENT: 'ingress-nignx'
+    IMAGE_PULLPOLICY: 'IfNotPresent'
+    SERVICE_PROVIDER: 'digital_ocean'
+
+    ############################################################################
+    ## Webhook
+    ############################################################################
+    WEBHOOK_API_VERSION: 'v1beta1'
+    WEBHOOK_IMAGE: 'docker.io/jettech/kube-webhook-certgen:v1.5.1'
+    WEBHOOK_RESTART_POLICY: 'OnFailure'
+    WEBHOOK_RUN_AS_NON_ROOT: 'true'
+    WEBHOOK_RUN_AS_USER: 2000
+
+    ###########################################################################
+    ## Controller
+    ############################################################################
+    CONTROLLER_HEALTHZ_PORT: 10254
+    CONTROLLER_REVISION_HISTORY_LIMIT: 10
+    CONTROLLER_MINIMUM_READY_SECONDS: 0
+    CONTROLLER_IMAGE: 'k8s.gcr.io/ingress-nginx/controller:v0.46.0@sha256:52f0058bed0a17ab0fb35628ba97e8d52b5d32299fbc03cc0f6c7b9ff036b61a'
+    CONTROLLER_VALIDATING_WEBHOOK_PORT: 8443
+    CONTROLLER_HTTP_PORT: 80
+    CONTROLLER_HTTPS_PORT: 443
+    CONTROLLER_SERVICE_WEBHOOK_HTTPS_PORT: 443
+    CONTROLLER_SERVICE_HTTP_PORT: 80
+    CONTROLLER_SERVICE_HTTPS_PORT: 443
+    CONTROLLER_RUN_AS_USER: 101
+    CONTROLLER_ALLOW_PRIVILIGES_ESCALATION: true
+    CONTROLLER_LIVENESS_PROBE_FAILURE_THRESHOLD: 5
+    CONTROLLER_LIVENESS_PROBE_INITIAL_DELAY_SECONDS: 10
+    CONTROLLER_LIVENESS_PROBE_PERIOD_SECONDS: 10
+    CONTROLLER_LIVENESS_SUCCESS_THRESHOLD: 1
+    CONTROLLER_LIVENESS_TIMEOUT_SECONDS: 1
+    CONTROLLER_READINESS_PROBE_FAILURE_THRESHOLD: 5
+    CONTROLLER_READINESS_PROBE_INITIAL_DELAY_SECONDS: 10
+    CONTROLLER_READINESS_PROBE_PERIOD_SECONDS: 10
+    CONTROLLER_READINESS_SUCCESS_THRESHOLD: 1
+    CONTROLLER_READINESS_TIMEOUT_SECONDS: 1
+    CONTROLLER_REQUEST_CPU: 100m
+    CONTROLLER_REQUEST_MEMORY: 90Mi
+    CONTROLLER_TERMINATION_GRACE_PERIOD_SECONDS: 300
+    CONTROLLER_AUTOMOUNT_SERVICE_TOKEN: true
+  environment:
+manifests:
+  - controller/serviceaccount.yaml
+  - controller/configmap.yaml
+  - cluster-role.yaml
+  - cluster-rolebinding.yaml
+  - controller/role.yaml
+  - controller/rolebinding.yaml
+  - controller/service-webhook.yaml
+  - controller/service.yaml
+  - controller/deployment.yaml
+  - admission-webhooks/validating-webhook.yaml
+  - admission-webhooks/job-patch/serviceaccount.yaml
+  - admission-webhooks/job-patch/clusterrole.yaml
+  - admission-webhooks/job-patch/clusterrolebinding.yaml
+  - admission-webhooks/job-patch/role.yaml
+  - admission-webhooks/job-patch/rolebinding.yaml
+  - admission-webhooks/job-patch/job-createSecret.yaml
+  - admission-webhooks/job-patch/job-patchWebhook.yaml

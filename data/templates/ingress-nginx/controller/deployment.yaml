@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/instance: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/managed-by: Plonk
+    app.kubernetes.io/component: controller
+  name: {{.NAME}}-{{.ENV}}-controller-deployment
+  namespace: {{.NAME}}-{{.ENV}}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
+      app.kubernetes.io/instance: {{.NAME}}-{{.ENV}}
+      app.kubernetes.io/component: controller
+  revisionHistoryLimit: {{.CONTROLLER_REVISION_HISTORY_LIMIT}}
+  minReadySeconds: {{.CONTROLLER_MINIMUM_READY_SECONDS}}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
+        app.kubernetes.io/instance: {{.NAME}}-{{.ENV}}
+        app.kubernetes.io/component: controller
+    spec:
+      dnsPolicy: ClusterFirst
+      containers:
+        - name: controller
+          image: {{.CONTROLLER_IMAGE}}
+          imagePullPolicy: {{.IMAGE_PULLPOLICY}}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /wait-shutdown
+          args:
+            - /nginx-ingress-controller
+            - --publish-service=$(POD_NAMESPACE)/{{.NAME}}-{{.ENV}}-controller-service
+            - --election-id=ingress-controller-leader
+            - --ingress-class=nginx
+            - --configmap=$(POD_NAMESPACE)/{{.NAME}}-{{.ENV}}-controller-configmap
+            - --validating-webhook=:{{.CONTROLLER_VALIDATING_WEBHOOK_PORT}}
+            - --validating-webhook-certificate=/usr/local/certificates/cert
+            - --validating-webhook-key=/usr/local/certificates/key
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
+            runAsUser: {{.CONTROLLER_RUN_AS_USER}}
+            allowPrivilegeEscalation: {{.CONTROLLER_ALLOW_PRIVILIGES_ESCALATION}}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: LD_PRELOAD
+              value: /usr/local/lib/libmimalloc.so
+          livenessProbe:
+            failureThreshold: {{.CONTROLLER_LIVENESS_PROBE_FAILURE_THRESHOLD}}
+            httpGet:
+              path: /healthz
+              port: {{.CONTROLLER_HEALTHZ_PORT}}
+              scheme: HTTP
+            initialDelaySeconds: {{.CONTROLLER_LIVENESS_PROBE_INITIAL_DELAY_SECONDS}}
+            periodSeconds: {{.CONTROLLER_LIVENESS_PROBE_PERIOD_SECONDS}}
+            successThreshold: {{.CONTROLLER_LIVENESS_SUCCESS_THRESHOLD}}
+            timeoutSeconds: {{.CONTROLLER_LIVENESS_TIMEOUT_SECONDS}}
+          readinessProbe:
+            failureThreshold: {{.CONTROLLER_READINESS_PROBE_FAILURE_THRESHOLD}}
+            httpGet:
+              path: /healthz
+              port: {{.CONTROLLER_HEALTHZ_PORT}}
+              scheme: HTTP
+            initialDelaySeconds: {{.CONTROLLER_READINESS_PROBE_INITIAL_DELAY_SECONDS}}
+            periodSeconds: {{.CONTROLLER_READINESS_PROBE_PERIOD_SECONDS}}
+            successThreshold: {{.CONTROLLER_READINESS_SUCCESS_THRESHOLD}}
+            timeoutSeconds: {{.CONTROLLER_READINESS_TIMEOUT_SECONDS}}
+          ports:
+            - name: http
+              containerPort: {{.CONTROLLER_HTTP_PORT}}
+              protocol: TCP
+            - name: https
+              containerPort: {{.CONTROLLER_HTTPS_PORT}}
+              protocol: TCP
+            - name: webhook
+              containerPort: {{.CONTROLLER_VALIDATING_WEBHOOK_PORT}}
+              protocol: TCP
+          volumeMounts:
+            - name: webhook-cert
+              mountPath: /usr/local/certificates/
+              readOnly: true
+          resources:
+            requests:
+              cpu: {{.CONTROLLER_REQUEST_CPU}}
+              memory: {{.CONTROLLER_REQUEST_MEMORY}}
+      nodeSelector:
+        kubernetes.io/os: linux
+      serviceAccountName: {{.NAME}}-{{.ENV}}-controller-serviceaccount
+      terminationGracePeriodSeconds: {{.CONTROLLER_TERMINATION_GRACE_PERIOD_SECONDS}}
+      volumes:
+        - name: webhook-cert
+          secret:
+            secretName: {{.NAME}}-{{.ENV}}-admission-secret

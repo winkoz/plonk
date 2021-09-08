@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{.NAME}}-{{.ENV}}-admission-webhook-role
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/instance: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/managed-by: Plonk
+    app.kubernetes.io/component: admission-webhook
+rules:
+  - apiGroups:
+      - ''
+    resources:
+      - secrets
+    verbs:
+      - get
+      - create

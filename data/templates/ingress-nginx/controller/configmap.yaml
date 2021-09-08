@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/instance: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/managed-by: Plonk
+    app.kubernetes.io/component: controller
+  name: {{.NAME}}-{{.ENV}}-controller-configmap
+  namespace: {{.NAME}}-{{.ENV}}
+data:
+  use-proxy-protocol: 'true'

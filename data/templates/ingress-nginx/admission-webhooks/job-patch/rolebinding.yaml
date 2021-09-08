@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{.NAME}}-{{.ENV}}-admission-webhook-rolebinding
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/instance: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/managed-by: Plonk
+    app.kubernetes.io/component: admission-webhook
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{.NAME}}-{{.ENV}}-admission-webhook-role
+subjects:
+  - kind: ServiceAccount
+    name: {{.NAME}}-{{.ENV}}-admission-webhook-serviceaccount
+    namespace: {{.NAME}}-{{.ENV}}

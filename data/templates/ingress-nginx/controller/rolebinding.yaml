@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/instance: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/managed-by: Plonk
+    app.kubernetes.io/component: controller
+  name: {{.NAME}}-{{.ENV}}-controller-rolebinding
+  namespace: {{.NAME}}-{{.ENV}}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{.NAME}}-{{.ENV}}-controller-role
+subjects:
+  - kind: ServiceAccount
+    name: {{.NAME}}-{{.ENV}}-controller-serviceaccount
+    namespace: {{.NAME}}-{{.ENV}}

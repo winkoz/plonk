@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/instance: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/managed-by: Plonk
+    app.kubernetes.io/component: controller
+  name: {{.NAME}}-{{.ENV}}-controller-admission
+  namespace: {{.NAME}}-{{.ENV}}
+spec:
+  type: ClusterIP
+  ports:
+    - name: https-webhook
+      port: {{.CONTROLLER_SERVICE_WEBHOOK_HTTPS_PORT}}
+      targetPort: webhook
+  selector:
+    app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/instance: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/component: controller

@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{.NAME}}-{{.ENV}}-admission-webhook-clusterrolebinding
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app.kubernetes.io/name: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/instance: {{.NAME}}-{{.ENV}}
+    app.kubernetes.io/managed-by: Plonk
+    app.kubernetes.io/component: admission-webhook
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{.NAME}}-{{.ENV}}-admission-webhook-clusterrole
+subjects:
+  - kind: ServiceAccount
+    name: {{.NAME}}-{{.ENV}}-admission-webhook-serviceaccount
+    namespace: {{.NAME}}-{{.ENV}}
