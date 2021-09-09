@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/winkoz/plonk/data"
 	"github.com/winkoz/plonk/internal/io/log"
+	"github.com/winkoz/plonk/internal/network"
 )
 
 // WalkFunc (s Service)is the callback method for the Walk function
@@ -32,11 +32,15 @@ type Service interface {
 	IsValidPath(path string) error
 }
 
-type service struct{}
+type service struct {
+	networkService network.Service
+}
 
 // NewService creates a new Service object
 func NewService() Service {
-	return service{}
+	return service{
+		networkService: network.NewService(),
+	}
 }
 
 // GetCurrentDir returns the directory in which the project is running.
@@ -90,7 +94,7 @@ func (s service) ReadFile(path string) ([]byte, error) {
 	var resData []byte
 	var err error
 
-	if isValidUrl(path) {
+	if s.networkService.IsUrl(path) {
 		resData, err = s.readFileFromURL(path)
 	} else if strings.Contains(path, BinaryFile) {
 		resData, err = s.readFileFromBinary(path)
@@ -178,20 +182,6 @@ func (s service) IsValidPath(path string) error {
 //////////////////////////////////////////////////////////////////
 // Internal functions
 //////////////////////////////////////////////////////////////////
-
-func isValidUrl(toTest string) bool {
-	_, err := url.ParseRequestURI(toTest)
-	if err != nil {
-		return false
-	}
-
-	u, err := url.Parse(toTest)
-	if err != nil || u.Scheme == "" || u.Host == "" {
-		return false
-	}
-
-	return true
-}
 
 func (s service) readFileFromBinary(path string) ([]byte, error) {
 	binaryPath := strings.TrimPrefix(path, BinaryFile+"/")
