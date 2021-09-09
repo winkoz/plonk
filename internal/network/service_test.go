@@ -32,6 +32,14 @@ func (suite *ServiceTestSuite) TestIsValidUrl_ReturnsFalse_WhenURLIsNotWithinAll
 	assert.False(suite.T(), suite.sut.IsValidUrl("https://not-allowed-url.com"))
 }
 
+func (suite *ServiceTestSuite) TestIsUrl_ReturnsFalse_WhenPassedURLIsNotISOComplaint() {
+	assert.False(suite.T(), suite.sut.IsUrl("not_valid_url"))
+}
+
+func (suite *ServiceTestSuite) TestIsUrl_ReturnsTrue_WhenPassedURLIsISOComplaint() {
+	assert.True(suite.T(), suite.sut.IsUrl("https://winkoz.com/plonk"))
+}
+
 func TestServiceTestSuite(t *testing.T) {
 	suite.Run(t, new(ServiceTestSuite))
 }
