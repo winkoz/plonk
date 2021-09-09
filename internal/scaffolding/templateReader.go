@@ -8,6 +8,7 @@ import (
 	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
 	"github.com/winkoz/plonk/internal/io/log"
+	"github.com/winkoz/plonk/internal/network"
 )
 
 // TemplateReader reads a project configuration from disk based on a passed configuration file
@@ -16,9 +17,10 @@ type TemplateReader interface {
 }
 
 type templateReader struct {
-	ctx        config.Context
-	yamlReader io.YamlReader
-	service    io.Service
+	ctx            config.Context
+	yamlReader     io.YamlReader
+	service        io.Service
+	networkService network.Service
 }
 
 // TemplateData contains the list of script files
@@ -38,9 +40,10 @@ type TemplateData struct {
 func NewTemplateReader(ctx config.Context) TemplateReader {
 	ioService := io.NewService()
 	return templateReader{
-		ctx:        ctx,
-		yamlReader: io.NewYamlReader(ioService),
-		service:    ioService,
+		ctx:            ctx,
+		yamlReader:     io.NewYamlReader(ioService),
+		service:        ioService,
+		networkService: network.NewService(),
 	}
 }
 
@@ -110,6 +113,10 @@ func (tr templateReader) locateFiles(templateName string, filePaths []string) ([
 }
 
 func (tr templateReader) fileLocator(templateName string, fileName string) (string, error) {
+	if tr.networkService.IsValidUrl(fileName) {
+		return fileName, nil
+	}
+
 	filePath := filepath.Join(templateName, fileName)
 	if tr.ctx.CustomTemplatesPath != "" {
 		customPath := filepath.Join(tr.ctx.CustomTemplatesPath, filePath)
