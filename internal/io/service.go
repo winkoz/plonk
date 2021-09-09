@@ -3,12 +3,14 @@ package io
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/winkoz/plonk/data"
 	"github.com/winkoz/plonk/internal/io/log"
+	"github.com/winkoz/plonk/internal/network"
 )
 
 // WalkFunc (s Service)is the callback method for the Walk function
@@ -30,11 +32,15 @@ type Service interface {
 	IsValidPath(path string) error
 }
 
-type service struct{}
+type service struct {
+	networkService network.Service
+}
 
 // NewService creates a new Service object
 func NewService() Service {
-	return service{}
+	return service{
+		networkService: network.NewService(),
+	}
 }
 
 // GetCurrentDir returns the directory in which the project is running.
@@ -69,7 +75,7 @@ func (s service) FileExists(filename string) bool {
 func (s service) CreatePath(path string) error {
 	err := os.MkdirAll(path, OwnerPermission)
 	if err != nil && !os.IsExist(err) {
-		log.Errorf("CreatePath %s failed. %v", path, err)
+		log.Errorf("createPath %s failed. %v", path, err)
 		return err
 	}
 	return nil
@@ -88,18 +94,19 @@ func (s service) ReadFile(path string) ([]byte, error) {
 	var resData []byte
 	var err error
 
-	if strings.Contains(path, BinaryFile) {
-		binaryPath := strings.TrimPrefix(path, BinaryFile+"/")
-		resData, err = data.Asset(binaryPath)
+	if s.networkService.IsUrl(path) {
+		resData, err = s.readFileFromURL(path)
+	} else if strings.Contains(path, BinaryFile) {
+		resData, err = s.readFileFromBinary(path)
 	} else if !s.FileExists(path) {
-		err = fmt.Errorf("File does not exist at path: %s", path)
+		err = fmt.Errorf("file does not exist at path: %s", path)
 		log.Error(err)
 	} else {
 		resData, err = ioutil.ReadFile(path)
 	}
 
 	if err != nil {
-		log.Errorf("Error reading file %s: %+v", path, err)
+		log.Errorf("error reading file %s: %+v", path, err)
 		return []byte{}, err
 	}
 
@@ -170,4 +177,29 @@ func (s service) Write(targetFilePath string, content string) error {
 func (s service) IsValidPath(path string) error {
 	_, err := os.Stat(path)
 	return err
+}
+
+//////////////////////////////////////////////////////////////////
+// Internal functions
+//////////////////////////////////////////////////////////////////
+
+func (s service) readFileFromBinary(path string) ([]byte, error) {
+	binaryPath := strings.TrimPrefix(path, BinaryFile+"/")
+	return data.Asset(binaryPath)
+}
+
+func (s service) readFileFromURL(path string) ([]byte, error) {
+	response, err := http.Get(path)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	defer response.Body.Close()
+	bytes, err := ioutil.ReadAll(response.Body)
+
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return bytes, nil
 }
