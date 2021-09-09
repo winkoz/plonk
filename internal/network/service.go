@@ -1,6 +1,7 @@
 package network
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
 )
@@ -40,6 +41,8 @@ func (s service) parseUrl(maybeUrl string) (*url.URL, error) {
 	u, err := url.ParseRequestURI(maybeUrl)
 	if err != nil {
 		return nil, err
+	} else if u == nil || u.Scheme == "" || u.Host == "" {
+		return nil, fmt.Errorf("invalid url %s", maybeUrl)
 	}
 
 	return u, nil

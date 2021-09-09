@@ -33,7 +33,7 @@ func (suite *ServiceTestSuite) TestIsValidUrl_ReturnsFalse_WhenURLIsNotWithinAll
 }
 
 func (suite *ServiceTestSuite) TestIsUrl_ReturnsFalse_WhenPassedURLIsNotISOComplaint() {
-	assert.False(suite.T(), suite.sut.IsUrl("not_valid_url"))
+	assert.False(suite.T(), suite.sut.IsUrl("/home/user/github.com/winkoz/plonk-test/plonk.yaml"))
 }
 
 func (suite *ServiceTestSuite) TestIsUrl_ReturnsTrue_WhenPassedURLIsISOComplaint() {
