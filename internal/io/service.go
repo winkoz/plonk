@@ -109,27 +109,6 @@ func (s service) ReadFile(path string) ([]byte, error) {
 	return resData, nil
 }
 
-func (s service) readFileFromBinary(path string) ([]byte, error) {
-	binaryPath := strings.TrimPrefix(path, BinaryFile+"/")
-	return data.Asset(binaryPath)
-}
-
-func (s service) readFileFromURL(path string) ([]byte, error) {
-	response, err := http.Get(path)
-	if err != nil {
-		return []byte{}, err
-	}
-
-	defer response.Body.Close()
-	bytes, err := ioutil.ReadAll(response.Body)
-
-	if err != nil {
-		return []byte{}, err
-	}
-
-	return bytes, nil
-}
-
 // ReadFileToString reads the contents of a file and spits them out as a string
 func (s service) ReadFileToString(path string) (string, error) {
 	bytes, err := s.ReadFile(path)
@@ -196,6 +175,10 @@ func (s service) IsValidPath(path string) error {
 	return err
 }
 
+//////////////////////////////////////////////////////////////////
+// Internal functions
+//////////////////////////////////////////////////////////////////
+
 func isValidUrl(toTest string) bool {
 	_, err := url.ParseRequestURI(toTest)
 	if err != nil {
@@ -208,4 +191,25 @@ func isValidUrl(toTest string) bool {
 	}
 
 	return true
+}
+
+func (s service) readFileFromBinary(path string) ([]byte, error) {
+	binaryPath := strings.TrimPrefix(path, BinaryFile+"/")
+	return data.Asset(binaryPath)
+}
+
+func (s service) readFileFromURL(path string) ([]byte, error) {
+	response, err := http.Get(path)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	defer response.Body.Close()
+	bytes, err := ioutil.ReadAll(response.Body)
+
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return bytes, nil
 }
