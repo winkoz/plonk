@@ -1,0 +1,7 @@
+name: letsencrypt
+variables: 
+  build:
+    LETS_ENCRYPT_EMAIL_ADDRESS: contact@winkoz.com
+  environment:
+manifests:
+  - cluster-issuer.yaml
