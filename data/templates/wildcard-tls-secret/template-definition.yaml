@@ -1,6 +1,7 @@
 name: secret
 variables: 
   build:
+    HOST_PROVIDER: 'digitalocean'
     COMPONENT: tls-secret
     ISSUER_NAME: ''
     ISSUER_TYPE: 'ClusterIssuer'

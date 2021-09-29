@@ -1,6 +1,8 @@
 name: alertmanager
 variables: 
   build:
+    HOST_PROVIDER: 'digitalocean'
+    DO_SECRET_DNS_NAME: digitalocean-dns-cert-production
   environment:
 manifests:
   - https://github.com/jetstack/cert-manager/releases/download/v1.5.3/cert-manager.crds.yaml

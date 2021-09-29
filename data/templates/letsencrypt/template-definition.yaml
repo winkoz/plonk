@@ -2,6 +2,8 @@ name: letsencrypt
 variables: 
   build:
     LETS_ENCRYPT_EMAIL_ADDRESS: contact@winkoz.com
+    SECRET_SHOULD_REPLICATE: 'true'
   environment:
 manifests:
+  - digitalocean-dns-secret.yaml
   - cluster-issuer.yaml

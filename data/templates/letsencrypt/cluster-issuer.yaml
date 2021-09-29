@@ -12,6 +12,14 @@ spec:
       name: letsencrypt-{{.NAME}}-{{.ENV}}-private-key
     # Add a single challenge solver, HTTP01 using nginx
     solvers:
+    {{ if (eq .HOST_PROVIDER "digitalocean") }}
+    - dns01:
+        digitalocean:
+          tokenSecretRef:
+            name: digitalocean-dns-{{.NAME}}-{{.ENV}}
+            key: access-token
+    {{ else }}
     - http01:
         ingress:
           class: nginx
+    {{ end }}
