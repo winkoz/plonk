@@ -8,6 +8,7 @@ import (
 
 	"github.com/winkoz/plonk/internal/config"
 	"github.com/winkoz/plonk/internal/io"
+	"github.com/winkoz/plonk/internal/network"
 )
 
 func Test_templateReader_Read(t *testing.T) {
@@ -19,11 +20,13 @@ func Test_templateReader_Read(t *testing.T) {
 	invalidTemplateData, _ := ioutil.ReadFile(customTemplatePath + "/invalid/template-definition.yaml")
 	invalidTemplate := string(invalidTemplateData)
 	ioService := io.NewService()
+	networkService := network.NewService()
 	yamlReader := io.NewYamlReader(ioService)
 	type fields struct {
-		ctx        config.Context
-		yamlReader io.YamlReader
-		ioService  io.Service
+		ctx            config.Context
+		yamlReader     io.YamlReader
+		ioService      io.Service
+		networkService network.Service
 	}
 	type args struct {
 		templateName string
@@ -39,9 +42,10 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "successfully loads a template data file located in the default template folder into a TemplateData structure",
 			fields: fields{
-				ctx:        ctx,
-				ioService:  ioService,
-				yamlReader: yamlReader,
+				ctx:            ctx,
+				ioService:      ioService,
+				networkService: networkService,
+				yamlReader:     yamlReader,
 			},
 			args: args{
 				templateName: "default",
@@ -84,9 +88,10 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "successfully loads a template data file located in the custom template folder into a TemplateData structure",
 			fields: fields{
-				ctx:        ctx,
-				ioService:  ioService,
-				yamlReader: yamlReader,
+				ctx:            ctx,
+				ioService:      ioService,
+				networkService: networkService,
+				yamlReader:     yamlReader,
 			},
 			args: args{
 				templateName: "custom",
@@ -118,9 +123,10 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "returns an error when the configuration file cannot be located",
 			fields: fields{
-				ctx:        ctx,
-				ioService:  ioService,
-				yamlReader: yamlReader,
+				ctx:            ctx,
+				ioService:      ioService,
+				networkService: networkService,
+				yamlReader:     yamlReader,
 			},
 			args: args{
 				templateName: "non-existent-config-file",
@@ -134,9 +140,10 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "returns an error when the configuration file is invalid",
 			fields: fields{
-				ctx:        ctx,
-				ioService:  ioService,
-				yamlReader: yamlReader,
+				ctx:            ctx,
+				ioService:      ioService,
+				networkService: networkService,
+				yamlReader:     yamlReader,
 			},
 			args: args{
 				templateName: "invalid",
@@ -150,9 +157,10 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "returns an error when the configuration file points to a non-existent file within the default path",
 			fields: fields{
-				ctx:        ctx,
-				ioService:  ioService,
-				yamlReader: yamlReader,
+				ctx:            ctx,
+				ioService:      ioService,
+				networkService: networkService,
+				yamlReader:     yamlReader,
 			},
 			args: args{
 				templateName: "missingFiles",
@@ -166,9 +174,10 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "returns an error when the configuration file points to a non-existent file within scripts",
 			fields: fields{
-				ctx:        ctx,
-				ioService:  ioService,
-				yamlReader: yamlReader,
+				ctx:            ctx,
+				ioService:      ioService,
+				networkService: networkService,
+				yamlReader:     yamlReader,
 			},
 			args: args{
 				templateName: "missingManifests",
@@ -184,9 +193,10 @@ func Test_templateReader_Read(t *testing.T) {
 		{
 			name: "returns an error when the configuration file points to a non-existent file within scripts",
 			fields: fields{
-				ctx:        ctx,
-				ioService:  ioService,
-				yamlReader: yamlReader,
+				ctx:            ctx,
+				ioService:      ioService,
+				networkService: networkService,
+				yamlReader:     yamlReader,
 			},
 			args: args{
 				templateName: "missingManifests",
@@ -203,9 +213,10 @@ func Test_templateReader_Read(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tf := templateReader{
-				ctx:        ctx,
-				service:    tt.fields.ioService,
-				yamlReader: tt.fields.yamlReader,
+				ctx:            ctx,
+				service:        tt.fields.ioService,
+				networkService: tt.fields.networkService,
+				yamlReader:     tt.fields.yamlReader,
 			}
 			got, err := tf.Read(tt.args.templateName)
 

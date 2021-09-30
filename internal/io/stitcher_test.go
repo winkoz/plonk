@@ -5,12 +5,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/winkoz/plonk/internal/network"
 )
 
 func Test_stitcher_Stitch(t *testing.T) {
 	fixturesPath := "../fixtures/stitcher"
 	targetPath := "/tmp/plonk/tests/deploy"
-	service := service{}
+	service := service{networkService: network.NewService()}
 	service.DeletePath(targetPath)
 	service.CreatePath(targetPath)
 

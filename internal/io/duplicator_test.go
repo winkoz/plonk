@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/winkoz/plonk/internal/network"
 )
 
 func Test_duplicator_CopyMultiple(t *testing.T) {
 	fixturesPath := "../fixtures/scripts"
 	testTargetPath := "/tmp/plonk/tests/deploy"
-	service := service{}
+	service := service{
+		networkService: network.NewService(),
+	}
 	service.CreatePath(testTargetPath)
 	type args struct {
 		targetPath      string
