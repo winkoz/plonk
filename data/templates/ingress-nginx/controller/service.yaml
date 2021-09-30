@@ -4,6 +4,7 @@ metadata:
   annotations:
     {{if (eq .SERVICE_PROVIDER "digital_ocean")}}
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: 'true'
+    service.beta.kubernetes.io/do-loadbalancer-hostname: "{{.WILDCARD_HOSTNAME}}"
     {{end}}
   labels:
     app.kubernetes.io/name: {{.NAME}}-{{.ENV}}

@@ -26,6 +26,11 @@ spec:
         - --github-org={{.OAUTH_ORGANIZATION}}
         - --upstream=file:///dev/null
         - --http-address=0.0.0.0:4180
+        - --whitelist-domain=".winkoz.com"
+        - --auth-logging={{.OAUTH_LOG_ATTEMPTS}}
+        - --redirect-url=https://{{.HOSTNAME}}/oauth2/callback
+        - --set-xauthrequest={{.OAUTH_SET_XAUTHREQUEST}}
+        - --set-authorization-header={{.OAUTH_SET_AUTH_HEADER}}
         env:
         - name: OAUTH2_PROXY_CLIENT_ID
           value: {{.OAUTH2_PROXY_CLIENT_ID}}

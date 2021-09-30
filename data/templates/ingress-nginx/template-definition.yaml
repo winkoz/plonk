@@ -4,6 +4,7 @@ variables:
     COMPONENT: 'ingress-nignx'
     IMAGE_PULLPOLICY: 'IfNotPresent'
     SERVICE_PROVIDER: 'digital_ocean'
+    WILDCARD_HOSTNAME: ''
 
     ############################################################################
     ## Webhook
