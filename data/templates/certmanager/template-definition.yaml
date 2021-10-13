@@ -1,7 +1,7 @@
 name: certmanager
 variables: 
   build:
-    HOST_PROVIDER: 'digitalocean'
+    HOST_PROVIDER: digitalocean
     DO_SECRET_DNS_NAME: digitalocean-dns-cert-production
   environment:
 manifests:

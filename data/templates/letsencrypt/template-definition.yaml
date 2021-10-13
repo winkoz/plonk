@@ -3,6 +3,8 @@ variables:
   build:
     LETS_ENCRYPT_EMAIL_ADDRESS: contact@winkoz.com
     SECRET_SHOULD_REPLICATE: 'true'
+    HOST_PROVIDER: digitalocean
+    DO_SECRET_TOKEN: ""
   environment:
 manifests:
   - digitalocean-dns-secret.yaml
