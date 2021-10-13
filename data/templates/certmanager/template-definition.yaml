@@ -1,4 +1,4 @@
-name: alertmanager
+name: certmanager
 variables: 
   build:
     HOST_PROVIDER: 'digitalocean'
