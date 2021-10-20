@@ -2,8 +2,9 @@ name: certmanager
 variables: 
   build:
     HOST_PROVIDER: digitalocean
-    DO_SECRET_DNS_NAME: digitalocean-dns-cert-production
+    DO_SECRET_DNS_NAME: digitalocean-dns-infra-production
   environment:
 manifests:
   - https://github.com/jetstack/cert-manager/releases/download/v1.5.3/cert-manager.crds.yaml
   - https://github.com/jetstack/cert-manager/releases/download/v1.5.3/cert-manager.yaml
+  - do-dns-name-empty-secret.yaml

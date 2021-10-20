@@ -1,4 +1,4 @@
-apiVersion: batch/v1beta1 #batch/v1 => Our cluster is at 1.20. When we reach 1.21 we need to use batch/v1 
+apiVersion: batch/v1 #batch/v1 => Our cluster is at 1.20. When we reach 1.21 we need to use batch/v1 
 kind: CronJob 
 metadata:
   name: {{.NAME}}-{{.ENV}}-cronjob

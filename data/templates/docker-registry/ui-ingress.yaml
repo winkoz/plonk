@@ -1,3 +1,4 @@
+{{if (eq .DEPLOY_UI "true")}}
 {{ if (eq .USE_WILDCARD_TLS_CERTIFICATE "true") }}
 #######################################################
 ## Wildcard TLS Cert
@@ -144,4 +145,5 @@ spec:
             port: 
               number: {{.OAUTH_CONTAINER_PORT}}
   {{end}}
+{{end}}
 {{end}}
