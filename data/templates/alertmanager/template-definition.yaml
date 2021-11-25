@@ -26,6 +26,7 @@ variables:
     AUTH_HTPASSWD_PATH: ''
     USE_WILDCARD_TLS_CERTIFICATE: 'false'
     WILDCARD_TLS_NAMESPACE: 'default'
+    ADD_REPLICATED_SECRETS: "true"
     # OAuth configuration
     OAUTH_PROVIDER: 'github'
     OAUTH_EMAIL_DOMAIN: '*'

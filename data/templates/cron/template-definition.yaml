@@ -11,6 +11,7 @@ variables:
     DOCKER_IMGPULL_SECRET: "docker-registry-production-imgpull-secret"
     IMAGE_PULLPOLICY: 'IfNotPresent'
     CONTAINER_ARGS: ''
+    ADD_REPLICATED_SECRETS: "true"
 manifests:
   - docker-registry-empty-secret.yaml
   - cronjob.yaml

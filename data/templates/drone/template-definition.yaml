@@ -26,6 +26,7 @@ variables:
     SERVER_MOUNT_PATH: '/data'
     SERVER_MOUNT_SUBPATH: ''
     DRONE_RPC_HOST: ''
+    ADD_REPLICATED_SECRETS: "true"
     ### Runner specific configuration
     RUNNER_REPLICAS: 1
     RUNNER_DOCKER_IMAGE: 'drone/drone-runner-kube:1.0.0-rc.1'

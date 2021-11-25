@@ -21,6 +21,7 @@ variables:
     WILDCARD_TLS_NAMESPACE: 'default'
     AUTH_TYPE: "none"
     DOCKER_BASIC_AUTH_64ENCODED: ""
+    ADD_REPLICATED_SECRETS: "true"
     # OAuth configuration
     OAUTH_PROVIDER: 'github'
     OAUTH_EMAIL_DOMAIN: '*'

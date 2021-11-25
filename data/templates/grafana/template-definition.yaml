@@ -1,5 +1,5 @@
 name: grafana
-variables: 
+variables:
   build:
     USE_WILDCARD_TLS_CERTIFICATE: 'true'
     WILDCARD_TLS_NAMESPACE: 'default'
@@ -13,6 +13,7 @@ variables:
     REVISION_HISTORY_LIMIT: 10
     ORG_ID: 1
     COMPONENT: grafana
+    ADD_REPLICATED_SECRETS: "true"
 
     #################################################
     # PVC data storage variables
@@ -38,7 +39,7 @@ variables:
     RUN_AS_GROUP: 472
     FS_GROUP: 472
     RUN_AS_NON_ROOT: 'false'
-    
+
     #################################################
     # Credentials variables
     #################################################
@@ -50,7 +51,7 @@ variables:
     # - Grafana admin vars
     ADMIN_USER: ''
     ADMIN_PASSWORD: ''
-    
+
     #################################################
     # Dashboard specific information
     #################################################

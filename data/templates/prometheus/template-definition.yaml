@@ -44,6 +44,7 @@ variables:
     ALERTS_FILE_PATH: ''
     RULE_FILES_FILEPATH: ''
     SERVER_RULES_DIRECTORYPATH: /etc/rules
+    ADD_REPLICATED_SECRETS: "true"
     # OAuth configuration
     OAUTH_PROVIDER: 'github'
     OAUTH_EMAIL_DOMAIN: '*'
