@@ -1,0 +1,19 @@
+name: postgres
+variables:
+  build:
+    COMPONENT: postgres
+    POSTGRES_DOCKER_IMAGE: "postgres:10.7"
+    POSTGRES_DB: plonk_database
+    POSTGRES_USER: test
+    POSTGRES_PASSWORD: t3stp4ss
+    POSTGRES_PORT: 5432
+    POSTGRES_REPLICAS: 1
+    HOST_PROVIDER: digitalocean
+    ADD_REPLICATED_SECRETS: true
+    DO_SECRET_DNS_NAME: digitalocean-dns-infra-production
+manifests:
+  - configmap.yaml
+  - do-empty-secret.yaml
+  - pvc.yaml
+  - service.yaml
+  - deployment.yaml

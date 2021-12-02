@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.NAME}}-{{.ENV}}-{{.COMPONENT}}-deployment
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: {{.COMPONENT}}
+spec:
+  selector:
+    matchLabels:
+      app: {{.NAME}}-{{.ENV}}
+      tier: postgresql
+      component: {{.COMPONENT}}
+  replicas: {{.POSTGRES_}} # number of replica set
+  template:
+    metadata:
+      labels:
+        app: {{.NAME}}-{{.ENV}}
+        component: {{.COMPONENT}}
+        tier: postgresql
+    spec:
+      containers:
+        - name: {{.NAME}}-{{.ENV}}-{{.COMPONENT}}
+          image: {{.POSTGRES_DOCKER_IMAGE}}
+          ports:
+            - containerPort: {{.POSTGRES_PORT}} # expose container port
+          envFrom:
+            - configMapRef:
+                name: {{.NAME}}-{{.ENV}}-{{.COMPONENT}}-config
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data # mount point of do pv
+              name: postgres-data # name of our mount point pv
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: {{.NAME}}-{{.ENV}}-{{.COMPONENT}}-pvc
