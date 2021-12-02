@@ -12,7 +12,7 @@ spec:
       app: {{.NAME}}-{{.ENV}}
       tier: postgresql
       component: {{.COMPONENT}}
-  replicas: {{.POSTGRES_}} # number of replica set
+  replicas: {{.POSTGRES_REPLICAS}} # number of replica set
   template:
     metadata:
       labels:
