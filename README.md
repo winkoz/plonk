@@ -8,7 +8,7 @@ An opinionated kubernetes deployment orchestrator. Plonk uses templates to build
 
 # How to Install
 
-Download the code and execute the following commands in the path where you downloaded it
+Download the code and execute the following commands in the path where you downloaded it:
 
 ```console
 
