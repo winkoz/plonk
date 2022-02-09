@@ -28,6 +28,7 @@ variables:
     OAUTH_SET_XAUTHREQUEST: 'true'
     OAUTH_SET_AUTH_HEADER: 'true'
     AUTH_TYPE: 'None'
+    PROMETHEUS_METRICS_ENABLED: 'true'
   # environment:
   #   PORT: $CONTAINER_PORT
 manifests:
