@@ -15,7 +15,7 @@ variables:
     IMAGE_PULLPOLICY: 'IfNotPresent'
     PROMETHEUS_NAMESPACE: ''
     CONFIGMAP_RELOAD_IMAGE: jimmidyson/configmap-reload:v0.4.0
-    ALERT_MANAGER_FILES_FILE_PATH: ''
+    ALERT_MANAGERS_FILE_PATH: ''
     CONFIG_FILE_NAME: 'alertmanager.yml'
     MOUNT_PATH: /data
     RUN_AS_USER: 65534
