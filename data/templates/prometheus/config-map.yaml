@@ -374,6 +374,12 @@ data:
 
     alerting:
       alertmanagers:
+        - kubernetes_sd_configs:
+          - role: service
+          relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name]
+            regex: {{.ALERTMANAGER_SERVICE_NAME}}
+            action: keep
       {{if .ALERT_MANAGERS_FILE_PATH}}
       {{.ALERT_MANAGERS_FILE_PATH | readFileToStr}}
       {{end}}
