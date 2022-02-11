@@ -6,13 +6,6 @@ metadata:
   labels:
     app: {{.NAME}}-{{.ENV}}
     component: {{.COMPONENT}}
-  {{if (eq .PROMETHEUS_METRICS_ENABLED "true")}}
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/scheme: "http"
-    prometheus.io/path: "/metrics"
-    prometheus.io/port: "{{.CONTAINER_PORT}}"
-  {{end}}
 spec:
   type: ClusterIP
   ports:
