@@ -6,5 +6,6 @@ metadata:
   labels:
     app: {{.NAME}}-{{.ENV}}
     component: {{.COMPONENT}}
-data:
-  {{.ALERT_MANAGER_FILES_FILE_PATH | readFileToStr}}
+data: 
+    alertmanager.yml: |+
+      {{indent (.ALERT_MANAGERS_FILE_PATH | readFileToStr) 8}}

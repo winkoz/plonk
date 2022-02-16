@@ -9,6 +9,6 @@ metadata:
     component: {{.COMPONENT}}
 data:
   {{range $k, $v := walkDirectory .RULE_FILES_DIRECTORYPATH}}{{$v | baseFilename}}: |
-    {{$v | readFileToStr}}
+    {{indent ($v | readFileToStr) 6}}
   {{end}}
 {{end}}
