@@ -369,7 +369,7 @@ data:
             action: drop
             
 {{if .CUSTOM_JOB_CONFIG_PATH}}
-{{.CUSTOM_JOB_CONFIG_PATH | readFileToStr}}
+      {{indent (.CUSTOM_JOB_CONFIG_PATH | readFileToStr) 6}}
 {{end}}
 
     alerting:
