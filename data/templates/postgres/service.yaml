@@ -10,6 +10,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: {{.POSTGRES_PORT}}
+    - targetPort: {{.POSTGRES_PORT}}
+      port: {{.POSTGRES_PORT}}
   selector:
     app: {{.NAME}}-{{.ENV}}
