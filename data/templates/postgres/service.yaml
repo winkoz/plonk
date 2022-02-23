@@ -8,8 +8,8 @@ metadata:
     app: {{.NAME}}-{{.ENV}}
     component: {{.COMPONENT}}
 spec:
-  type: LoadBalancer # expose the service as loadbalancer, see kubernetes docs
+  type: ClusterIP
   ports:
     - port: {{.POSTGRES_PORT}}
   selector:
-    app: {{.COMPONENT}}
+    app: {{.NAME}}-{{.ENV}}
