@@ -10,7 +10,6 @@ spec:
   selector:
     matchLabels:
       app: {{.NAME}}-{{.ENV}}
-      tier: postgresql
       component: {{.COMPONENT}}
   replicas: {{.POSTGRES_REPLICAS}} # number of replica set
   template:
@@ -18,7 +17,6 @@ spec:
       labels:
         app: {{.NAME}}-{{.ENV}}
         component: {{.COMPONENT}}
-        tier: postgresql
     spec:
       containers:
         - name: {{.NAME}}-{{.ENV}}-{{.COMPONENT}}
