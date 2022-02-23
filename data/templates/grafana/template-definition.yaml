@@ -52,6 +52,13 @@ variables:
     ADMIN_PASSWORD: 't3stp4ss'
 
     #################################################
+    # Prometheus Scraping configuration
+    #################################################
+    PROMETHEUS_METRICS_ENABLED: 'true'
+    PROMETHEUS_METRICS_PATH: '/metrics'
+    CONTAINER_METRICS_PORT: 3000
+
+    #################################################
     # Dashboard specific information
     #################################################
     DASHBOARDS: ''

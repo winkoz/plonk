@@ -21,6 +21,12 @@ spec:
       labels:
         app: {{.NAME}}-{{.ENV}}
         component: {{.COMPONENT}}
+      {{if (eq .PROMETHEUS_METRICS_ENABLED "true")}} 
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "{{.PROMETHEUS_METRICS_PATH}}"
+        prometheus.io/port: "{{.CONTAINER_METRICS_PORT}}"
+      {{end}}
     spec:
       serviceAccountName: {{.NAME}}-{{.ENV}}-service-account
       securityContext:
