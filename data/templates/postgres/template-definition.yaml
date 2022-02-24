@@ -1,0 +1,29 @@
+name: postgres
+variables:
+  build:
+    COMPONENT: postgres
+    POSTGRES_DOCKER_IMAGE: "postgres:14-alpine"
+    POSTGRES_DB: plonk_database
+    POSTGRES_USER: test
+    POSTGRES_PASSWORD: t3stp4ss
+    POSTGRES_PORT: 5432
+    POSTGRES_REPLICAS: 1
+    PVC_STORAGE_SIZE: '4Gi'
+    PVC_ACCESS_MODE: 'ReadWriteOnce'
+    PVC_STORAGE_CLASS_NAME: 'do-block-storage'
+    HOST_PROVIDER: digitalocean
+    ADD_REPLICATED_SECRETS: true
+    DO_SECRET_DNS_NAME: digitalocean-dns-infra-production
+
+    PROMETHEUS_METRICS_ENABLED: true
+    EXPORTER_COMPONENT: 'exporter'
+    EXPORTER_REPLICAS: 1
+    PROMETHEUS_METRICS_PATH: '/metrics'
+    CONTAINER_METRICS_PORT: 9187
+    EXPORTER_DOCKER_IMAGE: 'bitnami/postgres-exporter:0.10.1'
+manifests:
+  - configmap.yaml
+  - do-empty-secret.yaml
+  - service.yaml
+  - statefulset.yaml
+  - exporter-deployment.yaml

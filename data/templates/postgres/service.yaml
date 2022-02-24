@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.NAME}}-{{.ENV}}-service
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: {{.COMPONENT}}
+spec:
+  type: ClusterIP
+  ports:
+    - name: db
+      targetPort: {{.POSTGRES_PORT}}
+      port: {{.POSTGRES_PORT}}
+{{if (eq .PROMETHEUS_METRICS_ENABLED "true")}}
+    - name: metrics 
+      targetPort: {{.CONTAINER_METRICS_PORT}}
+      port: {{.CONTAINER_METRICS_PORT}}
+{{end}}
+  selector:
+    app: {{.NAME}}-{{.ENV}}
