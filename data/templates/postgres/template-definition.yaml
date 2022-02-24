@@ -8,12 +8,14 @@ variables:
     POSTGRES_PASSWORD: t3stp4ss
     POSTGRES_PORT: 5432
     POSTGRES_REPLICAS: 1
+    PVC_STORAGE_SIZE: '4Gi'
+    PVC_ACCESS_MODE: 'ReadWriteOnce'
+    PVC_STORAGE_CLASS_NAME: 'do-block-storage'
     HOST_PROVIDER: digitalocean
     ADD_REPLICATED_SECRETS: true
     DO_SECRET_DNS_NAME: digitalocean-dns-infra-production
 manifests:
   - configmap.yaml
   - do-empty-secret.yaml
-  - pvc.yaml
   - service.yaml
-  - deployment.yaml
+  - statefulset.yaml

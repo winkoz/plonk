@@ -1,7 +1,7 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: {{.NAME}}-{{.ENV}}-{{.COMPONENT}}-deployment
+  name: {{.NAME}}-{{.ENV}}-{{.COMPONENT}}-statefulset
   namespace: {{.NAME}}-{{.ENV}}
   labels:
     app: {{.NAME}}-{{.ENV}}
@@ -11,6 +11,7 @@ spec:
     matchLabels:
       app: {{.NAME}}-{{.ENV}}
       component: {{.COMPONENT}}
+  serviceName: {{.NAME}}-{{.ENV}}-{{.COMPONENT}}-service
   replicas: {{.POSTGRES_REPLICAS}} # number of replica set
   template:
     metadata:
@@ -29,7 +30,13 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data # mount point of do pv
               name: postgres-data # name of our mount point pv
-      volumes:
-        - name: postgres-data
-          persistentVolumeClaim:
-            claimName: {{.NAME}}-{{.ENV}}-{{.COMPONENT}}-pvc
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          - {{.PVC_ACCESS_MODE}}
+        resources:
+          requests:
+            storage: {{.PVC_STORAGE_SIZE}} # amount of pv we need
+        storageClassName: {{.PVC_STORAGE_CLASS_NAME}}
