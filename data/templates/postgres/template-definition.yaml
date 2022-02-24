@@ -14,8 +14,16 @@ variables:
     HOST_PROVIDER: digitalocean
     ADD_REPLICATED_SECRETS: true
     DO_SECRET_DNS_NAME: digitalocean-dns-infra-production
+
+    PROMETHEUS_METRICS_ENABLED: true
+    EXPORTER_COMPONENT: 'exporter'
+    EXPORTER_REPLICAS: 1
+    PROMETHEUS_METRICS_PATH: '/metrics'
+    CONTAINER_METRICS_PORT: 9187
+    EXPORTER_DOCKER_IMAGE: 'bitnami/postgres-exporter:0.10.1'
 manifests:
   - configmap.yaml
   - do-empty-secret.yaml
   - service.yaml
   - statefulset.yaml
+  - exporter-deployment.yaml
