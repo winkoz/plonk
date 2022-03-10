@@ -57,6 +57,19 @@ steps:
     when:
       event: tag
 
+  - name: publish-deployer
+    image: plugins/docker
+    settings:
+      repo: 
+        from_secret: DOCKER_REGISTRY
+      username:
+        from_secret: DOCKER_USER
+      password:
+        from_secret: DOCKER_PASS
+      dockerfile: Dockerfile.deployer
+      when:
+        event: tag
+
 
 volumes:
 - name: cache
@@ -65,6 +78,6 @@ volumes:
 
 ---
 kind: signature
-hmac: 6530ad20c8c548f5a37d83a3f0f8bc294e47a6f797ba6bb809eeb1c3da62554e
+hmac: 7c756e32895b1c8920ff6c3b4429479ba20c31179c6eee439f7636081a98cf50
 
 ...

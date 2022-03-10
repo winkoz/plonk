@@ -21,8 +21,11 @@ RUN make go-build GOOS=linux
 
 FROM bitnami/kubectl:1.23-debian-10
 
-COPY --from=Builder /workspace/bin .
-
-ENV PATH="${PATH}:/workspace/bin"
+USER root
+COPY --from=builder /workspace/bin/. /usr/local/bin/.
+COPY docker-deployer/. /opt/winkoz/kubectl/bin/
+ENV PATH="/opt/winkoz/kubectl/bin:${PATH}"
 
 CMD [ "tail", "-f", "/dev/null" ]
+
+ENTRYPOINT []

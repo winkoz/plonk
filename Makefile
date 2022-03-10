@@ -1,5 +1,6 @@
 include mk/docs.mk
 include mk/go.mk
+include mk/deployer.mk
 
 PROJECT_NAME=winkoz-plonk
 VERSION=$(shell git rev-parse --short HEAD)
@@ -10,7 +11,7 @@ DOCKER=docker run $(INTERACTIVE) -v $(shell pwd):/go $(TAG)
 GOOS?=darwin
 GOARCH?=amd64
 
-.PHONY: clean build test ssh docker-build run
+.PHONY: clean build test ssh docker-build run deployer
 # -----------------------------------------------
 # Top-level targets
 
