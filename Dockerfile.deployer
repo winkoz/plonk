@@ -1,0 +1,28 @@
+FROM golang:1.15.6 AS builder
+
+ENV GOPATH "/tmp/go"
+RUN mkdir -p $GOPATH
+
+RUN go get -u github.com/go-bindata/go-bindata/...
+
+ENV PATH="${PATH}:${GOPATH}/bin"
+
+WORKDIR /workspace
+
+# Copy go mod and sum files
+COPY go.mod go.sum ./
+COPY . .
+
+# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+RUN go mod download
+
+RUN make clean
+RUN make go-build GOOS=linux
+
+FROM bitnami/kubectl:1.23-debian-10
+
+COPY --from=Builder /workspace/bin .
+
+ENV PATH="${PATH}:/workspace/bin"
+
+CMD [ "tail", "-f", "/dev/null" ]
