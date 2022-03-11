@@ -60,7 +60,6 @@ steps:
   - name: publish-deployer
     image: plugins/docker
     settings:
-      auto_tag: true
       repo: 
         from_secret: DOCKER_REGISTRY
       username:
@@ -79,6 +78,6 @@ volumes:
 
 ---
 kind: signature
-hmac: 0680e742623a9a16cf2e31e05f5d1e761f41c5f409ed120de1b70f64b3d96f20
+hmac: 7c756e32895b1c8920ff6c3b4429479ba20c31179c6eee439f7636081a98cf50
 
 ...
