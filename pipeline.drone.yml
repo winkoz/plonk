@@ -68,10 +68,13 @@ steps:
         from_secret: DOCKER_PASS
       repo:
         from_secret: DOCKER_REPO
+      auto_tag: true
       dockerfile: Dockerfile.deployer
-      when:
-        event: tag
-
+    trigger:
+        branch: 
+        - main
+        event: 
+        - push
 
 volumes:
 - name: cache
@@ -80,6 +83,6 @@ volumes:
 
 ---
 kind: signature
-hmac: db01a16cac092526251f8faaeac50f1faf3b2faa14bec5d93a6978a13fac53f4
+hmac: cfaeee95f49fdd1e64cd98b477318f4f20d3052d8eff122a26f83f8ad4134119
 
 ...
