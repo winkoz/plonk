@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -e
+
+PATH="/opt/bitnami/kubectl/bin:$PATH"
+
+INIT_FILE=/opt/winkoz/kubectl/initialized
+
+if [ ! -f ${INIT_FILE} ]; then
+    kubectl-init
+    touch ${INIT_FILE}
+fi
+
+kubectl $@
