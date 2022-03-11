@@ -60,12 +60,14 @@ steps:
   - name: publish-deployer
     image: plugins/docker
     settings:
-      repo: 
+      registry: 
         from_secret: DOCKER_REGISTRY
       username:
         from_secret: DOCKER_USER
       password:
         from_secret: DOCKER_PASS
+      repo:
+        from_secret: DOCKER_REGISTRY/IMAGE_NAME
       dockerfile: Dockerfile.deployer
       when:
         event: tag
@@ -78,6 +80,6 @@ volumes:
 
 ---
 kind: signature
-hmac: 7c756e32895b1c8920ff6c3b4429479ba20c31179c6eee439f7636081a98cf50
+hmac: 920e0c79a152fb46e38402c95368d5d988649cdb323834e12fe960c073e05ac3
 
 ...
