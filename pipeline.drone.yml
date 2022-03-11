@@ -67,7 +67,7 @@ steps:
       password:
         from_secret: DOCKER_PASS
       repo:
-        from_secret: DOCKER_REGISTRY/IMAGE_NAME
+        from_secret: DOCKER_REPO
       dockerfile: Dockerfile.deployer
       when:
         event: tag
@@ -80,6 +80,6 @@ volumes:
 
 ---
 kind: signature
-hmac: 920e0c79a152fb46e38402c95368d5d988649cdb323834e12fe960c073e05ac3
+hmac: db01a16cac092526251f8faaeac50f1faf3b2faa14bec5d93a6978a13fac53f4
 
 ...
