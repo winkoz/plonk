@@ -6,7 +6,7 @@ VERSION=$(shell git rev-parse --short HEAD)
 TAG=winkoz/plonk:$(VERSION)
 INTERACTIVE?=-it
 GO-BIN-FOLDER?=
-DOCKER=docker run $(INTERACTIVE) -v $(shell pwd):/go $(TAG)
+DOCKER=docker run $(INTERACTIVE) -v $(shell pwd):/tmp/go $(TAG)
 
 .PHONY: clean build test ssh docker-build run
 # -----------------------------------------------
