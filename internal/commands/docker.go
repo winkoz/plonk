@@ -30,6 +30,7 @@ func (d dockerCommand) Build(tagName string, skipCache bool) error {
 
 	args = append(args, tags...)
 	args = append(args, "--platform", "linux/arm64,linux/amd64,linux/amd64/v2")
+	args = append(args, "--push")
 	args = append(args, ".")
 
 	_, err := d.executeCommand("Build", args...)

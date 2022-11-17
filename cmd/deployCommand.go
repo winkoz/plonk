@@ -84,11 +84,11 @@ func newDeployCommandHandler() CobraHandler {
 			}
 
 			// Publish the tag to the docker repository
-			err = builder.Publish(tag)
-			if err != nil {
-				log.Errorf("Failed publishing tag %s %s - %s.", tag, env, err)
-				return
-			}
+			// err = builder.Publish(tag)
+			// if err != nil {
+			// 	log.Errorf("Failed publishing tag %s %s - %s.", tag, env, err)
+			// 	return
+			// }
 		}
 
 		//Deploy the tag
