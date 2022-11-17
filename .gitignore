@@ -53,3 +53,6 @@ Temporary Items
 test
 data/data.go
 unit-tests.xml
+
+# vscode config
+.vscode/*.log
