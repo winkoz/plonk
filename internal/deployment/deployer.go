@@ -53,6 +53,7 @@ func (d deployer) Execute(ctx config.Context, env string, tagName string, dryRun
 
 	if tagName != "" {
 		variables.Build["DOCKER_IMAGE"] = tagName
+		variables.Environment["DOCKER_IMAGE"] = tagName
 	}
 
 	// load secrets
