@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.NAME}}-{{.ENV}}-deployment
+  namespace: {{.NAME}}-{{.ENV}}
+  labels:
+    app: {{.NAME}}-{{.ENV}}
+    component: {{.COMPONENT}}
+spec:
+  replicas: {{.REPLICAS}}
+  selector:
+    matchLabels:
+      app: {{.NAME}}-{{.ENV}}
+      component: {{.COMPONENT}}
+  template:
+    metadata:
+      labels:
+        app: {{.NAME}}-{{.ENV}}
+        component: {{.COMPONENT}}
+    spec:
+      initContainers:
+      - name: {{.NAME}}-create-certs
+        image: {{.DOCKER_IMAGE}}
+        imagePullPolicy: {{.IMAGE_PULLPOLICY}}
+        command: ['sh', '-c'] 
+        args:
+          - >-
+            mkdir -p {{.MOUNT_PATH}}/certs;
+            mkdir -p {{.MOUNT_PATH}}/keys;
+
+            if [ ! -f {{.MOUNT_PATH}}/certs/root.cert ]; then
+              KES_CLIENT_CERT={{.MOUNT_PATH}}-tls/server.cert ./kes tool identity new --key={{.MOUNT_PATH}}/certs/root.key --cert={{.MOUNT_PATH}}/certs/root.cert root;
+            fi
+            
+        volumeMounts:
+          - name: data
+            mountPath: {{.MOUNT_PATH | wrapInQuotes}}
+            readOnly: false
+      containers:
+      - name: {{.NAME}}
+        image: {{.DOCKER_IMAGE}}
+        ports:
+        - containerPort: {{.CONTAINER_PORT}}
+        env: {{range $k, $v := .ENVIRONMENT_VARIABLES}} 
+          - name: {{$k}} 
+            value: {{$v | wrapInQuotes}}
+        {{end}}
+        command: ['sh', '-c'] 
+        args:
+          - >-
+              export MY_APP_IDENTITY=$(./kes tool identity of {{.MOUNT_PATH}}/certs/root.cert);
+              KES_CLIENT_CERT={{.MOUNT_PATH}}-tls/server.cert ./kes server --auth=off --root $MY_APP_IDENTITY --config=/etc/config/server-config.yaml;
+        volumeMounts:
+          - name: data
+            mountPath: {{.MOUNT_PATH | wrapInQuotes}}
+            readOnly: false
+          - name: tls-dir
+            mountPath: {{.MOUNT_PATH}}-tls
+            readOnly: true
+          - name: config-volume
+            mountPath: /etc/config
+      volumes:
+        - name: tls-dir
+          secret:
+            secretName: {{.WILDCARD_TLS_SECRET}}
+            items:
+            - key: tls.crt
+              path: server.cert
+            - key: tls.key
+              path: server.key
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{.NAME}}-{{.ENV}}-pvc
+        - name: config-volume
+          configMap:
+            name: {{.NAME}}-{{.ENV}}-config-map
